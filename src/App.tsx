@@ -1,8 +1,9 @@
 import * as React from "react";
+import Workflowish from "./Workflowish";
 
 export default () => (
   <>
-    <h1>Welcome to React Parcel Micro App!</h1>
-    <p>Hard to get more minimal than this React app.</p>
+    <h1>Workflowish</h1>
+    <Workflowish></Workflowish>
   </>
 );
