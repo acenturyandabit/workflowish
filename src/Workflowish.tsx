@@ -1,6 +1,68 @@
 import * as React from "react";
 import ContentEditable, { ContentEditableEvent } from 'react-contenteditable'
 import * as sanitizeHtml from "sanitize-html"
+import * as localforage from "localforage";
+
+export default () => {
+
+    const [todoItems, setTodoItems] = useSavedItems();
+
+    const itemsList = todoItems.map((i, ii) => {
+        const listActions = {
+            createNewItem: () => {
+                setTodoItems((todoItems) => {
+                    const newTodoItems = [...todoItems];
+                    newTodoItems.splice(ii, 0, "");
+                    return newTodoItems;
+                })
+            },
+            deleteThisItem: () => {
+                if (todoItems.length > 1) {
+                    setTodoItems((todoItems) => {
+                        const newTodoItems = [...todoItems];
+                        newTodoItems.splice(ii, 1);
+                        return newTodoItems;
+                    })
+                }
+            }
+        };
+        return (<Item
+            key={ii}
+            emptyList={todoItems.length == 1 && i == ""}
+            item={i}
+            setItem={(newValue: string) => {
+                setTodoItems((todoItems) => {
+                    const newTodoItems = [...todoItems];
+                    newTodoItems[ii] = newValue;
+                    return newTodoItems;
+                })
+            }}
+            actions={listActions}
+        ></Item >)
+    })
+    return <div>
+        {itemsList}
+    </div>
+};
+
+const useSavedItems = (): [Array<string>, React.Dispatch<React.SetStateAction<Array<string>>>] => {
+    const [todoItems, setTodoItems] = React.useState<Array<string>>([""])
+    React.useEffect(() => {
+        (async () => {
+            const localForageTodoItems = await localforage.getItem("items")
+            if (localForageTodoItems) {
+                setTodoItems(localForageTodoItems as Array<string>);
+            }
+        })()
+    }, [])
+
+    React.useEffect(() => {
+        localforage.setItem("items", todoItems);
+    }, [todoItems])
+
+    return [todoItems, setTodoItems];
+}
+
 
 
 const Item = (props: {
@@ -47,43 +109,3 @@ const Item = (props: {
     </span>
 }
 
-
-export default () => {
-    const [todoItems, setTodoItems] = React.useState<Array<string>>([""])
-    const itemsList = todoItems.map((i, ii) => {
-        const listActions = {
-            createNewItem: () => {
-                setTodoItems((todoItems) => {
-                    const newTodoItems = [...todoItems];
-                    newTodoItems.splice(ii, 0, "");
-                    return newTodoItems;
-                })
-            },
-            deleteThisItem: () => {
-                if (todoItems.length > 1) {
-                    setTodoItems((todoItems) => {
-                        const newTodoItems = [...todoItems];
-                        newTodoItems.splice(ii, 1);
-                        return newTodoItems;
-                    })
-                }
-            }
-        };
-        return (<Item
-            key={ii}
-            emptyList={todoItems.length == 1 && i == ""}
-            item={i}
-            setItem={(newValue: string) => {
-                setTodoItems((todoItems) => {
-                    const newTodoItems = [...todoItems];
-                    newTodoItems[ii] = newValue;
-                    return newTodoItems;
-                })
-            }}
-            actions={listActions}
-        ></Item >)
-    })
-    return <div>
-        {itemsList}
-    </div>
-};
