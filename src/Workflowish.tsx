@@ -6,7 +6,10 @@ import * as localforage from "localforage";
 export default () => {
 
     const [todoItems, setTodoItems] = useSavedItems();
-
+    const itemsRefArray = React.useRef<Array<HTMLElement | null>>([])
+    while (itemsRefArray.current.length < todoItems.length) {
+        itemsRefArray.current.push(null);
+    }
     const itemsList = todoItems.map((i, ii) => {
         const listActions = {
             createNewItem: () => {
@@ -24,6 +27,33 @@ export default () => {
                         return newTodoItems;
                     })
                 }
+            },
+            focusNext: () => {
+                console.log(itemsRefArray.current)
+                itemsRefArray.current[ii + 1]?.focus()
+            },
+            focusPrev: () => {
+                console.log(itemsRefArray.current)
+                itemsRefArray.current[ii - 1]?.focus()
+            },
+            putBeforePrev: () => {
+                if (ii > 0) {
+                    const newTodoItems = [...todoItems];
+                    const [thisItem] = newTodoItems.splice(ii, 1);
+                    newTodoItems.splice(ii - 1, 0, thisItem);
+                    setTodoItems(newTodoItems);
+                    itemsRefArray.current[ii - 1]?.focus();
+                }
+            },
+            putAfterNext: () => {
+                if (ii < todoItems.length - 1) {
+                    const newTodoItems = [...todoItems];
+                    const [thisItem] = newTodoItems.splice(ii, 1);
+                    newTodoItems.splice(ii + 1, 0, thisItem);
+                    setTodoItems(newTodoItems);
+                    // Changing the list does not change the item refs; so focus on the next item
+                    itemsRefArray.current[ii + 1]?.focus();
+                }
             }
         };
         return (<Item
@@ -37,6 +67,7 @@ export default () => {
                     return newTodoItems;
                 })
             }}
+            pushRef={(ref: HTMLElement) => itemsRefArray.current[ii] = ref}
             actions={listActions}
         ></Item >)
     })
@@ -69,12 +100,17 @@ const Item = (props: {
     emptyList?: boolean,
     item: string,
     setItem: (item: string) => void,
+    pushRef: (ref: HTMLElement) => void,
     actions: {
         createNewItem: () => void,
         deleteThisItem: () => void
+        focusPrev: () => void
+        focusNext: () => void
+        putBeforePrev: () => void
+        putAfterNext: () => void
     }
 }) => {
-    const [isSelfEmpty, setIsSelfEmpty] = React.useState(false);
+    const [, setIsSelfEmpty] = React.useState(false);
     const onContentChange = React.useCallback((evt: ContentEditableEvent) => {
         const sanitizeConf = {
             allowedTags: ["b", "i", "a", "p"],
@@ -89,6 +125,20 @@ const Item = (props: {
             if (evt.key == "Enter") {
                 props.actions.createNewItem();
                 evt.preventDefault()
+            }
+            if (evt.key == "ArrowUp") {
+                if (evt.altKey) {
+                    props.actions.putBeforePrev();
+                } else {
+                    props.actions.focusPrev();
+                }
+            }
+            if (evt.key == "ArrowDown") {
+                if (evt.altKey) {
+                    props.actions.putAfterNext();
+                } else {
+                    props.actions.focusNext();
+                }
             }
             if (evt.key == "Backspace") {
                 setIsSelfEmpty((isSelfEmpty) => {
@@ -105,7 +155,7 @@ const Item = (props: {
         }
     }
     return <span style={{ display: "inline-flex", width: "100%" }}> {bulletPoint} &nbsp;
-        <ContentEditable style={{ flex: "1 1 auto" }} onChange={onContentChange} html={props.item} onKeyDown={checkEnterPressed}></ContentEditable>
-    </span>
+        <ContentEditable innerRef={props.pushRef} style={{ flex: "1 1 auto" }} onChange={onContentChange} html={props.item} onKeyDown={checkEnterPressed}></ContentEditable>
+    </span >
 }
 
