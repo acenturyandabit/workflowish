@@ -1,4 +1,7 @@
+import tsconfigPaths from 'vite-tsconfig-paths'
+
 export default {
+    plugins: [tsconfigPaths()],
     resolve: {
         alias: {
             // Solve sanitize-html complaints

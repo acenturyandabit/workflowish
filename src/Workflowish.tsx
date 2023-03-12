@@ -71,7 +71,7 @@ export default () => {
             actions={listActions}
         ></Item >)
     })
-    return <div>
+    return <div style={{ margin: "10px" }}>
         {itemsList}
     </div>
 };

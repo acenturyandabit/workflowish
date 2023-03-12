@@ -1,5 +1,6 @@
 import * as React from "react";
-import Workflowish from "./Workflowish";
+import FileMenu from "~FileMenu";
+import Workflowish from "~Workflowish";
 
 const preventUsersFromInstinctiveCtrlS = () => {
   window.addEventListener("keydown", (e) => {
@@ -11,8 +12,10 @@ const preventUsersFromInstinctiveCtrlS = () => {
 
 export default () => {
   preventUsersFromInstinctiveCtrlS();
-  return <>
-    <h1>Workflowish</h1>
-    <Workflowish></Workflowish>
-  </>
+  return <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
+    <FileMenu></FileMenu>
+    <div className="viewContainer">
+      <Workflowish></Workflowish>
+    </div>
+  </div>
 };

@@ -1,0 +1,17 @@
+body {
+    font-family: 'Noto Sans', Arial, Helvetica, sans-serif;
+    margin: 0;
+    overflow: hidden;
+}
+
+html,
+body,
+#root {
+    height: 100%;
+    color: var(--main-fg-color);
+}
+
+.viewContainer {
+    background: var(--main-bg-color);
+    flex: 1 0 auto;
+}
