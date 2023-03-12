@@ -40,7 +40,10 @@ const HelpDialog = (props: {
                     You can use the up and down arrow keys to navigate between list items.
                 </li>
                 <li>
-                    You can use Alt + the up and down arrow keys to rearrange list items.
+                    You can use Alt + up and down arrow keys to rearrange list items.
+                </li>
+                <li>
+                    You can use Tab to indent a list item; or Shift-Tab to unindent a list item.
                 </li>
             </ul>
         </DialogContentText>

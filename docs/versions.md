@@ -13,14 +13,22 @@
 - can use `alt-up` and `alt-down` to rearrange items
 - Add linter
 
-# (Current) Verison 2.0
+# Verison 2.0
 - Make it look like old polymorph
 - Add a help with instructions on how to use it so far
 
-# Version 2.1
+# (Current) Version 2.1
 - Can use `tab` at start of item to make child of item above
 - Can use `shift-tab` when cursor at start of item to make sibling of current parent
 - Corresponding updates to the instructions
+
+# Version 2.1.1
+- Up will focus on children of sibling if children of sibling exist
+- Up will exit from children if at first child
+- Down will exit from children if no further children
+
+# Version 2.1.2
+- Indenting and unindenting will focus on children correctly
 
 # Version 2.2
 - Add `ctrl-up` and `ctrl-down` to collapse / uncollapse
