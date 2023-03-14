@@ -22,7 +22,7 @@
 - Can use `shift-tab` when cursor at start of item to make sibling of current parent
 - Corresponding updates to the instructions
 
-# (Current) Version 2.1.1
+# Version 2.1.1
 - Up will focus on children of sibling if children of sibling exist
 - Up will exit from children if at first child
 - Down will exit from children if no further children
@@ -32,11 +32,18 @@
 - Editing item does not move focus to the start or end of the contenteditable
 - Deleting freshly created items should work
 
+# (Current) Version 2.1.3
+- Improved commit message checking rules
+
 # Version 2.2
 - Add `ctrl-up` and `ctrl-down` to collapse / uncollapse
 - Show little arrows for collapsed / uncollapsed items
 - [FIX] Enter adds new items below instead of above current item
 - Corresponding updates to the instructions
+
+# Version 2.2.1
+- Add `shift-enter` to add new items
+- Document this
 
 # Version 2.3
 - Add github ci

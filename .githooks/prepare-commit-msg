@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 COMMIT_TMP_FILE_NAME=$1
 COMMIT_MSG=$(cat $COMMIT_TMP_FILE_NAME)
 ERROR_MSG="Commit message format must match regex \"${REGEX}\""
@@ -7,3 +7,24 @@ if [[ ! $COMMIT_MSG =~ $REGEX ]]; then
  echo "Bad commit \"$COMMIT_MSG\", must be like \"Version x.x: <message>\"."
  exit 1
 fi
+
+function get_version () {
+    echo $1 | cut -d: -f 1
+}
+
+# Check that version in docs/versions.md is correct
+COMMIT_VERSION=$(get_version "$COMMIT_MSG")
+EXPECTED_CURRENT_VERSION_MESSAGE="# (Current) $COMMIT_VERSION"
+if ! (grep "$EXPECTED_CURRENT_VERSION_MESSAGE" docs/versions.md > /dev/null) ; then
+    echo "Bad commit: Version in docs does not match commit message"
+    exit 1;
+fi
+
+# Check that version numbers follow each other
+LAST_COMMIT_MSG=$(git show-branch --no-name HEAD)
+UNSORTED_COMMITS="$(echo -e "$LAST_COMMIT_MSG\n$COMMIT_MSG" | cut -c 9-)"
+SORTED_COMMITS="$(echo "$UNSORTED_COMMITS" | sort -V)"
+[ "$SORTED_COMMITS" != "$UNSORTED_COMMITS" ] && \
+    echo "Bad commit message \"$COMMIT_MSG\": Out of order version (last was $(get_version "$LAST_COMMIT_MSG"))" \
+    && exit 1
+exit 0
