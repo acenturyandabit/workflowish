@@ -37,6 +37,9 @@ const HelpDialog = (props: {
                     To create a new row anywhere, press enter in the row above it.
                 </li>
                 <li>
+                    You can use Shift+Enter to add an item as a child.
+                </li>
+                <li>
                     You can use the up and down arrow keys to navigate between list items.
                 </li>
                 <li>

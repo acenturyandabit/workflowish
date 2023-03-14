@@ -35,14 +35,14 @@
 # Version 2.1.3
 - Improved commit message checking rules
 
-# (Current) Version 2.2
+# Version 2.2
 - Add `ctrl-up` and `ctrl-down` to collapse / uncollapse
 - Show little arrows for collapsed / uncollapsed items
 - [FIX] Enter adds new items below instead of above current item
 - [FIX] Backspace deletion focuses on previous item
 - Corresponding updates to the instructions
 
-# Version 2.2.1
+# (Current) Version 2.2.1
 - Add `shift-enter` to add new items as children
 - Document this
 

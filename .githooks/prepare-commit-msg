@@ -22,7 +22,7 @@ fi
 
 # Check that version numbers follow each other
 LAST_COMMIT_MSG=$(git show-branch --no-name HEAD)
-UNSORTED_COMMITS="$(echo -e "$LAST_COMMIT_MSG\n$COMMIT_MSG" | cut -c 9-)"
+UNSORTED_COMMITS="$(echo -e "$LAST_COMMIT_MSG\n$COMMIT_MSG" | cut -d: -f 1)"
 SORTED_COMMITS="$(echo "$UNSORTED_COMMITS" | sort -V)"
 [ "$SORTED_COMMITS" != "$UNSORTED_COMMITS" ] && \
     echo "Bad commit message \"$COMMIT_MSG\": Out of order version (last was $(get_version "$LAST_COMMIT_MSG"))" \

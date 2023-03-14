@@ -2,7 +2,7 @@ import * as React from "react";
 import ContentEditable, { ContentEditableEvent } from 'react-contenteditable'
 import * as sanitizeHtml from "sanitize-html"
 import { ControllerActions, makeListActions, TreeNodeArrayGetSetter } from "./controller";
-import { ItemTreeNode } from "./model";
+import { ItemTreeNode, makeNewItem } from "./model";
 
 export type ItemRef = {
     triggerFocusFromAbove: () => void;
@@ -10,6 +10,7 @@ export type ItemRef = {
     focusThis: () => void;
     focusThisEnd: () => void;
     focusRecentlyIndentedItem: () => void;
+    focusMyNextSibling: () => void;
 }
 
 const Item = (props: {
@@ -42,7 +43,7 @@ const Item = (props: {
             data: sanitizeHtml(evt.currentTarget.innerHTML, sanitizeConf)
         }))
     }, [props.parentActions])
-    const bulletPoint: string = (() => {
+    const bulletPoint: React.ReactElement = <span style={{ paddingLeft: props.item.children.length ? "0px" : "0.2em" }}>{(() => {
         if (props.emptyList) return ">";
         else if (props.item.children.length) {
             if (props.item.collapsed) return "\u25b6";
@@ -50,10 +51,18 @@ const Item = (props: {
         } else {
             return "\u25CF";
         }
-    })();
+    })()}</span>;
     const onKeyDown = (evt: React.KeyboardEvent) => {
         if (evt.key == "Enter") {
-            props.parentActions.createNewItem();
+            if (evt.shiftKey) {
+                props.parentActions.getSetSelf(oldSelf => ({
+                    ...oldSelf,
+                    children: [makeNewItem(), ...oldSelf.children]
+                }));
+                setTimeout(() => itemsRefArray.current?.[0]?.focusThis());
+            } else {
+                props.parentActions.createNewItem();
+            }
             evt.preventDefault()
         }
         if (evt.key == "Tab") {
@@ -100,7 +109,7 @@ const Item = (props: {
             }
         }
     };
-    props.pushRef({
+    const thisActions = {
         triggerFocusFromAbove: () => {
             thisContentEditable.current?.focus();
         },
@@ -126,12 +135,14 @@ const Item = (props: {
                 }
             }
         },
+        focusMyNextSibling: props.parentActions.focusMyNextSibling,
         focusRecentlyIndentedItem: () => {
             setTimeout(() => {
                 itemsRefArray.current?.[itemsRefArray.current.length - 1]?.focusThis();
             })
         }
-    })
+    }
+    props.pushRef(thisActions);
     const childItems = <div style={{ marginLeft: "10px" }}>
         {props.item.children.map((item, ii) => (<Item
             key={ii}
@@ -157,12 +168,7 @@ const Item = (props: {
                         }
                     })
                 },
-                parentFocus: {
-                    focusThis: () => {
-                        thisContentEditable.current?.focus();
-                    },
-                    focusMyNextSibling: props.parentActions.focusMyNextSibling,
-                }
+                thisActions
             })}
         ></Item>))}
     </div>;

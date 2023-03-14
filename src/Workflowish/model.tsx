@@ -16,19 +16,19 @@ type FlatItemData = {
 }
 
 type FlatItemBlob = Record<string, FlatItemData>;
-export const makeNewUniqueKey = (): string => {
+const makeNewUniqueKey = (): string => {
     return (Date.now().toString()) + uuidv4();
 }
 
-const defaultEmptyArray = () => [{
+export const makeNewItem = () => ({
     id: makeNewUniqueKey(),
     data: "",
     children: [],
     collapsed: false
-}];
+});
 
 export const useSavedItems = (): [Array<ItemTreeNode>, React.Dispatch<React.SetStateAction<Array<ItemTreeNode>>>] => {
-    const [todoItems, setTodoItems] = React.useState<Array<ItemTreeNode>>(defaultEmptyArray())
+    const [todoItems, setTodoItems] = React.useState<Array<ItemTreeNode>>([makeNewItem()])
     React.useEffect(() => {
         (async () => {
             const localForageTodoItems: FlatItemBlob | null = await localforage.getItem<FlatItemBlob>("items")
@@ -80,7 +80,7 @@ const buildTree = (flatItemBlob: FlatItemBlob): Array<ItemTreeNode> => {
     treeRootsArray.forEach((n: ItemTreeNode & { indexInParent?: number }) => {
         delete n.indexInParent;
     })
-    if (treeRootsArray.length == 0) return defaultEmptyArray();
+    if (treeRootsArray.length == 0) return [makeNewItem()];
     else return treeRootsArray;
 }
 

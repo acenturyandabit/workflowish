@@ -1,6 +1,6 @@
 import * as React from "react";
 import { ItemRef } from "./Item";
-import { ItemTreeNode, makeNewUniqueKey } from "./model";
+import { ItemTreeNode, makeNewItem } from "./model";
 
 type TreeNodeGetSetter = (oldValue: ItemTreeNode) => ItemTreeNode;
 export type TreeNodeArrayGetSetter = (oldValue: ItemTreeNode[]) => ItemTreeNode[];
@@ -23,20 +23,12 @@ export const makeListActions = (props: {
     getSetSiblingArray: (t: TreeNodeArrayGetSetter) => void,
     siblingItemRefs: React.RefObject<(ItemRef | null)[]>,
     unindentCaller: () => void,
-    parentFocus: {
-        focusThis: () => void,
-        focusMyNextSibling: () => void,
-    }
+    thisActions: ItemRef
 }): ControllerActions => ({
     createNewItem: () => {
         props.getSetSiblingArray((siblingArray) => {
             const newSiblingArray = [...siblingArray];
-            newSiblingArray.splice(props.currentSiblingIdx + 1, 0, {
-                id: makeNewUniqueKey(),
-                data: "",
-                children: [],
-                collapsed: false
-            });
+            newSiblingArray.splice(props.currentSiblingIdx + 1, 0, makeNewItem());
             // New items won't be created yet, so delay the setfocus
             setTimeout(() => props.siblingItemRefs.current?.[props.currentSiblingIdx + 1]?.focusThis());
             return newSiblingArray;
@@ -47,7 +39,11 @@ export const makeListActions = (props: {
             if (siblingArray.length > 0) {
                 const newSiblingArray = [...siblingArray];
                 newSiblingArray.splice(props.currentSiblingIdx, 1);
-                props.siblingItemRefs.current?.[props.currentSiblingIdx - 1]?.focusThisEnd()
+                if (props.currentSiblingIdx - 1 >= 0) {
+                    props.siblingItemRefs.current?.[props.currentSiblingIdx - 1]?.focusThisEnd()
+                } else {
+                    props.thisActions.focusThisEnd();
+                }
                 return newSiblingArray;
             } else {
                 return siblingArray
@@ -58,7 +54,7 @@ export const makeListActions = (props: {
         const siblingItemsRef = props.siblingItemRefs.current;
         if (siblingItemsRef) {
             if (props.currentSiblingIdx >= siblingItemsRef.length - 1) {
-                props.parentFocus.focusMyNextSibling()
+                props.thisActions.focusMyNextSibling()
             } else {
                 siblingItemsRef[props.currentSiblingIdx + 1]?.triggerFocusFromAbove()
             }
@@ -68,7 +64,7 @@ export const makeListActions = (props: {
         const siblingItemsRef = props.siblingItemRefs.current;
         if (siblingItemsRef) {
             if (props.currentSiblingIdx <= 0) {
-                props.parentFocus.focusThis()
+                props.thisActions.focusThis()
             } else {
                 siblingItemsRef[props.currentSiblingIdx - 1]?.triggerFocusFromBelow()
             }
