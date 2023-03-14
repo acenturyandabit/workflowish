@@ -22,7 +22,7 @@ export const makeListActions = (props: {
     currentSiblingIdx: number,
     getSetSiblingArray: (t: TreeNodeArrayGetSetter) => void,
     siblingItemRefs: React.RefObject<(ItemRef | null)[]>,
-    unindentThis: () => void,
+    unindentCaller: () => void,
     parentFocus: {
         focusThis: () => void,
         focusMyNextSibling: () => void,
@@ -41,7 +41,7 @@ export const makeListActions = (props: {
     },
     deleteThisItem: () => {
         props.getSetSiblingArray((siblingArray) => {
-            if (siblingArray.length > 1) {
+            if (siblingArray.length > 0) {
                 const newSiblingArray = [...siblingArray];
                 newSiblingArray.splice(props.currentSiblingIdx, 1);
                 return newSiblingArray;
@@ -101,17 +101,19 @@ export const makeListActions = (props: {
                 const newSiblingArray = [...siblingArray];
                 const [thisItem] = newSiblingArray.splice(props.currentSiblingIdx, 1);
                 newSiblingArray[props.currentSiblingIdx - 1].children.push(thisItem);
+                props.siblingItemRefs.current?.[props.currentSiblingIdx - 1]?.focusRecentlyIndentedItem();
                 return newSiblingArray;
             } else {
                 return siblingArray;
             }
         })
     },
-    unindentSelf: props.unindentThis,
+    unindentSelf: props.unindentCaller,
     unindentChild: (child: ItemTreeNode) => {
         props.getSetSiblingArray((siblingArray) => {
             const newSiblingArray = [...siblingArray];
             newSiblingArray.splice(props.currentSiblingIdx, 0, child);
+            props.siblingItemRefs.current?.[props.currentSiblingIdx]?.focusThis();
             return newSiblingArray;
         })
     },

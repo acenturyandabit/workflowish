@@ -20,7 +20,7 @@ export default () => {
                 siblingItemRefs: itemsRefArray,
                 currentSiblingIdx: ii,
                 getSetSiblingArray: setTodoItems,
-                unindentThis: () => {
+                unindentCaller: () => {
                     // cannot unindent at root level
                 },
                 parentFocus: {

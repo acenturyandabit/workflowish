@@ -8,6 +8,7 @@ export type ItemRef = {
     triggerFocusFromAbove: () => void;
     triggerFocusFromBelow: () => void;
     focusThis: () => void;
+    focusRecentlyIndentedItem: () => void;
 }
 
 const Item = (props: {
@@ -16,7 +17,10 @@ const Item = (props: {
     pushRef: (ref: ItemRef) => void,
     parentActions: ControllerActions
 }) => {
-    const [, setIsSelfEmpty] = React.useState(false);
+    const [, setIsSelfEmpty] = React.useState(props.item.data.length == 0);
+    React.useEffect(() => {
+        setIsSelfEmpty(props.item.data.length == 0)
+    }, [props.item.data]);
     const itemsRefArray = React.useRef<Array<ItemRef | null>>([])
     const thisContentEditable = React.useRef<HTMLElement | null>(null);
     while (itemsRefArray.current.length < props.item.children.length) {
@@ -30,14 +34,13 @@ const Item = (props: {
             allowedTags: ["b", "i", "a", "p"],
             allowedAttributes: { a: ["href"] }
         };
-        setIsSelfEmpty(evt.currentTarget.innerText.length == 0);
         props.parentActions.getSetSelf(oldSelf => ({
             // this needs to be a getsetter as the useEffect is run only once, and so 
             // the self item at construction time is outdated
             ...oldSelf,
             data: sanitizeHtml(evt.currentTarget.innerHTML, sanitizeConf)
         }))
-    }, [])
+    }, [setIsSelfEmpty, props])
     const bulletPoint: string = props.emptyList ? ">" : "\u2022";
     const checkEnterPressed = (evt: React.KeyboardEvent) => {
         if (evt.key == "Enter") {
@@ -83,7 +86,7 @@ const Item = (props: {
                 return isSelfEmpty;
             })
         }
-    }
+    };
     props.pushRef({
         triggerFocusFromAbove: () => {
             thisContentEditable.current?.focus();
@@ -98,13 +101,21 @@ const Item = (props: {
         },
         focusThis: () => {
             thisContentEditable.current?.focus();
+        },
+        focusRecentlyIndentedItem: () => {
+            setTimeout(() => {
+                itemsRefArray.current?.[itemsRefArray.current.length - 1]?.focusThis();
+            })
         }
     })
+    const memoizedInnerRef = React.useCallback(
+        (contenteditableElement: HTMLElement) => {
+            thisContentEditable.current = contenteditableElement;
+        }
+        , []);
     return <span style={{ display: "flex", flexDirection: "column", width: "100%" }}>
         <span style={{ display: "inline-flex", width: "100%" }}>
-            {bulletPoint} &nbsp;<ContentEditable innerRef={(contenteditableElement: HTMLElement) => {
-                thisContentEditable.current = contenteditableElement;
-            }} style={{ flex: "1 1 auto" }} onChange={onContentChange} html={props.item.data} onKeyDown={checkEnterPressed}></ContentEditable>
+            {bulletPoint} &nbsp;<ContentEditable innerRef={memoizedInnerRef} style={{ flex: "1 1 auto" }} onChange={onContentChange} html={props.item.data} onKeyDown={checkEnterPressed}></ContentEditable>
         </span>
         <div style={{ marginLeft: "10px" }}>
             {props.item.children.map((item, ii) => (<Item
@@ -120,7 +131,7 @@ const Item = (props: {
                             children: t(item.children)
                         }))
                     },
-                    unindentThis: () => {
+                    unindentCaller: () => {
                         props.parentActions.getSetSelf((item) => {
                             const newChildren = [...item.children];
                             const [splicedThis] = newChildren.splice(ii, 1);
