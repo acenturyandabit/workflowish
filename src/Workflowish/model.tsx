@@ -4,13 +4,15 @@ import { v4 as uuidv4 } from 'uuid';
 export type ItemTreeNode = {
     id: string,
     data: string,
-    children: ItemTreeNode[]
+    children: ItemTreeNode[],
+    collapsed: boolean
 }
 
 type FlatItemData = {
     data: string,
     parentId: string,
-    indexInParent: number
+    indexInParent: number,
+    collapsed: boolean
 }
 
 type FlatItemBlob = Record<string, FlatItemData>;
@@ -21,7 +23,8 @@ export const makeNewUniqueKey = (): string => {
 const defaultEmptyArray = () => [{
     id: makeNewUniqueKey(),
     data: "",
-    children: []
+    children: [],
+    collapsed: false
 }];
 
 export const useSavedItems = (): [Array<ItemTreeNode>, React.Dispatch<React.SetStateAction<Array<ItemTreeNode>>>] => {
@@ -53,7 +56,8 @@ const buildTree = (flatItemBlob: FlatItemBlob): Array<ItemTreeNode> => {
             id: nodeId,
             data: flatItemBlob[nodeId].data,
             indexInParent: flatItemBlob[nodeId].indexInParent,
-            children: []
+            children: [],
+            collapsed: flatItemBlob[nodeId].collapsed
         }
     }
     // Second pass: Parent assignment
@@ -87,7 +91,8 @@ const fromTree = (itemTreeArray: Array<ItemTreeNode>): FlatItemBlob => {
             flatBlob[n.id] = {
                 data: n.data,
                 parentId: parentId,
-                indexInParent: idx
+                indexInParent: idx,
+                collapsed: n.collapsed
             }
             unrollItems(n.id, n.children);
         })

@@ -31,11 +31,14 @@ export const makeListActions = (props: {
     createNewItem: () => {
         props.getSetSiblingArray((siblingArray) => {
             const newSiblingArray = [...siblingArray];
-            newSiblingArray.splice(props.currentSiblingIdx, 0, {
+            newSiblingArray.splice(props.currentSiblingIdx + 1, 0, {
                 id: makeNewUniqueKey(),
                 data: "",
-                children: []
+                children: [],
+                collapsed: false
             });
+            // New items won't be created yet, so delay the setfocus
+            setTimeout(() => props.siblingItemRefs.current?.[props.currentSiblingIdx + 1]?.focusThis());
             return newSiblingArray;
         })
     },
@@ -44,6 +47,7 @@ export const makeListActions = (props: {
             if (siblingArray.length > 0) {
                 const newSiblingArray = [...siblingArray];
                 newSiblingArray.splice(props.currentSiblingIdx, 1);
+                props.siblingItemRefs.current?.[props.currentSiblingIdx - 1]?.focusThisEnd()
                 return newSiblingArray;
             } else {
                 return siblingArray

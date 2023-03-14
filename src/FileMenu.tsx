@@ -45,6 +45,9 @@ const HelpDialog = (props: {
                 <li>
                     You can use Tab to indent a list item; or Shift-Tab to unindent a list item.
                 </li>
+                <li>
+                    You can use Ctrl+Up or Ctrl+Down to collapse / uncollapse an item with children.
+                </li>
             </ul>
         </DialogContentText>
     </DialogContent>

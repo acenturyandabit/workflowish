@@ -32,27 +32,40 @@
 - Editing item does not move focus to the start or end of the contenteditable
 - Deleting freshly created items should work
 
-# (Current) Version 2.1.3
+# Version 2.1.3
 - Improved commit message checking rules
 
-# Version 2.2
+# (Current) Version 2.2
 - Add `ctrl-up` and `ctrl-down` to collapse / uncollapse
 - Show little arrows for collapsed / uncollapsed items
 - [FIX] Enter adds new items below instead of above current item
+- [FIX] Backspace deletion focuses on previous item
 - Corresponding updates to the instructions
 
 # Version 2.2.1
-- Add `shift-enter` to add new items
+- Add `shift-enter` to add new items as children
 - Document this
 
 # Version 2.3
-- Add github ci
-- Make issue tickets to allow collaboration
+- Make contribution guide
 - Push to github
 
-# Version 2.4
-- Can load and save to a server instead of localforage, as a JSON blob
-- A file menu to select the action on ctrl-S
+# Version 3.0
+- Add a file menu
+- Add configurable save sources
+- Add ability to POST to arbitrary endpoint
 
-# Version x.x.minor-bugs
+# Version 3.1
+- Add an open different files dialog
+- Load configurations from query path, which inform file loading
+- Recent documents should show on open file menu
+- Visiting site with blank URL should show open file dialog
+
+# Version 3.1.1
+- Visiting site with blank URL should load last opened document
 - Little popup to give user peace of mind when ctrl-s is pressed
+
+# Version 3.1.2
+- Add github ci
+- Add automated versions.md file checking: check that versions are in-order
+- Add automated roadmap checking: explicitly alert maintainer when versions past version n+1 have been modified
