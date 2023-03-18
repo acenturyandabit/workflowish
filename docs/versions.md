@@ -46,8 +46,11 @@
 - Add `shift-enter` to add new items as children
 - Document this
 
-# (Current) Version 2.2.2
+# Version 2.2.2
 - Add initial test
+
+# (Current) Version 2.2.3
+- [FIX] Focus crashes on some empty items
 
 # Version 2.3
 - Make contribution guide

@@ -131,7 +131,7 @@ const Item = (props: {
                 _thisContentEditable.focus();
                 if (_thisContentEditable.lastChild != null) {
                     const sel = window.getSelection();
-                    sel?.collapse(_thisContentEditable.lastChild, length);
+                    sel?.collapse(_thisContentEditable.firstChild, length);
                 }
             }
         },
