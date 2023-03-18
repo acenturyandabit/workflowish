@@ -1,5 +1,6 @@
 #!/bin/bash
-
+set -e
 [ ! -z "$(git diff)" ] && echo "Warning, you have uncommitted changes; perhaps you forgot to git add after linter?" && exit 1;
 
 npm run lint 
+npm run test

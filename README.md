@@ -1,4 +1,5 @@
 # Polymorph
+A love letter to tiling window managers, tabs, and recursive lists.
 
 ## Dev setup 
 ```

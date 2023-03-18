@@ -42,13 +42,19 @@
 - [FIX] Backspace deletion focuses on previous item
 - Corresponding updates to the instructions
 
-# (Current) Version 2.2.1
+# Version 2.2.1
 - Add `shift-enter` to add new items as children
 - Document this
+
+# (Current) Version 2.2.2
+- Add initial test
 
 # Version 2.3
 - Make contribution guide
 - Push to github
+
+# Version 2.4
+- Fancy up the README
 
 # Version 3.0
 - Add a file menu
@@ -69,3 +75,24 @@
 - Add github ci
 - Add automated versions.md file checking: check that versions are in-order
 - Add automated roadmap checking: explicitly alert maintainer when versions past version n+1 have been modified
+
+# Version 3.1.3
+- Add a line thingy that renders when objects unfold
+
+# Version 3.2
+- Add search and tagging
+
+# Version 3.3
+- Add Symlinks
+
+# Version 4.0
+- Create an event bus
+- Detach the model from the save process, so that the event bus can be used (and so workflowy can be used standalone)
+- Move the help screen into Workflowish
+
+# Version 4.1 
+- Add a tabbing window manager
+
+# Version 4.2
+- Add a Userscript runner hooked into the event bus
+

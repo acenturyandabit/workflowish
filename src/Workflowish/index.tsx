@@ -2,12 +2,17 @@ import * as React from "react";
 import { makeListActions } from "./controller";
 import Item, { ItemRef } from "./Item"
 import { useSavedItems } from "./model"
+
+
 export default () => {
 
     const [todoItems, setTodoItems] = useSavedItems();
     const itemsRefArray = React.useRef<Array<ItemRef | null>>([])
     while (itemsRefArray.current.length < todoItems.length) {
         itemsRefArray.current.push(null);
+    }
+    const topLevelTakeFocus = () => {
+        // Top level cannot take focus
     }
     const itemsList = todoItems.map((i, ii) => {
 
@@ -23,13 +28,13 @@ export default () => {
                 unindentCaller: () => {
                     // cannot unindent at root level
                 },
-                parentFocus: {
-                    focusThis: () => {
-                        itemsRefArray.current?.[ii]?.triggerFocusFromBelow();
-                    },
-                    focusMyNextSibling: () => {
-                        // Cannot focus next at root level
-                    }
+                thisActions: {
+                    triggerFocusFromAbove: topLevelTakeFocus,
+                    triggerFocusFromBelow: topLevelTakeFocus,
+                    focusThis: topLevelTakeFocus,
+                    focusThisEnd: topLevelTakeFocus,
+                    focusRecentlyIndentedItem: topLevelTakeFocus,
+                    focusMyNextSibling: topLevelTakeFocus,
                 }
             })}
         ></Item >)
