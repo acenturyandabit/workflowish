@@ -1,21 +1,40 @@
+import { Dialog, DialogTitle } from "@mui/material";
 import * as React from "react";
-import FileMenu from "~FileMenu";
+import { useCoreDataLake } from "~CoreDataLake";
+import NavBar from "~NavBar";
+import { useKVStoresList } from "~Stores/KVStoreInstances";
 import Workflowish from "~Workflowish";
 
-const preventUsersFromInstinctiveCtrlS = () => {
-  window.addEventListener("keydown", (e) => {
-    if (e.key == "s" && e.ctrlKey) {
-      e.preventDefault();
-    }
-  });
-}
 
 export default () => {
-  preventUsersFromInstinctiveCtrlS();
+
+  const [kvStores, setKVStores] = useKVStoresList();
+  const [dataAndLoadState, setData, doSave] = useCoreDataLake(kvStores);
+
+  React.useEffect(() => {
+    const keydownListener = (e: KeyboardEvent) => {
+      if (e.key == "s" && e.ctrlKey) {
+        e.preventDefault();
+        doSave();
+      }
+    }
+    window.addEventListener("keydown", keydownListener);
+    return () => window.removeEventListener("keydown", keydownListener);
+  }, [doSave])
+
+
   return <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
-    <FileMenu></FileMenu>
+    <Dialog open={!dataAndLoadState.loaded} >
+      <DialogTitle>Loading your document...</DialogTitle>
+    </Dialog>
+    <NavBar
+      kvStores={kvStores}
+      setKVStores={setKVStores}
+      dataAndLoadState={dataAndLoadState}
+      setData={setData}
+    ></NavBar>
     <div className="viewContainer">
-      <Workflowish></Workflowish>
+      <Workflowish data={dataAndLoadState.data} setData={setData}></Workflowish>
     </div>
   </div>
 };

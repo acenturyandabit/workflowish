@@ -1,6 +1,6 @@
-import * as localforage from "localforage";
 import * as React from "react";
 import { v4 as uuidv4 } from 'uuid';
+import { BaseStoreDataType } from "~CoreDataLake";
 export type ItemTreeNode = {
     id: string,
     data: string,
@@ -27,22 +27,26 @@ export const makeNewItem = () => ({
     collapsed: false
 });
 
-export const useSavedItems = (): [Array<ItemTreeNode>, React.Dispatch<React.SetStateAction<Array<ItemTreeNode>>>] => {
-    const [todoItems, setTodoItems] = React.useState<Array<ItemTreeNode>>([makeNewItem()])
-    React.useEffect(() => {
-        (async () => {
-            const localForageTodoItems: FlatItemBlob | null = await localforage.getItem<FlatItemBlob>("items")
-            if (localForageTodoItems) {
-                setTodoItems(buildTree(localForageTodoItems));
+export const transformData = (props: {
+    data: BaseStoreDataType,
+    setData: React.Dispatch<React.SetStateAction<BaseStoreDataType>>
+}): [Array<ItemTreeNode>,
+        React.Dispatch<React.SetStateAction<Array<ItemTreeNode>>>] => {
+    const currentTodoItems = buildTree(props.data as FlatItemBlob);
+    const setTodoItems = (todoItems: Array<ItemTreeNode> |
+        ((currentTodoItems: Array<ItemTreeNode>) => Array<ItemTreeNode>)
+    ) => {
+        props.setData((oldData) => {
+            let todoItemsToSet: Array<ItemTreeNode>
+            if (todoItems instanceof Function) {
+                todoItemsToSet = todoItems(buildTree(oldData as FlatItemBlob))
+            } else {
+                todoItemsToSet = todoItems
             }
-        })()
-    }, [])
-
-    React.useEffect(() => {
-        localforage.setItem<FlatItemBlob>("items", fromTree(todoItems));
-    }, [todoItems])
-
-    return [todoItems, setTodoItems];
+            return fromTree(todoItemsToSet)
+        })
+    }
+    return [currentTodoItems, setTodoItems];
 }
 
 const buildTree = (flatItemBlob: FlatItemBlob): Array<ItemTreeNode> => {

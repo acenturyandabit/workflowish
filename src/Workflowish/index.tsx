@@ -1,12 +1,16 @@
 import * as React from "react";
+import { BaseStoreDataType } from "~CoreDataLake";
 import { makeListActions } from "./controller";
 import Item, { ItemRef } from "./Item"
-import { useSavedItems } from "./model"
+import { transformData } from "./model"
 
 
-export default () => {
+export default (props: {
+    data: BaseStoreDataType,
+    setData: React.Dispatch<React.SetStateAction<BaseStoreDataType>>
+}) => {
 
-    const [todoItems, setTodoItems] = useSavedItems();
+    const [todoItems, setTodoItems] = transformData(props);
     const itemsRefArray = React.useRef<Array<ItemRef | null>>([])
     while (itemsRefArray.current.length < todoItems.length) {
         itemsRefArray.current.push(null);

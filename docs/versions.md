@@ -49,46 +49,63 @@
 # Version 2.2.2
 - Add initial test
 
-# (Current) Version 2.2.3
+# Version 2.2.3
 - [FIX] Focus crashes on some empty items
 
-# Version 2.3
-- Make contribution guide
-- Push to github
-
-# Version 2.4
-- Fancy up the README
-
-# Version 3.0
+# (Current) Version 2.3
+`The peace of mind version`
 - Add a file menu
 - Add configurable save sources
-- Add ability to POST to arbitrary endpoint
+- Add ability to POST to specified endpoint
+- Make a simple backend which saves JSON deltas one per line (slow but somewhat RAM/disk efficient)
+
+# Version 2.3.1
+- Add a screenshot in the README to show how it works
+- Make backend paths configurable
+
+# Version 2.3.2
+- Add a line thingy that renders when objects unfold
+
+# Version 2.4
+`The MVP Mobile Version`
+- Add the sticky buttons
+- Add click-to-expand
+- UI Fixes for mobile
+
+# Version 2.5
+`The Search version`
+- Add search
+
+# Version 2.4
+- Make contribution guide
+- Push to github
+- Create config-fold-check to fold config files
+
 
 # Version 3.1
+`The multifile version`
 - Add an open different files dialog
 - Load configurations from query path, which inform file loading
 - Recent documents should show on open file menu
 - Visiting site with blank URL should show open file dialog
 
+
 # Version 3.1.1
 - Visiting site with blank URL should load last opened document
 - Little popup to give user peace of mind when ctrl-s is pressed
+- Pressing Enter will either insert an item before OR after the current element, based on the current caret index (front or back)
 
 # Version 3.1.2
 - Add github ci
-- Add automated versions.md file checking: check that versions are in-order
+- Add automated versions.md file checking: check that past/future versions are in-order
 - Add automated roadmap checking: explicitly alert maintainer when versions past version n+1 have been modified
 
-# Version 3.1.3
-- Add a line thingy that renders when objects unfold
-
-# Version 3.2
-- Add search and tagging
-
 # Version 3.3
+`The symlink version`
 - Add Symlinks
 
 # Version 4.0
+`The scripting engine version`
 - Create an event bus
 - Detach the model from the save process, so that the event bus can be used (and so workflowy can be used standalone)
 - Move the help screen into Workflowish
