@@ -1,6 +1,6 @@
 import * as React from "react";
 import ContentEditable, { ContentEditableEvent } from 'react-contenteditable'
-import * as sanitizeHtml from "sanitize-html"
+import sanitizeHtml from "sanitize-html"
 import { ControllerActions, makeListActions, TreeNodeArrayGetSetter } from "./controller";
 import { ItemTreeNode, makeNewItem } from "./model";
 
@@ -143,7 +143,11 @@ const Item = (props: {
         }
     }
     props.pushRef(thisActions);
-    const childItems = <div style={{ marginLeft: "10px" }}>
+    const childItems = <div style={{
+        paddingLeft: "5px",
+        borderLeft: "1px solid white",
+        marginLeft: "0.5em"
+    }}>
         {props.item.children.map((item, ii) => (<Item
             key={ii}
             item={item}

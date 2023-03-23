@@ -43,7 +43,7 @@ export default (props: {
             })}
         ></Item >)
     })
-    return <div style={{ margin: "10px" }}>
+    return <div style={{ margin: "10px 5px" }}>
         {itemsList}
     </div>
 };

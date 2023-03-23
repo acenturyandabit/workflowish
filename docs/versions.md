@@ -52,19 +52,20 @@
 # Version 2.2.3
 - [FIX] Focus crashes on some empty items
 
-# (Current) Version 2.3
+# Version 2.3
 `The peace of mind version`
 - Add a file menu
 - Add configurable save sources
 - Add ability to POST to specified endpoint
 - Make a simple backend which saves JSON deltas one per line (slow but somewhat RAM/disk efficient)
 
-# Version 2.3.1
-- Add a screenshot in the README to show how it works
-- Make backend paths configurable
+# (Current) Version 2.3.1
+- [FIX] Backend diff engine not working correctly
+- [FIX] Reduce length of new keys
+- Add a line border to show indentation depth
+- Add old polymorph import source
 
 # Version 2.3.2
-- Add a line thingy that renders when objects unfold
 
 # Version 2.4
 `The MVP Mobile Version`
@@ -77,7 +78,10 @@
 - Add search
 
 # Version 2.4
+- Make backend paths configurable
 - Make contribution guide
+- Add structural readability checker
+- Add a screenshot in the README to show how it works
 - Push to github
 - Create config-fold-check to fold config files
 

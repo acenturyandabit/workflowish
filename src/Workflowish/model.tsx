@@ -1,6 +1,5 @@
 import * as React from "react";
-import { v4 as uuidv4 } from 'uuid';
-import { BaseStoreDataType } from "~CoreDataLake";
+import { BaseStoreDataType, makeNewUniqueKey } from "~CoreDataLake";
 export type ItemTreeNode = {
     id: string,
     data: string,
@@ -16,9 +15,6 @@ type FlatItemData = {
 }
 
 type FlatItemBlob = Record<string, FlatItemData>;
-const makeNewUniqueKey = (): string => {
-    return (Date.now().toString()) + uuidv4();
-}
 
 export const makeNewItem = () => ({
     id: makeNewUniqueKey(),

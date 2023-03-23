@@ -1,6 +1,6 @@
 import * as fs from 'fs'
 import * as path from 'path'
-import express from 'express'
+import express, { Request } from 'express'
 import cors from 'cors'
 import bodyParser from "body-parser"
 import diff from './diff'
@@ -19,31 +19,22 @@ app.use(bodyParser.json({ limit: '50mb' }));
 app.use(cors());
 const port = 5174
 
+
+
 app.post('/save', (req) => {
     console.log("Saving")
-    const cleanDocName = String(req.query.f).replace(/\W/g, "_");
-    const cleanFilePath = fileDBLocation + "/" + cleanDocName + ".json"
-    let baseDoc: BaseStoreDataType = {}
+    const docPath = getCleanFileName(req.query.f);
+    const savedDoc = loadFromFile(docPath);
+
     const incomingDoc: BaseStoreDataType = req.body;
-    if (fs.existsSync(cleanFilePath)) {
-        const wholeDoc: string = fs.readFileSync(cleanFilePath).toString();
-        const docDeltas: Array<BaseStoreDataType> = wholeDoc
-            .split("\n")
-            .filter(i => i)
-            .map((doc: string) => JSON.parse(doc));
-        baseDoc = docDeltas.reduce((currentDoc, delta) => {
-            Object.assign(currentDoc, delta);
-            return currentDoc;
-        }, {});
-    }
-    const differences: BaseStoreDataType = diff(incomingDoc, baseDoc)
-    if (Object.keys(differences).length) {
+    const differences: BaseStoreDataType = diff(incomingDoc, savedDoc)
+    if (Object.keys(differences || {}).length) {
         const diffsToSave: BaseStoreDataType = {};
         for (const key in differences) {
             diffsToSave[key] = incomingDoc[key] || null; // use explicit null for deletion
         }
+        fs.appendFileSync(docPath, JSON.stringify(diffsToSave) + "\n");
         console.log("Saved")
-        fs.appendFileSync(cleanFilePath, JSON.stringify(diffsToSave) + "\n");
     } else {
         console.log("Nothing to save")
     }
@@ -51,21 +42,36 @@ app.post('/save', (req) => {
 
 app.get("/load", (req, res) => {
     console.log("Loaded")
-    const cleanDocName = String(req.query.f).replace(/\W/g, "_");
+
+    const docPath = getCleanFileName(req.query.f);
+    const savedDoc = loadFromFile(docPath);
+    res.json(savedDoc)
+})
+
+const getCleanFileName = (queryString: Request['query'][string]): string => {
+    if (!queryString) throw Error("No query provided");
+    if (typeof queryString != "string") throw Error("Invalid document name");
+    const cleanDocName = String(queryString).replace(/\W/g, "_");
     const cleanFilePath = fileDBLocation + "/" + cleanDocName + ".json"
-    let loadedDoc: BaseStoreDataType = {}
-    if (fs.existsSync(cleanFilePath)) {
-        const wholeDoc: string = fs.readFileSync(cleanFilePath).toString();
+    return cleanFilePath;
+}
+
+const loadFromFile = (fileName: string): BaseStoreDataType => {
+    let savedDoc: BaseStoreDataType = {}
+
+    if (fs.existsSync(fileName)) {
+        const wholeDoc: string = fs.readFileSync(fileName).toString();
         const docDeltas: Array<BaseStoreDataType> = wholeDoc
             .split("\n")
+            .filter(i => i)
             .map((doc: string) => JSON.parse(doc));
-        loadedDoc = docDeltas.reduce((currentDoc, delta) => {
+        savedDoc = docDeltas.reduce((currentDoc, delta) => {
             Object.assign(currentDoc, delta);
             return currentDoc;
         }, {});
     }
-    res.json(loadedDoc)
-})
+    return savedDoc
+}
 
 app.listen(port, () => {
     console.log(`Example app listening on port ${port}`)

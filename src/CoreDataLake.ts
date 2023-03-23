@@ -7,6 +7,11 @@ export type DataAndLoadState = {
     loaded: boolean,
     changed: boolean
 }
+
+export const makeNewUniqueKey = (): string => {
+    return Date.now().toString();
+}
+
 export const useCoreDataLake = (kvStores: KVStoresAndLoadedState): [
     DataAndLoadState,
     React.Dispatch<React.SetStateAction<BaseStoreDataType>>,
