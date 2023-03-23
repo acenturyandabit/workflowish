@@ -6,7 +6,8 @@ export interface KVStoreSettingsStruct {
 }
 
 export interface KVStoreConstructor<SettingsStruct extends KVStoreSettingsStruct> {
-    new(settings: SettingsStruct | DefaultKVConstructionArgs): KVStore<SettingsStruct>
+    new(settings: SettingsStruct | DefaultKVConstructionArgs): KVStore<SettingsStruct>,
+    type: string
 }
 
 export type DefaultKVConstructionArgs = null;

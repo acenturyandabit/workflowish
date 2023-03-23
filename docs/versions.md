@@ -66,6 +66,8 @@
 - Add old polymorph import source
 
 # Version 2.3.2
+- Refactor KVStores so it acts like CoreDataLake in terms of the 'changed' flag
+- Refactor TextImportKVStore so that it doesn't use dirty this.settings hacks
 
 # Version 2.4
 `The MVP Mobile Version`

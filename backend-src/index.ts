@@ -70,6 +70,11 @@ const loadFromFile = (fileName: string): BaseStoreDataType => {
             return currentDoc;
         }, {});
     }
+    for (const key in savedDoc) {
+        if (savedDoc[key] == null) {
+            delete savedDoc[key];
+        }
+    }
     return savedDoc
 }
 

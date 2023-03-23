@@ -1,14 +1,16 @@
 import { DefaultKVConstructionArgs, KVStore, KVStoreConstructor, KVStoreSettingsStruct } from "./types";
 
 import BrowserKVStore from "./BrowserKVStore"
-import HTTPStore from "./HTTPStore";
+import HTTPStore from "./HTTPKVStore";
+import TextImportKVStore from "./TextImportKVStore";
 
 // I don't know what to google to get it to work without <any> :sad:
 // best lead so far: https://stackoverflow.com/questions/46312206/narrowing-a-return-type-from-a-generic-discriminated-union-in-typescript
 // eslint-disable-next-line
 export const KVStores: Record<string, KVStoreConstructor<any>> = {
     [BrowserKVStore.type]: BrowserKVStore,
-    [HTTPStore.type]: HTTPStore
+    [HTTPStore.type]: HTTPStore,
+    [TextImportKVStore.type]: TextImportKVStore
 }
 
 export const makeKVStore = (type: string): KVStore<KVStoreSettingsStruct> => {

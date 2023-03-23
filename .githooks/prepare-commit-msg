@@ -1,4 +1,12 @@
 #!/bin/bash
+
+# Ignore rules when rebasing...
+BRANCH_NAME=$(git branch | grep '*' | sed 's/* //')
+if [[ "$BRANCH_NAME" =~ '^\(no branch' ]] || [ $2 == 'commit' ]
+then
+  exit 0
+fi
+
 COMMIT_TMP_FILE_NAME=$1
 COMMIT_MSG=$(cat $COMMIT_TMP_FILE_NAME)
 ERROR_MSG="Commit message format must match regex \"${REGEX}\""
