@@ -51,6 +51,7 @@
 
 # Version 2.2.3
 - [FIX] Focus crashes on some empty items
+- Move the help screen into Workflowish
 
 # Version 2.3
 `The peace of mind version`
@@ -58,22 +59,27 @@
 - Add configurable save sources
 - Add ability to POST to specified endpoint
 - Make a simple backend which saves JSON deltas one per line (slow but somewhat RAM/disk efficient)
+- Detach the model from the save process
 
-# (Current) Version 2.3.1
+# Version 2.3.1
 - [FIX] Backend diff engine not working correctly
 - [FIX] Reduce length of new keys
 - Add a line border to show indentation depth
 - Add old polymorph import source
 
-# Version 2.3.2
-- Refactor KVStores so it acts like CoreDataLake in terms of the 'changed' flag
-- Refactor TextImportKVStore so that it doesn't use dirty this.settings hacks
-
-# Version 2.4
+# (Current) Version 2.4
 `The MVP Mobile Version`
 - Add the sticky buttons
 - Add click-to-expand
 - UI Fixes for mobile
+- Deployment with the web server
+- Make it a PWA
+
+# Version 2.4
+`The scripting engine version`
+- Create an event bus
+- Create a popup scripting engine in the file menu
+
 
 # Version 2.5
 `The Search version`
@@ -110,11 +116,6 @@
 `The symlink version`
 - Add Symlinks
 
-# Version 4.0
-`The scripting engine version`
-- Create an event bus
-- Detach the model from the save process, so that the event bus can be used (and so workflowy can be used standalone)
-- Move the help screen into Workflowish
 
 # Version 4.1 
 - Add a tabbing window manager
@@ -122,3 +123,7 @@
 # Version 4.2
 - Add a Userscript runner hooked into the event bus
 
+# Miscellaneous technical debt
+- The pre-commit-msg check is too easy on rebases, make it stricter
+- Refactor KVStores so it acts like CoreDataLake in terms of the 'changed' flag
+- Refactor TextImportKVStore so that it doesn't use dirty this.settings hacks

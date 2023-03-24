@@ -15,9 +15,11 @@ if (!fs.existsSync(fileDBLocation)) {
 }
 
 const app = express()
+app.use(express.static(thisFileDirectory + "/static"))
 app.use(bodyParser.json({ limit: '50mb' }));
 app.use(cors());
-const port = 5174
+
+const port = Number(process.argv[2]) || 5174;
 
 
 
@@ -79,5 +81,5 @@ const loadFromFile = (fileName: string): BaseStoreDataType => {
 }
 
 app.listen(port, () => {
-    console.log(`Example app listening on port ${port}`)
+    console.log(`Polymorph backend listening on port ${port}`)
 })

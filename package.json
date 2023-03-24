@@ -5,7 +5,7 @@
   "scripts": {
     "start": "vite",
     "start-backend": "tsx backend-src/index.ts",
-    "build": "vite build",
+    "build": "vite build --outDir backend-src/static",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
     "typewatch": "tsc --noEmit --watch",
