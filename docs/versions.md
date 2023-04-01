@@ -84,6 +84,7 @@
 # (Current) Version 2.4.1
 - Fix bug where source sync overwrites some user changes
 - Fix bug where saving deletion of multiple objects fails
+- Fix collapse failing due to not updating lastUpdatedUnixMillis
 - Remove the notion of 'id' from items; replace with key
 - Fix bug where on load, Enter key doesn't work because setFocusedActionReceiver is undefined
 - Fix bug where its possible to use focus buttons to leave focus by spamming 'Up'
@@ -105,9 +106,11 @@
 
 # Version 2.7
 - Make contribution guide
-- Add structural readability checker
 - Add github todo-to-issue
 - Do versioning with tags rather than the current scheme
+- Autogenerate the changelog rather than forcing users to update it, 
+    but also preserve its utility as a planning space. 
+- Add structural readability checker
 - Add a screenshot in the README to show how it works
 - Push to github
 - Create config-fold-check to fold config files

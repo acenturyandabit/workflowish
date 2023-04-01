@@ -120,7 +120,11 @@ export const makeListActions = (props: {
     getSetSelf: (getSetter: TreeNodeGetSetter) => {
         props.getSetSiblingArray((siblingArray) => {
             const newSiblingArray = [...siblingArray];
-            newSiblingArray[props.currentSiblingIdx] = getSetter(newSiblingArray[props.currentSiblingIdx]);
+            const newItemWithoutTimeUpdate = getSetter(newSiblingArray[props.currentSiblingIdx]);
+            newSiblingArray[props.currentSiblingIdx] = {
+                ...newItemWithoutTimeUpdate,
+                lastModifiedUnixMillis: Date.now()
+            }
             return newSiblingArray;
         })
     }

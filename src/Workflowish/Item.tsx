@@ -186,7 +186,6 @@ const Item = (props: {
                 getSetSiblingArray: (t: TreeNodeArrayGetSetter) => {
                     props.parentActions.getSetSelf((item) => ({
                         ...item,
-                        lastModifiedUnixMillis: Date.now(),
                         children: t(item.children)
                     }))
                 },
