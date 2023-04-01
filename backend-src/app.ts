@@ -5,6 +5,7 @@ import cors from 'cors'
 import bodyParser from "body-parser"
 import getDiffsAndResolvedItems from '../src/CoreDataLake/getResolvedItems'
 import { BaseStoreDataType } from '../src/CoreDataLake'
+import { IncomingHttpHeaders } from 'http'
 
 const thisFileDirectory = path.dirname(__filename)
 const fileDBLocation = thisFileDirectory + "/filedb"
@@ -24,25 +25,33 @@ export const appFactory_build = (): ReturnType<typeof express> => {
         res.sendStatus(200);
     })
 
-    app.post('/save', (req) => {
+    app.post('/save', (req, res) => {
         console.log("Saving")
-        innerSaveOrSync(req);
+        const docPath = getCleanFileName(req.query.f);
+        if (!checkAuthPasses(docPath, req.headers)) {
+            res.sendStatus(401);
+        } else {
+            innerSaveOrSync(docPath, req.body);
+        }
         console.log("Saved")
     })
 
 
     app.post('/sync', (req, res) => {
         console.log("Syncing")
-        const resolved = innerSaveOrSync(req);
-        res.send(resolved);
+        const docPath = getCleanFileName(req.query.f);
+        if (!checkAuthPasses(docPath, req.headers)) {
+            res.sendStatus(401);
+        } else {
+            const resolved = innerSaveOrSync(docPath, req.body);
+            res.send(resolved);
+        }
         console.log("Synced");
     })
 
-    const innerSaveOrSync = (req: Request): BaseStoreDataType => {
-        const docPath = getCleanFileName(req.query.f);
+    const innerSaveOrSync = (docPath: string, incomingDoc: BaseStoreDataType): BaseStoreDataType => {
         const savedDoc = loadFromFile(docPath);
 
-        const incomingDoc: BaseStoreDataType = req.body;
         const { resolved, incomingDiffs } = getDiffsAndResolvedItems(incomingDoc, savedDoc)
         if (Object.keys(incomingDiffs).length) {
             fs.appendFileSync(docPath, JSON.stringify(incomingDiffs) + "\n");
@@ -54,10 +63,13 @@ export const appFactory_build = (): ReturnType<typeof express> => {
 
     app.get("/load", (req, res) => {
         console.log("Loaded")
-
         const docPath = getCleanFileName(req.query.f);
-        const savedDoc = loadFromFile(docPath);
-        res.json(savedDoc)
+        if (!checkAuthPasses(docPath, req.headers)) {
+            res.sendStatus(401);
+        } else {
+            const savedDoc = loadFromFile(docPath);
+            res.json(savedDoc)
+        }
     })
 
     return app;
@@ -69,6 +81,21 @@ const getCleanFileName = (queryString: Request['query'][string]): string => {
     const cleanDocName = String(queryString).replace(/\W/g, "_");
     const cleanFilePath = fileDBLocation + "/" + cleanDocName + ".json"
     return cleanFilePath;
+}
+
+const checkAuthPasses = (docPath: string, headers: IncomingHttpHeaders): boolean => {
+    const passwordFile = docPath.replace(/.json$/, ".pass");
+    let authPassed = false;
+    if (fs.existsSync(passwordFile)) {
+        const savedPassword = fs.readFileSync(passwordFile).toString();
+        authPassed = (savedPassword == headers.password);
+    } else if (headers.password) {
+        fs.writeFileSync(passwordFile, headers.password.toString());
+        authPassed = true;
+    } else {
+        authPassed = true;
+    }
+    return authPassed
 }
 
 const loadFromFile = (fileName: string): BaseStoreDataType => {

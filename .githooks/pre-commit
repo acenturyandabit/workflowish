@@ -1,14 +1,17 @@
 #!/bin/bash
 set -e
-[ ! -z "$(git diff)" ] && echo << EOM
 
+function echoErrorMessage () {
+  echo << EOM
 Warning, you have uncommitted changes!
 Perhaps you forgot to `git add` after linter?
 If you're working on multiple changes at a time, you can:
   - `git stash push /path/to/file` to stash just some changes
   - make a separate branch with some of your changes only.
+EOM
+}
 
-EOM && exit 1;
+[ ! -z "$(git diff)" ] && echoErrorMessage && exit 1;
 
 npm run lint 
 npm run test
