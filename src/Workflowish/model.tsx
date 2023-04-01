@@ -1,5 +1,5 @@
 import * as React from "react";
-import { BaseItemType, BaseStoreDataType, makeNewUniqueKey, setToDeleted } from "~CoreDataLake";
+import { BaseItemType, BaseStoreDataType, makeNewUniqueKey } from "~CoreDataLake";
 export type ItemTreeNode = {
     lastModifiedUnixMillis: number
     id: string,
@@ -29,14 +29,14 @@ export const makeNewItem = (): ItemTreeNode => ({
 export const transformData = (props: {
     data: BaseStoreDataType,
     setData: React.Dispatch<React.SetStateAction<BaseStoreDataType>>
-}): [Array<ItemTreeNode>,
-        React.Dispatch<React.SetStateAction<Array<ItemTreeNode>>>] => {
+}): [ItemTreeNode,
+        React.Dispatch<React.SetStateAction<ItemTreeNode>>] => {
     const currentTodoItems = buildTree(props.data as FlatItemBlob);
-    const setTodoItems = (todoItems: Array<ItemTreeNode> |
-        ((currentTodoItems: Array<ItemTreeNode>) => Array<ItemTreeNode>)
+    const setTodoItems = (todoItems: ItemTreeNode |
+        ((currentTodoItems: ItemTreeNode) => ItemTreeNode)
     ) => {
         props.setData((oldData) => {
-            let todoItemsToSet: Array<ItemTreeNode>
+            let todoItemsToSet: ItemTreeNode
             if (todoItems instanceof Function) {
                 todoItemsToSet = todoItems(buildTree(oldData as FlatItemBlob))
             } else {
@@ -48,15 +48,15 @@ export const transformData = (props: {
     return [currentTodoItems, setTodoItems];
 }
 
-const buildTree = (flatItemBlob: FlatItemBlob): Array<ItemTreeNode> => {
+const buildTree = (flatItemBlob: FlatItemBlob): ItemTreeNode => {
     const treeConstructorRecord: Record<string,
         ItemTreeNode
     > = {};
-    const treeRootIdCandidates = new Set<string>();
+    const orphanedTreeItemCandidates = new Set<string>();
     // First pass: instantiation.
     for (const nodeId in flatItemBlob) {
         if (isValidTreeObject(flatItemBlob[nodeId])) {
-            treeRootIdCandidates.add(nodeId);
+            orphanedTreeItemCandidates.add(nodeId);
             treeConstructorRecord[nodeId] = {
                 id: nodeId,
                 lastModifiedUnixMillis: flatItemBlob[nodeId].lastModifiedUnixMillis,
@@ -73,11 +73,20 @@ const buildTree = (flatItemBlob: FlatItemBlob): Array<ItemTreeNode> => {
             return childWasDeleted ? null : treeConstructorRecord[childId]
         }).filter((nodeOrNull): nodeOrNull is ItemTreeNode => nodeOrNull != null);
         treeConstructorRecord[nodeId].children = nodeChildInstances;
-        flatItemBlob[nodeId].children.forEach(childId => treeRootIdCandidates.delete(childId))
+        flatItemBlob[nodeId].children.forEach(childId => orphanedTreeItemCandidates.delete(childId))
     }
-    const treeRootsArray = Array.from(treeRootIdCandidates).map(rootId => treeConstructorRecord[rootId]);
-    if (treeRootsArray.length == 0) return [makeNewItem()];
-    else return treeRootsArray;
+    const virtualRootId = "__virtualRoot";
+    let virtualRoot: ItemTreeNode;
+    if (virtualRootId in treeConstructorRecord) {
+        virtualRoot = treeConstructorRecord[virtualRootId];
+    } else {
+        virtualRoot = makeNewItem();
+        virtualRoot.id = "__virtualRoot";
+        for (const orphanedId of orphanedTreeItemCandidates) {
+            virtualRoot.children.push(treeConstructorRecord[orphanedId]);
+        }
+    }
+    return virtualRoot;
 }
 
 const isValidTreeObject = (item: BaseItemType) => {
@@ -88,22 +97,24 @@ const isValidTreeObject = (item: BaseItemType) => {
     )
 }
 
-const fromTree = (itemTreeArray: Array<ItemTreeNode>): FlatItemBlob => {
+type Queue<T> = Array<T>;
+const fromTree = (root: ItemTreeNode): FlatItemBlob => {
     const flatBlob: FlatItemBlob = {};
-    const unrollItems = (nodes: ItemTreeNode[]) => {
-        nodes.forEach((n) => {
-            flatBlob[n.id] = {
-                lastModifiedUnixMillis: n.lastModifiedUnixMillis,
-                data: n.data,
-                children: n.children.map(i => i.id),
-                collapsed: n.collapsed
+    const nodeStack: Queue<ItemTreeNode> = [root];
+    while (nodeStack.length) {
+        const top = nodeStack.shift()
+        if (top) {
+            if (top.id in flatBlob) {
+                throw Error("Cycle detected in tree! Refusing to update.")
             }
-            if (n.markedForCleanup) {
-                setToDeleted(flatBlob[n.id]);
+            flatBlob[top.id] = {
+                lastModifiedUnixMillis: top.lastModifiedUnixMillis,
+                data: top.data,
+                collapsed: top.collapsed,
+                children: top.children.map(child => child.id)
             }
-            unrollItems(n.children);
-        })
+            top.children.forEach(child => nodeStack.push(child));
+        }
     }
-    unrollItems(itemTreeArray);
     return flatBlob;
 }

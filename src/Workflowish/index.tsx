@@ -1,8 +1,8 @@
 import * as React from "react";
 import { BaseStoreDataType } from "~CoreDataLake";
-import { makeListActions } from "./controller";
+import { makeListActions, TreeNodeArrayGetSetter } from "./controller";
 import Item, { FocusActions, FocusedActionReceiver } from "./Item"
-import { transformData } from "./model"
+import { ItemTreeNode, transformData } from "./model"
 import { isMobile } from 'react-device-detect';
 import { FloatyButtons } from "./FloatyButtons";
 
@@ -19,24 +19,33 @@ export default (props: {
             // Set by children
         }
     });
-    const nullSizedArrayForRefs = Array(todoItems.length).fill(null);
+    const nullSizedArrayForRefs = Array(todoItems.children.length).fill(null);
     const itemsRefArray = React.useRef<Array<FocusActions | null>>(nullSizedArrayForRefs);
 
     const topLevelTakeFocus = () => {
         // Top level cannot take focus
     }
-    const itemsList = todoItems.map((i, ii) => {
+    const itemsList = todoItems.children.map((item, ii) => {
 
         return (<Item
             key={ii}
-            emptyList={todoItems.length == 1 && i.data == ""}
-            item={i}
+            emptyList={todoItems.children.length == 1 && item.data == ""}
+            item={item}
             pushRef={(ref: FocusActions) => itemsRefArray.current[ii] = ref}
             setFocusedActionReceiver={setFocusedActionReceiver}
             parentActions={makeListActions({
                 siblingsFocusActions: itemsRefArray,
                 currentSiblingIdx: ii,
-                getSetSiblingArray: getSetTodoItems,
+                getSetSiblingArray: (t: TreeNodeArrayGetSetter)=>{
+                    getSetTodoItems((virtualRoot: ItemTreeNode)=>{
+                        const newChildren = t(virtualRoot.children);
+                        return {
+                            ...virtualRoot,
+                            lastModifiedUnixMillis: Date.now(),
+                            children: newChildren
+                        }
+                    })
+                },
                 unindentCaller: () => {
                     // cannot unindent at root level
                 },

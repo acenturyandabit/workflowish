@@ -85,6 +85,9 @@
 - Fix bug where source sync overwrites some user changes
 - Fix bug where saving deletion of multiple objects fails
 - Fix collapse failing due to not updating lastUpdatedUnixMillis
+- Fix root level rearrangement
+
+## PLANNED
 - Remove the notion of 'id' from items; replace with key
 - Fix bug where on load, Enter key doesn't work because setFocusedActionReceiver is undefined
 - Fix bug where its possible to use focus buttons to leave focus by spamming 'Up'
@@ -105,11 +108,14 @@
 - Add search
 
 # Version 2.7
+`The Github release version`
 - Make contribution guide
 - Add github todo-to-issue
 - Do versioning with tags rather than the current scheme
 - Autogenerate the changelog rather than forcing users to update it, 
-    but also preserve its utility as a planning space. 
+  but also preserve its utility as a planning space. 
+  - Separate versions.md which keeps last version + future plans, and 
+    changelog.md which keeps all versions in reverse order with newest on top.
 - Add structural readability checker
 - Add a screenshot in the README to show how it works
 - Push to github
