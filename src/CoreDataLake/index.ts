@@ -82,6 +82,13 @@ export const useCoreDataLake = (kvStores: KVStoresAndLoadedState): [
         })()
     }, [kvStores, dataAndLoadState])
 
+    React.useEffect(() => {
+        const autoSaveThrottleTimeout = setTimeout(() => {
+            doSave();
+        }, 3000);
+        return () => clearTimeout(autoSaveThrottleTimeout);
+    }, [kvStores, dataAndLoadState, doSave])
+
     const setData = (data: BaseStoreDataType |
         ((currentData: BaseStoreDataType) => BaseStoreDataType)) => {
         setDataAndLoadState(olddataAndLoadState => {

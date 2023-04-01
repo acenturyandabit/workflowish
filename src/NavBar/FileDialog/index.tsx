@@ -5,7 +5,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import { KVStores, makeKVStore } from '~Stores';
-import { Box, TextField, MenuItem } from "@mui/material"
+import { Box, TextField, MenuItem, FormControlLabel, Checkbox } from "@mui/material"
 import { KVStoresAndLoadedState } from '~Stores/KVStoreInstances';
 import { BaseStoreDataType } from '~CoreDataLake';
 import { KVStore, KVStoreSettingsStruct } from '~Stores/types';
@@ -51,6 +51,15 @@ class FileDialog implements NavBarDialog {
             <DialogContent dividers={true}>
 
                 <h2>Registered save sources</h2>
+                <FormControlLabel control={<Checkbox
+                    checked={props.kvStores.autosaveOn}
+                    onChange={(evt) => {
+                        props.setKVStores({
+                            ...props.kvStores,
+                            autosaveOn: evt.target.checked
+                        })
+                    }}
+                ></Checkbox>} label="Autosave"></FormControlLabel>
                 {props.kvStores.stores.map((i, ii) => (
                     <Box key={ii}>
                         {i.makeFileDialog(bumpKVStore)}
