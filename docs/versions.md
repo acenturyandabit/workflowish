@@ -73,19 +73,22 @@
 - Add push-pull functionality on save
      - Breaking change! Now all stored items must have a lastModifiedUnixMillis
      - Breaking change! Now trees are stored as rendered (i.e. with a childArray rather than with a parent pointer)
+        - this makes it more flexible
+        - this also better suits a data model where we fetch individual items from the datamodel on an as-needed basis rather than dumping every change to every consumer always.
      - Breaking change! Now items cannot be deleted, only set to dataless objects
 - Add mobile autosave with appropriate throttling
 - Make it a PWA
 - Add a password
 - Add the sticky buttons
-- Add click-to-expand
-- UI Fixes for mobile
 
 # Version 2.4.1
-- Change the tree data model to have children in its list rather than a singular parent
-    - this makes it more flexible
-    - this also better suits a data model where we fetch individual items from the datamodel on an as-needed basis rather than dumping every change to every consumer always.
 - Remove the notion of 'id' from items; replace with key
+- Fix bug where on load, Enter key doesn't work because setFocusedActionReceiver is undefined
+- Fix bug where its possible to use focus buttons to leave focus by spamming 'Up'
+- Fix bug where ctrl/alt/shift hides keyboard
+- Fix bug where clicking doesnt change focus
+- Better (hidden) password prompt
+
 # Version 2.5
 `The scripting engine version`
 - Create an event bus
@@ -99,9 +102,10 @@
 - Add search
 
 # Version 2.7
-- Make backend paths configurable
 - Make contribution guide
 - Add structural readability checker
+- Add github todo-to-issue
+- Do versioning with tags rather than the current scheme
 - Add a screenshot in the README to show how it works
 - Push to github
 - Create config-fold-check to fold config files
@@ -127,14 +131,9 @@
 `The symlink version`
 - Add Symlinks
 
-
 # Version 4.1 
 - Add a tabbing window manager
 
-# Version 4.2
-- Add a Userscript runner hooked into the event bus
-
 # Miscellaneous technical debt
-- The pre-commit-msg check is too easy on rebases, make it stricter
 - Refactor KVStores so it acts like CoreDataLake in terms of the 'changed' flag
 - Refactor TextImportKVStore so that it doesn't use dirty this.settings hacks

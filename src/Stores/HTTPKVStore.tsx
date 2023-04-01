@@ -86,7 +86,7 @@ class HTTPKVStore implements
                             bumpKVStores();
                         }}
                     />}
-                    label={"Use Password (Prompts on reload)"}
+                    label={"Use Password (Prompts on load - press 'load' to retry password)"}
                 />
             </>
         )

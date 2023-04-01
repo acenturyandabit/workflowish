@@ -1,0 +1,22 @@
+.floatyButtons{
+    position: absolute;
+    display: flex;
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
+    transform-origin: left bottom;
+    transform: translate(0px, 0px) scale(1);
+}
+
+.floatyButtons button{
+    flex: 1 1 auto;
+    height: 40px;
+}
+
+.floatyButtons button.pressed{
+    background:lightblue;
+}
+.floatyButtons button.heavyPressed{
+    color:white;
+    background:darkblue;
+}

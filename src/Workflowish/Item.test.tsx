@@ -33,6 +33,7 @@ it('Renders an item', () => {
             }}
             pushRef={mockEmptyFunction}
             parentActions={dummyParentActions}
+            setFocusedActionReceiver={mockEmptyFunction}
         ></Item>
     )
     const item = component.toJSON();

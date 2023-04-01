@@ -13,11 +13,27 @@ export type FocusActions = {
     focusMyNextSibling: () => void;
 }
 
+export type FocusedActionReceiver =
+    {
+        // wrapping required because of the way setState interprets a function - cannot pass a function directly
+        wrappedFunction: (
+            evt: {
+                key: string,
+                shiftKey: boolean,
+                altKey: boolean,
+                ctrlKey: boolean,
+                metaKey: boolean,
+                preventDefault: () => void
+            }
+        ) => void
+    };
+
 const Item = (props: {
     emptyList?: boolean,
     item: ItemTreeNode,
     pushRef: (ref: FocusActions) => void,
-    parentActions: ControllerActions
+    parentActions: ControllerActions,
+    setFocusedActionReceiver: React.Dispatch<React.SetStateAction<FocusedActionReceiver>>
 }) => {
     const item = React.useRef(props.item);
     React.useEffect(() => {
@@ -53,77 +69,87 @@ const Item = (props: {
             return "\u25CF";
         }
     })()}</span>;
-    const onKeyDown = (evt: React.KeyboardEvent) => {
-        if (evt.key == "Enter") {
-            if (evt.shiftKey) {
-                props.parentActions.getSetSelf(oldSelf => ({
-                    ...oldSelf,
-                    children: [makeNewItem(), ...oldSelf.children]
-                }));
-                setTimeout(() => itemsRefArray.current?.[0]?.focusThis());
-            } else {
-                props.parentActions.createNewItem();
-            }
-            evt.preventDefault()
-        }
-        if (evt.key == "Tab") {
-            if (evt.shiftKey) {
-                props.parentActions.unindentSelf();
-            } else {
-                props.parentActions.indentSelf();
-            }
-            evt.preventDefault()
-        }
-        if (evt.key == "ArrowUp") {
-            if (evt.altKey) {
-                props.parentActions.putBeforePrev();
-            } else if (evt.ctrlKey || evt.metaKey) {
-                props.parentActions.getSetSelf(oldSelf => ({
-                    ...oldSelf,
-                    collapsed: true
-                }))
-            } else {
-                props.parentActions.focusMyPrevSibling();
-            }
-        }
-        if (evt.key == "ArrowDown") {
-            if (evt.altKey) {
-                props.parentActions.putAfterNext();
-            } else if (evt.ctrlKey || evt.metaKey) {
-                props.parentActions.getSetSelf(oldSelf => ({
-                    ...oldSelf,
-                    collapsed: false
-                }))
-            } else {
-                const childrenArray = itemsRefArray.current;
-                if (!item.current.collapsed && childrenArray && childrenArray.length) {
-                    childrenArray[0]?.triggerFocusFromAbove();
+    const focusedActionReceiver: FocusedActionReceiver = {
+        wrappedFunction: (evt) => {
+            if (evt.key == "Enter") {
+                if (evt.shiftKey) {
+                    props.parentActions.getSetSelf(oldSelf => ({
+                        ...oldSelf,
+                        children: [makeNewItem(), ...oldSelf.children]
+                    }));
+                    setTimeout(() => itemsRefArray.current?.[0]?.focusThis());
                 } else {
-                    props.parentActions.focusMyNextSibling();
+                    props.parentActions.createNewItem();
+                }
+                evt.preventDefault()
+            }
+            if (evt.key == "Tab") {
+                if (evt.shiftKey) {
+                    props.parentActions.unindentSelf();
+                } else {
+                    props.parentActions.indentSelf();
+                }
+                evt.preventDefault()
+            }
+            if (evt.key == "ArrowUp") {
+                if (evt.altKey) {
+                    props.parentActions.putBeforePrev();
+                } else if (evt.ctrlKey || evt.metaKey) {
+                    props.parentActions.getSetSelf(oldSelf => ({
+                        ...oldSelf,
+                        collapsed: true
+                    }))
+                } else {
+                    props.parentActions.focusMyPrevSibling();
+                }
+            }
+            if (evt.key == "ArrowDown") {
+                if (evt.altKey) {
+                    props.parentActions.putAfterNext();
+                } else if (evt.ctrlKey || evt.metaKey) {
+                    props.parentActions.getSetSelf(oldSelf => ({
+                        ...oldSelf,
+                        collapsed: false
+                    }))
+                } else {
+                    const childrenArray = itemsRefArray.current;
+                    if (!item.current.collapsed && childrenArray && childrenArray.length) {
+                        childrenArray[0]?.triggerFocusFromAbove();
+                    } else {
+                        props.parentActions.focusMyNextSibling();
+                    }
+                }
+            }
+            if (evt.key == "Backspace") {
+                if (item.current.data.length == 0) {
+                    props.parentActions.deleteThisItem();
+                    evt.preventDefault();
                 }
             }
         }
-        if (evt.key == "Backspace") {
-            if (item.current.data.length == 0) {
-                props.parentActions.deleteThisItem();
-                evt.preventDefault();
-            }
-        }
-    };
+    }
+    const onKeyDown = (evt: React.KeyboardEvent) => {
+        // TODO: inline this method
+        focusedActionReceiver.wrappedFunction(evt);
+    }
+
+    const focusThis = () => {
+        thisContentEditable.current?.focus();
+        props.setFocusedActionReceiver(focusedActionReceiver);
+    }
+
     const parentFocusActions = {
+        focusThis,
         triggerFocusFromAbove: () => {
-            thisContentEditable.current?.focus();
+            focusThis()
         },
         triggerFocusFromBelow: () => {
             const currentChildItemsRef = itemsRefArray.current;
             if (!props.item.collapsed && currentChildItemsRef && currentChildItemsRef.length) {
                 currentChildItemsRef[currentChildItemsRef.length - 1]?.triggerFocusFromBelow();
             } else {
-                thisContentEditable.current?.focus();
+                focusThis()
             }
-        },
-        focusThis: () => {
-            thisContentEditable.current?.focus();
         },
         focusThisEnd: () => {
             const _thisContentEditable = thisContentEditable.current;
@@ -153,6 +179,7 @@ const Item = (props: {
             key={ii}
             item={item}
             pushRef={(ref: FocusActions) => itemsRefArray.current[ii] = ref}
+            setFocusedActionReceiver={props.setFocusedActionReceiver}
             parentActions={makeListActions({
                 siblingsFocusActions: itemsRefArray,
                 currentSiblingIdx: ii,

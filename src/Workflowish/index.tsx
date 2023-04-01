@@ -1,9 +1,10 @@
 import * as React from "react";
 import { BaseStoreDataType } from "~CoreDataLake";
 import { makeListActions } from "./controller";
-import Item, { FocusActions } from "./Item"
+import Item, { FocusActions, FocusedActionReceiver } from "./Item"
 import { transformData } from "./model"
-
+import { isMobile } from 'react-device-detect';
+import { FloatyButtons } from "./FloatyButtons";
 
 export default (props: {
     data: BaseStoreDataType,
@@ -13,7 +14,11 @@ export default (props: {
         data: props.data,
         setData: props.setData
     });
-
+    const [focusedActionReceiver, setFocusedActionReceiver] = React.useState<FocusedActionReceiver>({
+        wrappedFunction: () => {
+            // Set by children
+        }
+    });
     const nullSizedArrayForRefs = Array(todoItems.length).fill(null);
     const itemsRefArray = React.useRef<Array<FocusActions | null>>(nullSizedArrayForRefs);
 
@@ -27,6 +32,7 @@ export default (props: {
             emptyList={todoItems.length == 1 && i.data == ""}
             item={i}
             pushRef={(ref: FocusActions) => itemsRefArray.current[ii] = ref}
+            setFocusedActionReceiver={setFocusedActionReceiver}
             parentActions={makeListActions({
                 siblingsFocusActions: itemsRefArray,
                 currentSiblingIdx: ii,
@@ -47,5 +53,6 @@ export default (props: {
     })
     return <div style={{ margin: "10px 5px" }}>
         {itemsList}
+        {isMobile ? <FloatyButtons focusedActionReceiver={focusedActionReceiver}></FloatyButtons> : null}
     </div>
 };
