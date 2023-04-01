@@ -1,10 +1,11 @@
 import * as React from 'react';
 import { KVStoresAndLoadedState } from '~Stores/KVStoreInstances';
+import getDiffsAndResolvedItems from './getResolvedItems';
 export type BaseItemType = {
     lastModifiedUnixMillis: number,
     [key: string]: unknown
 }
-export type BaseStoreDataType ={
+export type BaseStoreDataType = {
     [key: string]: BaseItemType
 }
 
@@ -16,6 +17,15 @@ export type DataAndLoadState = {
 
 export const makeNewUniqueKey = (): string => {
     return Date.now().toString();
+}
+
+export const setToDeleted = (itm: BaseItemType) => {
+    for (const key in itm) {
+        if (key != "lastModifiedUnixMillis") {
+            delete itm[key];
+        }
+    }
+    itm.lastModifiedUnixMillis = Date.now();
 }
 
 export const useCoreDataLake = (kvStores: KVStoresAndLoadedState): [
@@ -50,6 +60,7 @@ export const useCoreDataLake = (kvStores: KVStoresAndLoadedState): [
                         return {}
                     }
                 }));
+
                 setDataAndLoadState({
                     loaded: true,
                     changed: false,
@@ -75,11 +86,14 @@ export const useCoreDataLake = (kvStores: KVStoresAndLoadedState): [
             }
         })
     }
-
     return [dataAndLoadState, setData, doSave]
 }
 
 const resolveAllDocuments = (documents: BaseStoreDataType[]): BaseStoreDataType => {
-    // TODO: Stub
-    return documents[0]
+    const mergedDocument: BaseStoreDataType = documents.reduce((mergedDoc, newDoc) => {
+        const { resolved } = getDiffsAndResolvedItems(mergedDoc, newDoc);
+        return resolved;
+    }, {})
+
+    return mergedDocument
 }

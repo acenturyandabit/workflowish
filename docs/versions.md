@@ -73,7 +73,7 @@
 - Add push-pull functionality on save
      - Breaking change! Now all stored items must have a lastModifiedUnixMillis
      - Breaking change! Now trees are stored as rendered (i.e. with a childArray rather than with a parent pointer)
-     - Breaking change! Now items cannot be deleted, only set to null
+     - Breaking change! Now items cannot be deleted, only set to dataless objects
 - Add mobile autosave with appropriate throttling
 - Make it a PWA
 - Add a password

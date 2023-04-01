@@ -9,12 +9,14 @@ export default (props: {
     data: BaseStoreDataType,
     setData: React.Dispatch<React.SetStateAction<BaseStoreDataType>>
 }) => {
+    const [todoItems, getSetTodoItems] = transformData({
+        data: props.data,
+        setData: props.setData
+    });
 
-    const [todoItems, getSetTodoItems] = transformData(props);
-    const itemsRefArray = React.useRef<Array<FocusActions | null>>([])
-    while (itemsRefArray.current.length < todoItems.length) {
-        itemsRefArray.current.push(null);
-    }
+    const nullSizedArrayForRefs = Array(todoItems.length).fill(null);
+    const itemsRefArray = React.useRef<Array<FocusActions | null>>(nullSizedArrayForRefs);
+
     const topLevelTakeFocus = () => {
         // Top level cannot take focus
     }

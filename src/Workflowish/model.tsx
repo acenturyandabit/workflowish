@@ -1,11 +1,12 @@
 import * as React from "react";
-import { BaseStoreDataType, makeNewUniqueKey } from "~CoreDataLake";
+import { BaseItemType, BaseStoreDataType, makeNewUniqueKey, setToDeleted } from "~CoreDataLake";
 export type ItemTreeNode = {
     lastModifiedUnixMillis: number
     id: string,
     data: string,
     children: ItemTreeNode[],
-    collapsed: boolean
+    collapsed: boolean,
+    markedForCleanup?: boolean
 }
 
 type FlatItemData = {
@@ -54,24 +55,37 @@ const buildTree = (flatItemBlob: FlatItemBlob): Array<ItemTreeNode> => {
     const treeRootIdCandidates = new Set<string>();
     // First pass: instantiation.
     for (const nodeId in flatItemBlob) {
-        treeRootIdCandidates.add(nodeId);
-        treeConstructorRecord[nodeId] = {
-            id: nodeId,
-            lastModifiedUnixMillis: flatItemBlob[nodeId].lastModifiedUnixMillis,
-            data: flatItemBlob[nodeId].data,
-            children: [],
-            collapsed: flatItemBlob[nodeId].collapsed
+        if (isValidTreeObject(flatItemBlob[nodeId])) {
+            treeRootIdCandidates.add(nodeId);
+            treeConstructorRecord[nodeId] = {
+                id: nodeId,
+                lastModifiedUnixMillis: flatItemBlob[nodeId].lastModifiedUnixMillis,
+                data: flatItemBlob[nodeId].data,
+                children: [],
+                collapsed: flatItemBlob[nodeId].collapsed
+            }
         }
     }
     // Second pass: Child linking
-    for (const nodeId in flatItemBlob) {
-        const nodeChildInstances = flatItemBlob[nodeId].children.map(childId => treeConstructorRecord[childId])
+    for (const nodeId in treeConstructorRecord) {
+        const nodeChildInstances = flatItemBlob[nodeId].children.map(childId => {
+            const childWasDeleted = !(childId in treeConstructorRecord)
+            return childWasDeleted ? null : treeConstructorRecord[childId]
+        }).filter((nodeOrNull): nodeOrNull is ItemTreeNode => nodeOrNull != null);
         treeConstructorRecord[nodeId].children = nodeChildInstances;
         flatItemBlob[nodeId].children.forEach(childId => treeRootIdCandidates.delete(childId))
     }
     const treeRootsArray = Array.from(treeRootIdCandidates).map(rootId => treeConstructorRecord[rootId]);
     if (treeRootsArray.length == 0) return [makeNewItem()];
     else return treeRootsArray;
+}
+
+const isValidTreeObject = (item: BaseItemType) => {
+    return (
+        "children" in item &&
+        "data" in item &&
+        "collapsed" in item
+    )
 }
 
 const fromTree = (itemTreeArray: Array<ItemTreeNode>): FlatItemBlob => {
@@ -83,6 +97,9 @@ const fromTree = (itemTreeArray: Array<ItemTreeNode>): FlatItemBlob => {
                 data: n.data,
                 children: n.children.map(i => i.id),
                 collapsed: n.collapsed
+            }
+            if (n.markedForCleanup) {
+                setToDeleted(flatBlob[n.id]);
             }
             unrollItems(n.children);
         })

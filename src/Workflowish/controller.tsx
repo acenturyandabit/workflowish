@@ -38,7 +38,7 @@ export const makeListActions = (props: {
         props.getSetSiblingArray((siblingArray) => {
             if (siblingArray.length > 0) {
                 const newSiblingArray = [...siblingArray];
-                newSiblingArray.splice(props.currentSiblingIdx, 1);
+                newSiblingArray[props.currentSiblingIdx].markedForCleanup = true;
                 if (props.currentSiblingIdx - 1 >= 0) {
                     props.siblingsFocusActions.current?.[props.currentSiblingIdx - 1]?.focusThisEnd()
                 } else {

@@ -1,4 +1,4 @@
-import { BaseStoreDataType } from "../src/CoreDataLake";
+import { BaseStoreDataType } from ".";
 
 const getDiffsAndResolvedItems = (incomingDoc: BaseStoreDataType, savedDoc: BaseStoreDataType): {
     incomingDiffs: BaseStoreDataType,
@@ -22,9 +22,9 @@ const leftRightKeysChanged = (left: BaseStoreDataType, right: BaseStoreDataType)
     leftNewerKeys: string[],
     rightNewerKeys: string[]
 } => {
-    const leftNewerKeys: Array<string> = []
-    const rightNewerKeys: Array<string> = []
-    const halfKeysChanged = (_left, _right, _leftItemsNewer) => {
+    const leftNewerKeys: string[] = []
+    const rightNewerKeys: string[] = []
+    const halfKeysChanged = (_left: BaseStoreDataType, _right: BaseStoreDataType, _leftItemsNewer: string[]) => {
         for (const key in _left) {
             if (!(key in _right) || _right[key].lastModifiedUnixMillis < _left[key].lastModifiedUnixMillis) {
                 _leftItemsNewer.push(key);
