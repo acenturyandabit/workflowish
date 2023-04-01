@@ -100,6 +100,7 @@ export const useCoreDataLake = (kvStores: KVStoresAndLoadedState): [
             } else {
                 dataToSet = data;
             }
+            dataToSet = resolveAllDocuments([dataToSet, olddataAndLoadState.data]);
             return {
                 ...olddataAndLoadState,
                 data: dataToSet,

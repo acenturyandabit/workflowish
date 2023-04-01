@@ -83,6 +83,7 @@
 
 # (Current) Version 2.4.1
 - Fix bug where source sync overwrites some user changes
+- Fix bug where saving deletion of multiple objects fails
 - Remove the notion of 'id' from items; replace with key
 - Fix bug where on load, Enter key doesn't work because setFocusedActionReceiver is undefined
 - Fix bug where its possible to use focus buttons to leave focus by spamming 'Up'
