@@ -85,7 +85,7 @@
 - Change the tree data model to have children in its list rather than a singular parent
     - this makes it more flexible
     - this also better suits a data model where we fetch individual items from the datamodel on an as-needed basis rather than dumping every change to every consumer always.
-
+- Remove the notion of 'id' from items; replace with key
 # Version 2.5
 `The scripting engine version`
 - Create an event bus
