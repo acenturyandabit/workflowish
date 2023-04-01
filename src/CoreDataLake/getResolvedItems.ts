@@ -6,9 +6,7 @@ const getDiffsAndResolvedItems = (incomingDoc: BaseStoreDataType, savedDoc: Base
 } => {
     const keysChanged = leftRightKeysChanged(incomingDoc, savedDoc);
     const resolved = Object.assign({}, savedDoc);
-    for (const key in keysChanged.leftNewerKeys) {
-        resolved[key] = incomingDoc[key];
-    }
+    keysChanged.leftNewerKeys.forEach(key => resolved[key] = incomingDoc[key]);
     const incomingDiffs: BaseStoreDataType = {};
     keysChanged.leftNewerKeys.forEach(key => incomingDiffs[key] = incomingDoc[key]);
 

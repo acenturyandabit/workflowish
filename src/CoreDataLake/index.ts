@@ -42,9 +42,21 @@ export const useCoreDataLake = (kvStores: KVStoresAndLoadedState): [
     const doSave = React.useCallback(() => {
         setDataAndLoadState((dataAndLoadState) => {
             if (kvStores.loaded && dataAndLoadState.loaded && dataAndLoadState.changed) {
-                // todo: use await or otherwise set the success state after save has occurred 
+                // todo: use await or otherwise set the success state _after_ save has occurred 
                 // successfully.
-                kvStores.stores.forEach(i => i.save(dataAndLoadState.data));
+                kvStores.stores.forEach(async i => {
+                    if (i.sync) {
+                        const syncedDoc = await i.sync(dataAndLoadState.data)
+                        const mergedDoc = resolveAllDocuments([syncedDoc, dataAndLoadState.data]);
+                        setDataAndLoadState({
+                            data: mergedDoc,
+                            loaded: true,
+                            changed: false
+                        })
+                    } else {
+                        i.save(dataAndLoadState.data)
+                    }
+                });
             }
             return { ...dataAndLoadState, changed: false }
         })
