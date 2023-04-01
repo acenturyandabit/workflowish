@@ -86,6 +86,7 @@
 - Fix bug where saving deletion of multiple objects fails
 - Fix collapse failing due to not updating lastUpdatedUnixMillis
 - Fix root level rearrangement
+- Fix not being allowed to delete root level nodes
 
 ## PLANNED
 - Remove the notion of 'id' from items; replace with key

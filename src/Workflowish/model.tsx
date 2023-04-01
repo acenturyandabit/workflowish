@@ -1,5 +1,5 @@
 import * as React from "react";
-import { BaseItemType, BaseStoreDataType, makeNewUniqueKey } from "~CoreDataLake";
+import { BaseItemType, BaseStoreDataType, makeNewUniqueKey, setToDeleted } from "~CoreDataLake";
 export type ItemTreeNode = {
     lastModifiedUnixMillis: number
     id: string,
@@ -113,7 +113,12 @@ const fromTree = (root: ItemTreeNode): FlatItemBlob => {
                 collapsed: top.collapsed,
                 children: top.children.map(child => child.id)
             }
-            top.children.forEach(child => nodeStack.push(child));
+            if (top.markedForCleanup) {
+                setToDeleted(flatBlob[top.id]);
+                top.children.forEach(child => nodeStack.push({ ...child, markedForCleanup: true }));
+            } else {
+                top.children.forEach(child => nodeStack.push(child));
+            }
         }
     }
     return flatBlob;
