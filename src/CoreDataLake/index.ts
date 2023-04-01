@@ -47,11 +47,13 @@ export const useCoreDataLake = (kvStores: KVStoresAndLoadedState): [
                 kvStores.stores.forEach(async i => {
                     if (i.sync) {
                         const syncedDoc = await i.sync(dataAndLoadState.data)
-                        const mergedDoc = resolveAllDocuments([syncedDoc, dataAndLoadState.data]);
-                        setDataAndLoadState({
-                            data: mergedDoc,
-                            loaded: true,
-                            changed: false
+                        setDataAndLoadState((dataAndLoadState) => {
+                            const mergedDoc = resolveAllDocuments([syncedDoc, dataAndLoadState.data]);
+                            return {
+                                data: mergedDoc,
+                                loaded: true,
+                                changed: dataAndLoadState.changed
+                            }
                         })
                     } else {
                         i.save(dataAndLoadState.data)

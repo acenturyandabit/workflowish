@@ -67,7 +67,7 @@
 - Add a line border to show indentation depth
 - Add old polymorph import source
 
-# (Current) Version 2.4
+# Version 2.4
 `The MVP Mobile Version`
 - Deployment with the web server
 - Add push-pull functionality on save
@@ -81,7 +81,8 @@
 - Add a password
 - Add the sticky buttons
 
-# Version 2.4.1
+# (Current) Version 2.4.1
+- Fix bug where source sync overwrites some user changes
 - Remove the notion of 'id' from items; replace with key
 - Fix bug where on load, Enter key doesn't work because setFocusedActionReceiver is undefined
 - Fix bug where its possible to use focus buttons to leave focus by spamming 'Up'
