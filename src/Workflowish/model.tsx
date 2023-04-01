@@ -1,6 +1,7 @@
 import * as React from "react";
 import { BaseStoreDataType, makeNewUniqueKey } from "~CoreDataLake";
 export type ItemTreeNode = {
+    lastModifiedUnixMillis: number
     id: string,
     data: string,
     children: ItemTreeNode[],
@@ -8,16 +9,17 @@ export type ItemTreeNode = {
 }
 
 type FlatItemData = {
+    lastModifiedUnixMillis: number
     data: string,
-    parentId: string,
-    indexInParent: number,
+    children: string[],
     collapsed: boolean
 }
 
 type FlatItemBlob = Record<string, FlatItemData>;
 
-export const makeNewItem = () => ({
+export const makeNewItem = (): ItemTreeNode => ({
     id: makeNewUniqueKey(),
+    lastModifiedUnixMillis: Date.now(),
     data: "",
     children: [],
     collapsed: false
@@ -46,57 +48,45 @@ export const transformData = (props: {
 }
 
 const buildTree = (flatItemBlob: FlatItemBlob): Array<ItemTreeNode> => {
-    const treeRootsArray: Array<ItemTreeNode> = [];
     const treeConstructorRecord: Record<string,
-        { indexInParent: number, children: Array<ItemTreeNode & { indexInParent: number }> } & ItemTreeNode
+        ItemTreeNode
     > = {};
-    // First pass: instantiation. 
+    const treeRootIdCandidates = new Set<string>();
+    // First pass: instantiation.
     for (const nodeId in flatItemBlob) {
+        treeRootIdCandidates.add(nodeId);
         treeConstructorRecord[nodeId] = {
             id: nodeId,
+            lastModifiedUnixMillis: flatItemBlob[nodeId].lastModifiedUnixMillis,
             data: flatItemBlob[nodeId].data,
-            indexInParent: flatItemBlob[nodeId].indexInParent,
             children: [],
             collapsed: flatItemBlob[nodeId].collapsed
         }
     }
-    // Second pass: Parent assignment
+    // Second pass: Child linking
     for (const nodeId in flatItemBlob) {
-        const parentId = flatItemBlob[nodeId].parentId;
-        const currentNode = treeConstructorRecord[nodeId];
-        if (parentId in treeConstructorRecord) {
-            treeConstructorRecord[parentId].children.push(currentNode);
-        } else {
-            // Lost OR root items
-            treeRootsArray.push(currentNode);
-        }
+        const nodeChildInstances = flatItemBlob[nodeId].children.map(childId => treeConstructorRecord[childId])
+        treeConstructorRecord[nodeId].children = nodeChildInstances;
+        flatItemBlob[nodeId].children.forEach(childId => treeRootIdCandidates.delete(childId))
     }
-    // Clean up the ordering
-    for (const nodeId in flatItemBlob) {
-        const currentNode = treeConstructorRecord[nodeId];
-        currentNode.children.sort((a, b) => a.indexInParent - b.indexInParent);
-    }
-    // Remove indexInParent
-    treeRootsArray.forEach((n: ItemTreeNode & { indexInParent?: number }) => {
-        delete n.indexInParent;
-    })
+    const treeRootsArray = Array.from(treeRootIdCandidates).map(rootId => treeConstructorRecord[rootId]);
     if (treeRootsArray.length == 0) return [makeNewItem()];
     else return treeRootsArray;
 }
 
 const fromTree = (itemTreeArray: Array<ItemTreeNode>): FlatItemBlob => {
     const flatBlob: FlatItemBlob = {};
-    const unrollItems = (parentId: string, nodes: ItemTreeNode[]) => {
-        nodes.forEach((n, idx) => {
+    const unrollItems = (nodes: ItemTreeNode[]) => {
+        nodes.forEach((n) => {
             flatBlob[n.id] = {
+                lastModifiedUnixMillis: n.lastModifiedUnixMillis,
                 data: n.data,
-                parentId: parentId,
-                indexInParent: idx,
+                children: n.children.map(i => i.id),
                 collapsed: n.collapsed
             }
-            unrollItems(n.id, n.children);
+            unrollItems(n.children);
         })
     }
-    unrollItems("", itemTreeArray);
+    unrollItems(itemTreeArray);
     return flatBlob;
 }

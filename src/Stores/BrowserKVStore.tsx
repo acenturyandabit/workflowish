@@ -53,7 +53,6 @@ class BrowserKVStore implements
     }
 
     save(data: BaseStoreDataType) {
-        console.log(data)
         localforage.setItem<BaseStoreDataType>(this.settings.documentName, data)
     }
 

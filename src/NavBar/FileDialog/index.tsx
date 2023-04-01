@@ -8,6 +8,7 @@ import { KVStores, makeKVStore } from '~Stores';
 import { Box, TextField, MenuItem } from "@mui/material"
 import { KVStoresAndLoadedState } from '~Stores/KVStoreInstances';
 import { BaseStoreDataType } from '~CoreDataLake';
+import { KVStore, KVStoreSettingsStruct } from '~Stores/types';
 
 class FileDialog implements NavBarDialog {
     setOpen: () => void
@@ -53,27 +54,13 @@ class FileDialog implements NavBarDialog {
                 {props.kvStores.stores.map((i, ii) => (
                     <Box key={ii}>
                         {i.makeFileDialog(bumpKVStore)}
-                        <Button
-                            variant="outlined"
-                            sx={{ mt: 2 }}
-                            onClick={() => i.save(props.data)}
-                        >Save</Button>
-                        <Button
-                            variant="outlined"
-                            sx={{ mt: 2 }}
-                            onClick={() => {
-                                (async () => {
-                                    const loadedData = await i.load();
-                                    props.setData(loadedData)
-                                })();
-                            }}
-                        >Load</Button>
-                        <Button
-                            variant="outlined"
-                            color="error"
-                            sx={{ mt: 2 }}
-                            onClick={() => removeSaveSource(ii)}
-                        >Remove this source</Button>
+                        <SaveLoadButtons
+                            saveSource={i}
+                            removeSaveSource={() => removeSaveSource(ii)}
+                            data={props.data}
+                            setData={props.setData}
+                        />
+
                     </Box>
                 ))}
                 <h3>Or, add a new save source...</h3>
@@ -100,5 +87,55 @@ class FileDialog implements NavBarDialog {
         this.open = open;
     }
 }
+
+const SaveLoadButtons = (props: {
+    saveSource: KVStore<KVStoreSettingsStruct>,
+    removeSaveSource: () => void
+    data: BaseStoreDataType,
+    setData: React.Dispatch<React.SetStateAction<BaseStoreDataType>>,
+}) => {
+    const syncFn = props.saveSource.sync;
+    const SyncButton = syncFn ? <Button
+        variant="outlined"
+        sx={{ mt: 2 }}
+        onClick={() => {
+            (async () => {
+                const newData = await syncFn(props.data)
+                // TODO: make a class in charge of handling the data; 
+                // this should just be a call to "saverClass.sync(props.saveSource)". 
+                // Same goes with other functions which handle data. 
+                props.setData(newData)
+            })();
+        }}
+    >Sync</Button> : null;
+
+    return <>
+        <Button
+            variant="outlined"
+            sx={{ mt: 2 }}
+            onClick={() => {
+                props.saveSource.save(props.data)
+            }}
+        >Save</Button>
+        {SyncButton}
+        <Button
+            variant="outlined"
+            sx={{ mt: 2 }}
+            onClick={() => {
+                (async () => {
+                    const loadedData = await props.saveSource.load();
+                    props.setData(loadedData)
+                })();
+            }}
+        >Load</Button>
+        <Button
+            variant="outlined"
+            color="error"
+            sx={{ mt: 2 }}
+            onClick={() => props.removeSaveSource()}
+        >Remove this source</Button>
+    </>
+}
+
 
 export default FileDialog;

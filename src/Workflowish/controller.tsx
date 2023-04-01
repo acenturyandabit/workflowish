@@ -1,5 +1,5 @@
 import * as React from "react";
-import { ItemRef } from "./Item";
+import { FocusActions } from "./Item";
 import { ItemTreeNode, makeNewItem } from "./model";
 
 type TreeNodeGetSetter = (oldValue: ItemTreeNode) => ItemTreeNode;
@@ -21,16 +21,16 @@ export type ControllerActions = {
 export const makeListActions = (props: {
     currentSiblingIdx: number,
     getSetSiblingArray: (t: TreeNodeArrayGetSetter) => void,
-    siblingItemRefs: React.RefObject<(ItemRef | null)[]>,
+    siblingsFocusActions: React.RefObject<(FocusActions | null)[]>,
     unindentCaller: () => void,
-    thisActions: ItemRef
+    parentFocusActions: FocusActions
 }): ControllerActions => ({
     createNewItem: () => {
         props.getSetSiblingArray((siblingArray) => {
             const newSiblingArray = [...siblingArray];
             newSiblingArray.splice(props.currentSiblingIdx + 1, 0, makeNewItem());
             // New items won't be created yet, so delay the setfocus
-            setTimeout(() => props.siblingItemRefs.current?.[props.currentSiblingIdx + 1]?.focusThis());
+            setTimeout(() => props.siblingsFocusActions.current?.[props.currentSiblingIdx + 1]?.focusThis());
             return newSiblingArray;
         })
     },
@@ -40,9 +40,9 @@ export const makeListActions = (props: {
                 const newSiblingArray = [...siblingArray];
                 newSiblingArray.splice(props.currentSiblingIdx, 1);
                 if (props.currentSiblingIdx - 1 >= 0) {
-                    props.siblingItemRefs.current?.[props.currentSiblingIdx - 1]?.focusThisEnd()
+                    props.siblingsFocusActions.current?.[props.currentSiblingIdx - 1]?.focusThisEnd()
                 } else {
-                    props.thisActions.focusThisEnd();
+                    props.parentFocusActions.focusThisEnd();
                 }
                 return newSiblingArray;
             } else {
@@ -51,20 +51,20 @@ export const makeListActions = (props: {
         })
     },
     focusMyNextSibling: () => {
-        const siblingItemsRef = props.siblingItemRefs.current;
+        const siblingItemsRef = props.siblingsFocusActions.current;
         if (siblingItemsRef) {
             if (props.currentSiblingIdx >= siblingItemsRef.length - 1) {
-                props.thisActions.focusMyNextSibling()
+                props.parentFocusActions.focusMyNextSibling()
             } else {
                 siblingItemsRef[props.currentSiblingIdx + 1]?.triggerFocusFromAbove()
             }
         }
     },
     focusMyPrevSibling: () => {
-        const siblingItemsRef = props.siblingItemRefs.current;
+        const siblingItemsRef = props.siblingsFocusActions.current;
         if (siblingItemsRef) {
             if (props.currentSiblingIdx <= 0) {
-                props.thisActions.focusThis()
+                props.parentFocusActions.focusThis()
             } else {
                 siblingItemsRef[props.currentSiblingIdx - 1]?.triggerFocusFromBelow()
             }
@@ -76,7 +76,7 @@ export const makeListActions = (props: {
                 const newSiblingArray = [...siblingArray];
                 const [thisItem] = newSiblingArray.splice(props.currentSiblingIdx, 1);
                 newSiblingArray.splice(props.currentSiblingIdx - 1, 0, thisItem);
-                props.siblingItemRefs.current?.[props.currentSiblingIdx - 1]?.focusThis();
+                props.siblingsFocusActions.current?.[props.currentSiblingIdx - 1]?.focusThis();
                 return newSiblingArray;
             })
         }
@@ -88,7 +88,7 @@ export const makeListActions = (props: {
                 const [thisItem] = newSiblingArray.splice(props.currentSiblingIdx, 1);
                 newSiblingArray.splice(props.currentSiblingIdx + 1, 0, thisItem);
                 // Changing the list does not change the item refs; so focus on the next item
-                props.siblingItemRefs.current?.[props.currentSiblingIdx + 1]?.focusThis();
+                props.siblingsFocusActions.current?.[props.currentSiblingIdx + 1]?.focusThis();
                 return newSiblingArray;
             } else {
                 return siblingArray
@@ -101,7 +101,7 @@ export const makeListActions = (props: {
                 const newSiblingArray = [...siblingArray];
                 const [thisItem] = newSiblingArray.splice(props.currentSiblingIdx, 1);
                 newSiblingArray[props.currentSiblingIdx - 1].children.push(thisItem);
-                props.siblingItemRefs.current?.[props.currentSiblingIdx - 1]?.focusRecentlyIndentedItem();
+                props.siblingsFocusActions.current?.[props.currentSiblingIdx - 1]?.focusRecentlyIndentedItem();
                 return newSiblingArray;
             } else {
                 return siblingArray;
@@ -113,7 +113,7 @@ export const makeListActions = (props: {
         props.getSetSiblingArray((siblingArray) => {
             const newSiblingArray = [...siblingArray];
             newSiblingArray.splice(props.currentSiblingIdx, 0, child);
-            props.siblingItemRefs.current?.[props.currentSiblingIdx]?.focusThis();
+            props.siblingsFocusActions.current?.[props.currentSiblingIdx]?.focusThis();
             return newSiblingArray;
         })
     },

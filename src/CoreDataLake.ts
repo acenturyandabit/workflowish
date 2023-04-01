@@ -1,6 +1,12 @@
 import * as React from 'react';
 import { KVStoresAndLoadedState } from '~Stores/KVStoreInstances';
-export type BaseStoreDataType = Record<string, unknown>
+export type BaseItemType = {
+    lastModifiedUnixMillis: number,
+    [key: string]: unknown
+}
+export type BaseStoreDataType ={
+    [key: string]: BaseItemType
+}
 
 export type DataAndLoadState = {
     data: BaseStoreDataType,

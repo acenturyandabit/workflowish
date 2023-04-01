@@ -8,6 +8,7 @@ export interface HTTPKVStoreSettings extends KVStoreSettingsStruct {
     type: typeof HTTPKVStoreType
     saveURL: string
     loadURL: string
+    syncURL: string
 }
 
 const isHTTPKVStoreSettings = (x: KVStoreSettingsStruct | DefaultKVConstructionArgs):
@@ -27,9 +28,11 @@ class HTTPKVStore implements
             this.settings = {
                 type: HTTPKVStoreType,
                 saveURL: "",
-                loadURL: ""
+                loadURL: "",
+                syncURL: ""
             };
         }
+        this.sync = this.sync.bind(this)
     }
 
     toJsonSettings() {
@@ -52,6 +55,7 @@ class HTTPKVStore implements
                 />
                 <br></br>
                 <TextField
+                    sx={{ mb: 2 }}
                     label="Load URL"
                     value={this.settings.loadURL}
                     fullWidth
@@ -60,12 +64,21 @@ class HTTPKVStore implements
                         bumpKVStores();
                     }}
                 />
+                <br></br>
+                <TextField
+                    label="Sync URL"
+                    value={this.settings.syncURL}
+                    fullWidth
+                    onChange={(evt) => {
+                        this.settings.syncURL = evt.target.value;
+                        bumpKVStores();
+                    }}
+                />
             </>
         )
     }
 
     save(data: BaseStoreDataType) {
-        console.log(data);
         fetch(this.settings.saveURL, {
             method: "POST",
             headers: {
@@ -73,6 +86,17 @@ class HTTPKVStore implements
             },
             body: JSON.stringify(data)
         })
+    }
+
+    async sync(data: BaseStoreDataType): Promise<BaseStoreDataType> {
+        const response = fetch(this.settings.syncURL, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data)
+        })
+        return await (await response).json()
     }
 
     async load(): Promise<BaseStoreDataType> {

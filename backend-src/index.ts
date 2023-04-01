@@ -3,7 +3,7 @@ import * as path from 'path'
 import express, { Request } from 'express'
 import cors from 'cors'
 import bodyParser from "body-parser"
-import diff from './diff'
+import getDiffsAndResolvedItems from './getResolvedItems'
 import { BaseStoreDataType } from '../src/CoreDataLake'
 
 const thisFileDirectory = path.dirname(__filename)
@@ -25,22 +25,31 @@ const port = Number(process.argv[2]) || 5174;
 
 app.post('/save', (req) => {
     console.log("Saving")
+    innerSaveOrSync(req);
+    console.log("Saved")
+})
+
+
+app.post('/sync', (req, res) => {
+    console.log("Syncing")
+    const resolved = innerSaveOrSync(req);
+    res.send(resolved);
+    console.log("Synced");
+})
+
+const innerSaveOrSync = (req): BaseStoreDataType => {
     const docPath = getCleanFileName(req.query.f);
     const savedDoc = loadFromFile(docPath);
 
     const incomingDoc: BaseStoreDataType = req.body;
-    const differences: BaseStoreDataType = diff(incomingDoc, savedDoc)
-    if (Object.keys(differences || {}).length) {
-        const diffsToSave: BaseStoreDataType = {};
-        for (const key in differences) {
-            diffsToSave[key] = incomingDoc[key] || null; // use explicit null for deletion
-        }
-        fs.appendFileSync(docPath, JSON.stringify(diffsToSave) + "\n");
-        console.log("Saved")
+    const { resolved, incomingDiffs } = getDiffsAndResolvedItems(incomingDoc, savedDoc)
+    if (Object.keys(incomingDiffs).length) {
+        fs.appendFileSync(docPath, JSON.stringify(incomingDiffs) + "\n");
     } else {
         console.log("Nothing to save")
     }
-})
+    return resolved;
+}
 
 app.get("/load", (req, res) => {
     console.log("Loaded")

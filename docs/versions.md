@@ -69,23 +69,36 @@
 
 # (Current) Version 2.4
 `The MVP Mobile Version`
+- Deployment with the web server
+- Add push-pull functionality on save
+     - Breaking change! Now all stored items must have a lastModifiedUnixMillis
+     - Breaking change! Now trees are stored as rendered (i.e. with a childArray rather than with a parent pointer)
+     - Breaking change! Now items cannot be deleted, only set to null
+- Add mobile autosave with appropriate throttling
+- Make it a PWA
+- Add a password
 - Add the sticky buttons
 - Add click-to-expand
 - UI Fixes for mobile
-- Deployment with the web server
-- Make it a PWA
 
-# Version 2.4
+# Version 2.4.1
+- Change the tree data model to have children in its list rather than a singular parent
+    - this makes it more flexible
+    - this also better suits a data model where we fetch individual items from the datamodel on an as-needed basis rather than dumping every change to every consumer always.
+
+# Version 2.5
 `The scripting engine version`
 - Create an event bus
 - Create a popup scripting engine in the file menu
 
+# Version 2.5.1
+- Allow appending imports in the text importer, to allow incremental addition of items
 
-# Version 2.5
+# Version 2.6
 `The Search version`
 - Add search
 
-# Version 2.4
+# Version 2.7
 - Make backend paths configurable
 - Make contribution guide
 - Add structural readability checker
@@ -93,14 +106,12 @@
 - Push to github
 - Create config-fold-check to fold config files
 
-
 # Version 3.1
 `The multifile version`
 - Add an open different files dialog
 - Load configurations from query path, which inform file loading
 - Recent documents should show on open file menu
 - Visiting site with blank URL should show open file dialog
-
 
 # Version 3.1.1
 - Visiting site with blank URL should load last opened document

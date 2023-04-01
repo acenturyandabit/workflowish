@@ -26,6 +26,7 @@ it('Renders an item', () => {
         <Item
             item={{
                 id: "test-id",
+                lastModifiedUnixMillis: 0,
                 data: "Hello world!",
                 children: [],
                 collapsed: true

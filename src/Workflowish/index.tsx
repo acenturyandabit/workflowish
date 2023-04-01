@@ -1,7 +1,7 @@
 import * as React from "react";
 import { BaseStoreDataType } from "~CoreDataLake";
 import { makeListActions } from "./controller";
-import Item, { ItemRef } from "./Item"
+import Item, { FocusActions } from "./Item"
 import { transformData } from "./model"
 
 
@@ -10,8 +10,8 @@ export default (props: {
     setData: React.Dispatch<React.SetStateAction<BaseStoreDataType>>
 }) => {
 
-    const [todoItems, setTodoItems] = transformData(props);
-    const itemsRefArray = React.useRef<Array<ItemRef | null>>([])
+    const [todoItems, getSetTodoItems] = transformData(props);
+    const itemsRefArray = React.useRef<Array<FocusActions | null>>([])
     while (itemsRefArray.current.length < todoItems.length) {
         itemsRefArray.current.push(null);
     }
@@ -24,15 +24,15 @@ export default (props: {
             key={ii}
             emptyList={todoItems.length == 1 && i.data == ""}
             item={i}
-            pushRef={(ref: ItemRef) => itemsRefArray.current[ii] = ref}
+            pushRef={(ref: FocusActions) => itemsRefArray.current[ii] = ref}
             parentActions={makeListActions({
-                siblingItemRefs: itemsRefArray,
+                siblingsFocusActions: itemsRefArray,
                 currentSiblingIdx: ii,
-                getSetSiblingArray: setTodoItems,
+                getSetSiblingArray: getSetTodoItems,
                 unindentCaller: () => {
                     // cannot unindent at root level
                 },
-                thisActions: {
+                parentFocusActions: {
                     triggerFocusFromAbove: topLevelTakeFocus,
                     triggerFocusFromBelow: topLevelTakeFocus,
                     focusThis: topLevelTakeFocus,

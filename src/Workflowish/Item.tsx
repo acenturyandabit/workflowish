@@ -4,7 +4,7 @@ import sanitizeHtml from "sanitize-html"
 import { ControllerActions, makeListActions, TreeNodeArrayGetSetter } from "./controller";
 import { ItemTreeNode, makeNewItem } from "./model";
 
-export type ItemRef = {
+export type FocusActions = {
     triggerFocusFromAbove: () => void;
     triggerFocusFromBelow: () => void;
     focusThis: () => void;
@@ -16,14 +16,14 @@ export type ItemRef = {
 const Item = (props: {
     emptyList?: boolean,
     item: ItemTreeNode,
-    pushRef: (ref: ItemRef) => void,
+    pushRef: (ref: FocusActions) => void,
     parentActions: ControllerActions
 }) => {
     const item = React.useRef(props.item);
     React.useEffect(() => {
         item.current = props.item
     }, [props.item]);
-    const itemsRefArray = React.useRef<Array<ItemRef | null>>([])
+    const itemsRefArray = React.useRef<Array<FocusActions | null>>([])
     const thisContentEditable = React.useRef<HTMLElement | null>(null);
     while (itemsRefArray.current.length < props.item.children.length) {
         itemsRefArray.current.push(null);
@@ -40,6 +40,7 @@ const Item = (props: {
             // this needs to be a getsetter as the useEffect is run only once, and so 
             // the self item at construction time is outdated
             ...oldSelf,
+            lastModifiedUnixMillis: Date.now(),
             data: sanitizeHtml(evt.currentTarget.innerHTML, sanitizeConf)
         }))
     }, [props.parentActions])
@@ -109,7 +110,7 @@ const Item = (props: {
             }
         }
     };
-    const thisActions = {
+    const parentFocusActions = {
         triggerFocusFromAbove: () => {
             thisContentEditable.current?.focus();
         },
@@ -142,7 +143,7 @@ const Item = (props: {
             })
         }
     }
-    props.pushRef(thisActions);
+    props.pushRef(parentFocusActions);
     const childItems = <div style={{
         paddingLeft: "5px",
         borderLeft: "1px solid white",
@@ -151,13 +152,14 @@ const Item = (props: {
         {props.item.children.map((item, ii) => (<Item
             key={ii}
             item={item}
-            pushRef={(ref: ItemRef) => itemsRefArray.current[ii] = ref}
+            pushRef={(ref: FocusActions) => itemsRefArray.current[ii] = ref}
             parentActions={makeListActions({
-                siblingItemRefs: itemsRefArray,
+                siblingsFocusActions: itemsRefArray,
                 currentSiblingIdx: ii,
                 getSetSiblingArray: (t: TreeNodeArrayGetSetter) => {
                     props.parentActions.getSetSelf((item) => ({
                         ...item,
+                        lastModifiedUnixMillis: Date.now(),
                         children: t(item.children)
                     }))
                 },
@@ -168,11 +170,12 @@ const Item = (props: {
                         props.parentActions.unindentChild(splicedThis);
                         return {
                             ...item,
+                            lastModifiedUnixMillis: Date.now(),
                             children: newChildren
                         }
                     })
                 },
-                thisActions
+                parentFocusActions
             })}
         ></Item>))}
     </div>;
