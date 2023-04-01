@@ -190,16 +190,7 @@ const Item = (props: {
                     }))
                 },
                 unindentCaller: () => {
-                    props.parentActions.getSetSelf((item) => {
-                        const newChildren = [...item.children];
-                        const [splicedThis] = newChildren.splice(ii, 1);
-                        props.parentActions.unindentChild(splicedThis);
-                        return {
-                            ...item,
-                            lastModifiedUnixMillis: Date.now(),
-                            children: newChildren
-                        }
-                    })
+                    props.parentActions.unindentGrandchild(ii);
                 },
                 parentFocusActions
             })}

@@ -15,7 +15,7 @@ export type ControllerActions = {
     putAfterNext: () => void
     indentSelf: () => void,
     unindentSelf: () => void,
-    unindentChild: (child: ItemTreeNode) => void
+    unindentGrandchild: (grandChildIdx: number) => void
 }
 
 export const makeListActions = (props: {
@@ -101,6 +101,8 @@ export const makeListActions = (props: {
                 const newSiblingArray = [...siblingArray];
                 const [thisItem] = newSiblingArray.splice(props.currentSiblingIdx, 1);
                 newSiblingArray[props.currentSiblingIdx - 1].children.push(thisItem);
+                newSiblingArray[props.currentSiblingIdx - 1].lastModifiedUnixMillis = Date.now()
+                newSiblingArray[props.currentSiblingIdx - 1].collapsed = false
                 props.siblingsFocusActions.current?.[props.currentSiblingIdx - 1]?.focusRecentlyIndentedItem();
                 return newSiblingArray;
             } else {
@@ -109,10 +111,17 @@ export const makeListActions = (props: {
         })
     },
     unindentSelf: props.unindentCaller,
-    unindentChild: (child: ItemTreeNode) => {
+    unindentGrandchild: (grandChildIdx: number) => {
         props.getSetSiblingArray((siblingArray) => {
             const newSiblingArray = [...siblingArray];
+
+            const child = newSiblingArray[props.currentSiblingIdx].children[grandChildIdx];
+            newSiblingArray[props.currentSiblingIdx].children.splice(grandChildIdx, 1);
             newSiblingArray.splice(props.currentSiblingIdx, 0, child);
+
+            child.lastModifiedUnixMillis = Date.now();
+            newSiblingArray[props.currentSiblingIdx].lastModifiedUnixMillis = Date.now();
+
             props.siblingsFocusActions.current?.[props.currentSiblingIdx]?.focusThis();
             return newSiblingArray;
         })

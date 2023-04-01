@@ -18,7 +18,7 @@ const dummyParentActions: ControllerActions = {
     putAfterNext: mockEmptyFunction,
     indentSelf: mockEmptyFunction,
     unindentSelf: mockEmptyFunction,
-    unindentChild: mockEmptyFunction,
+    unindentGrandchild: mockEmptyFunction,
 };
 
 it('Renders an item', () => {

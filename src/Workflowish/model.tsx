@@ -104,8 +104,19 @@ const fromTree = (root: ItemTreeNode): FlatItemBlob => {
     while (nodeStack.length) {
         const top = nodeStack.shift()
         if (top) {
-            if (top.id in flatBlob) {
-                throw Error("Cycle detected in tree! Refusing to update.")
+            const noDuplicateChildren = top.children.filter(child => {
+                if (child.id in flatBlob) {
+                    // Log an error and ignore the duplicate
+                    console.error(`Duplicate node ${top.id}! Removing from this parent and moving on.`);
+                    return false;
+                } else {
+                    nodeStack.push({ ...child, markedForCleanup: top.markedForCleanup || child.markedForCleanup })
+                    return true;
+                }
+            });
+            if (noDuplicateChildren.length != top.children.length){
+                top.children = noDuplicateChildren;
+                top.lastModifiedUnixMillis = Date.now();
             }
             flatBlob[top.id] = {
                 lastModifiedUnixMillis: top.lastModifiedUnixMillis,
@@ -115,9 +126,6 @@ const fromTree = (root: ItemTreeNode): FlatItemBlob => {
             }
             if (top.markedForCleanup) {
                 setToDeleted(flatBlob[top.id]);
-                top.children.forEach(child => nodeStack.push({ ...child, markedForCleanup: true }));
-            } else {
-                top.children.forEach(child => nodeStack.push(child));
             }
         }
     }

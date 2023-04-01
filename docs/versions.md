@@ -82,24 +82,41 @@
 - Add the sticky buttons
 
 # (Current) Version 2.4.1
+`All those major structural changes shouldn't make the app unusable`
 - Fix bug where source sync overwrites some user changes
 - Fix bug where saving deletion of multiple objects fails
 - Fix collapse failing due to not updating lastUpdatedUnixMillis
 - Fix root level rearrangement
 - Fix not being allowed to delete root level nodes
-
-## PLANNED
-- Remove the notion of 'id' from items; replace with key
-- Fix bug where on load, Enter key doesn't work because setFocusedActionReceiver is undefined
-- Fix bug where its possible to use focus buttons to leave focus by spamming 'Up'
-- Fix bug where ctrl/alt/shift hides keyboard
-- Fix bug where clicking doesnt change focus
-- Better (hidden) password prompt
+- Shift-tab on any item causes Workflowish to blow up
+  - 1. Shift tab is two operations which are not atomic, and this triggers
+  the cycle detector because the cycle detector sees the same object twice.
+    - THIS IS HARD TO FIX without breaking encapsulation or decopuling the 
+    item renderer from the item itself.
+    - But we've already got a precedent for breaking encapsulation by passing
+    indexes through to the parent, so guess we're doing that again...
+  - 2. cycle detector doesnt detect cycles, it detects duplicates, which 
+  causes it to freak out more than necessary, but it should still freak out, 
+  because the model should guarantee no node appears twice, even for a moment
+    3. Cycle detector could crash softer, instead of whitescreening the whole app.
+      - We can make it just delete items which are in lower levels of the
+      hierarchy, because if they are duplicated then they're being rendered, which is good
+- Tab to indent also doesn't work, because I missed a lastUpdatedMillis
 
 # Version 2.5
 `The scripting engine version`
 - Create an event bus
 - Create a popup scripting engine in the file menu
+
+# Noncritical technical debt
+- Refactor KVStores so it acts like CoreDataLake in terms of the 'changed' flag
+- Refactor TextImportKVStore so that it doesn't use dirty this.settings hacks
+- Remove the notion of 'id' from items; replace with key
+- Fix mobile bug where on load, Enter key doesn't work because setFocusedActionReceiver is undefined
+- Fix mobile bug where its possible to use focus buttons to leave focus by spamming 'Up'
+- Fix mobile bug where ctrl/alt/shift hides keyboard
+- Fix mobile bug where clicking doesnt change focus
+- Better (hidden) password prompt
 
 # Version 2.5.1
 - Allow appending imports in the text importer, to allow incremental addition of items
@@ -107,6 +124,10 @@
 # Version 2.6
 `The Search version`
 - Add search
+
+# Version 2.7
+`The plays nicely with other software version`
+- Context menu export this-and-siblings-and-children as bullet points
 
 # Version 2.7
 `The Github release version`
@@ -142,10 +163,10 @@
 # Version 3.3
 `The symlink version`
 - Add Symlinks
+- Press a modifier key to view item IDs
+- them symlink to an item ID.
 
 # Version 4.1 
 - Add a tabbing window manager
 
-# Miscellaneous technical debt
-- Refactor KVStores so it acts like CoreDataLake in terms of the 'changed' flag
-- Refactor TextImportKVStore so that it doesn't use dirty this.settings hacks
+
