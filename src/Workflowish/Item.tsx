@@ -204,7 +204,14 @@ const Item = (props: {
         , []);
     return <span style={{ display: "flex", flexDirection: "column", width: "100%" }}>
         <span style={{ display: "inline-flex", width: "100%" }}>
-            {bulletPoint} &nbsp;<ContentEditable innerRef={memoizedInnerRef} style={{ flex: "1 1 auto" }} onChange={onContentChange} html={props.item.data} onKeyDown={onKeyDown}></ContentEditable>
+            {bulletPoint} &nbsp;<ContentEditable
+                innerRef={memoizedInnerRef}
+                html={props.item.data}
+                onChange={onContentChange}
+                onKeyDown={onKeyDown}
+                onClick={() => props.setFocusedActionReceiver(focusedActionReceiver)}
+                style={{ flex: "1 1 auto" }}
+            ></ContentEditable>
         </span>
         {props.item.collapsed ? null : childItems}
     </span >

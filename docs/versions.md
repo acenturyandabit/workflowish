@@ -83,11 +83,11 @@
 
 # Version 2.4.1
 `All those major structural changes shouldn't make the app unusable`
-- Fix bug where source sync overwrites some user changes
-- Fix bug where saving deletion of multiple objects fails
-- Fix collapse failing due to not updating lastUpdatedUnixMillis
-- Fix root level rearrangement
-- Fix not being allowed to delete root level nodes
+- [FIX] bug where source sync overwrites some user changes
+- [FIX] bug where saving deletion of multiple objects fails
+- [FIX] collapse failing due to not updating lastUpdatedUnixMillis
+- [FIX] root level rearrangement
+- [FIX] not being allowed to delete root level nodes
 - Shift-tab on any item causes Workflowish to blow up
   - 1. Shift tab is two operations which are not atomic, and this triggers
   the cycle detector because the cycle detector sees the same object twice.
@@ -109,8 +109,13 @@
 - Create a popup scripting engine in the file menu
   - Refactor Navbar Dialogs to idiomatic React
 - Create a wrapper which executes scripts
+- [FIX] mobile bug where clicking doesnt change focus
 
 ## TODO
+- Fix unindent creating duplicate entries
+- Add press/hold indicators to mobile buttons
+- Make it so that when shift/alt/control are pressed in mobile, focus is not lost
+
 # Noncritical technical debt
 - Refactor KVStores so it acts like CoreDataLake in terms of the 'changed' flag
 - Refactor TextImportKVStore so that it doesn't use dirty this.settings hacks
@@ -118,11 +123,12 @@
 - Fix mobile bug where on load, Enter key doesn't work because setFocusedActionReceiver is undefined
 - Fix mobile bug where its possible to use focus buttons to leave focus by spamming 'Up'
 - Fix mobile bug where ctrl/alt/shift hides keyboard
-- Fix mobile bug where clicking doesnt change focus
 
 # Unroadmapped features
 - Better (hidden) password prompt
 - Create a SetInterval implementation for the ScriptRunner
+- [devops] Create config-fold-check to fold config files
+- [devops] Add structural readability checker
 
 # Version 2.5.1
 - Allow appending imports in the text importer, to allow incremental addition of items
@@ -134,22 +140,22 @@
 # Version 2.7
 `The plays nicely with other software version`
 - Context menu export this-and-siblings-and-children as bullet points
+- Old polymorph upgrade script
 
 # Version 2.7
 `The Github release version`
 - Make contribution guide
 - Extract MVC interface from ScriptingEngine / Workflowish into a template
 - Add github todo-to-issue
-- add usage guide for self hosting in README
+- Add usage guide for self hosting in README
 - Do versioning with tags rather than the current scheme
-- Autogenerate the changelog rather than forcing users to update it, 
+- Autogenerate the changelog rather than forcing users to update it manually, 
   but also preserve its utility as a planning space. 
   - Separate versions.md which keeps last version + future plans, and 
     changelog.md which keeps all versions in reverse order with newest on top.
-- Add structural readability checker
 - Add a screenshot in the README to show how it works
+- Create a release flow of the built frontend only
 - Push to github
-- Create config-fold-check to fold config files
 
 # Version 3.1
 `The multifile version`
@@ -161,10 +167,10 @@
 # Version 3.1.1
 - Visiting site with blank URL should load last opened document
 - Little popup to give user peace of mind when ctrl-s is pressed
+- Alt + Enter will split a line down with the remaining text after the caret. Alt + Shift + Enter will make it a child.
 - Pressing Enter will either insert an item before OR after the current element, based on the current caret index (front or back)
 
 # Version 3.1.2
-- Add github ci builds
 - Add automated versions.md file checking: check that past/future versions are in-order
 - Add automated roadmap checking: explicitly alert maintainer when versions past version n+1 have been modified
 

@@ -37,6 +37,7 @@ exports[`Renders an item 1`] = `
       }
       onBlur={[Function]}
       onChange={[Function]}
+      onClick={[Function]}
       onInput={[Function]}
       onKeyDown={[Function]}
       onKeyUp={[Function]}
