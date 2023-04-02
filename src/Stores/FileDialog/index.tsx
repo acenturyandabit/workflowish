@@ -1,55 +1,49 @@
 import * as React from 'react';
-import { NavBarDialog } from "~NavBar";
 import Button from '@mui/material/Button';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
+import Dialog from '@mui/material/Dialog';
 import { KVStores, makeKVStore } from '~Stores';
 import { Box, TextField, MenuItem, FormControlLabel, Checkbox } from "@mui/material"
 import { KVStoresAndLoadedState } from '~Stores/KVStoreInstances';
 import { BaseStoreDataType } from '~CoreDataLake';
 import { KVStore, KVStoreSettingsStruct } from '~Stores/types';
 
-class FileDialog implements NavBarDialog {
-    setOpen: () => void
-    setClose: () => void
-    innerDialog: React.ReactElement
-    path = "File"
-    open: boolean
-    constructor(props: {
-        setKVStores: React.Dispatch<React.SetStateAction<KVStoresAndLoadedState>>,
-        kvStores: KVStoresAndLoadedState,
-        setData: React.Dispatch<React.SetStateAction<BaseStoreDataType>>,
-        data: BaseStoreDataType
-    }) {
-        const [open, setOpen] = React.useState(false);
-        const [newSaveLocationType, setNewSaveLocationType] = React.useState<string>(Object.keys(KVStores)[0]);
-        const bumpKVStore = () => {
-            props.setKVStores(kvStores => ({ ...kvStores }))
-        }
-        const addNewSaveSource = () => {
-            props.setKVStores(kvStores => ({
-                ...kvStores, stores: [
-                    ...kvStores.stores,
-                    makeKVStore(newSaveLocationType)
-                ]
-            }))
-        }
 
-        const removeSaveSource = (idx: number) => {
-            props.setKVStores(kvStores => {
-                const newStores = [...kvStores.stores];
-                newStores.splice(idx, 1);
-                return {
-                    ...kvStores, stores: newStores
-                }
-            })
-        }
+const FileNavbarAndDialog = (props: {
+    setKVStores: React.Dispatch<React.SetStateAction<KVStoresAndLoadedState>>,
+    kvStores: KVStoresAndLoadedState,
+    setData: React.Dispatch<React.SetStateAction<BaseStoreDataType>>,
+    data: BaseStoreDataType
+}) => {
+    const [open, setOpen] = React.useState<boolean>(false);
+    const [newSaveLocationType, setNewSaveLocationType] = React.useState<string>(Object.keys(KVStores)[0]);
+    const bumpKVStore = () => {
+        props.setKVStores(kvStores => ({ ...kvStores }))
+    }
+    const addNewSaveSource = () => {
+        props.setKVStores(kvStores => ({
+            ...kvStores, stores: [
+                ...kvStores.stores,
+                makeKVStore(newSaveLocationType)
+            ]
+        }))
+    }
 
-        this.innerDialog = <>
+    const removeSaveSource = (idx: number) => {
+        props.setKVStores(kvStores => {
+            const newStores = [...kvStores.stores];
+            newStores.splice(idx, 1);
+            return {
+                ...kvStores, stores: newStores
+            }
+        })
+    }
+    return <li>
+        <Dialog open={open} onClose={() => setOpen(false)}>
             <DialogTitle>Save Sources</DialogTitle>
             <DialogContent dividers={true}>
-
                 <h2>Registered save sources</h2>
                 <FormControlLabel control={<Checkbox
                     checked={props.kvStores.autosaveOn}
@@ -90,11 +84,9 @@ class FileDialog implements NavBarDialog {
             <DialogActions>
                 <Button onClick={() => setOpen(false)}>Close</Button>
             </DialogActions>
-        </>;
-        this.setOpen = () => setOpen(true);
-        this.setClose = () => setOpen(false);
-        this.open = open;
-    }
+        </Dialog>
+        <a onClick={() => setOpen(true)}>File</a>
+    </li>
 }
 
 const SaveLoadButtons = (props: {
@@ -147,4 +139,4 @@ const SaveLoadButtons = (props: {
 }
 
 
-export default FileDialog;
+export default FileNavbarAndDialog;

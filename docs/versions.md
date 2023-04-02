@@ -81,7 +81,7 @@
 - Add a password
 - Add the sticky buttons
 
-# (Current) Version 2.4.1
+# Version 2.4.1
 `All those major structural changes shouldn't make the app unusable`
 - Fix bug where source sync overwrites some user changes
 - Fix bug where saving deletion of multiple objects fails
@@ -103,11 +103,14 @@
       hierarchy, because if they are duplicated then they're being rendered, which is good
 - Tab to indent also doesn't work, because I missed a lastUpdatedMillis
 
-# Version 2.5
+# (Current) Version 2.5
 `The scripting engine version`
-- Create an event bus
+- Fix nothing shows up on clean start
 - Create a popup scripting engine in the file menu
+  - Refactor Navbar Dialogs to idiomatic React
+- Create a wrapper which executes scripts
 
+## TODO
 # Noncritical technical debt
 - Refactor KVStores so it acts like CoreDataLake in terms of the 'changed' flag
 - Refactor TextImportKVStore so that it doesn't use dirty this.settings hacks
@@ -116,7 +119,10 @@
 - Fix mobile bug where its possible to use focus buttons to leave focus by spamming 'Up'
 - Fix mobile bug where ctrl/alt/shift hides keyboard
 - Fix mobile bug where clicking doesnt change focus
+
+# Unroadmapped features
 - Better (hidden) password prompt
+- Create a SetInterval implementation for the ScriptRunner
 
 # Version 2.5.1
 - Allow appending imports in the text importer, to allow incremental addition of items
@@ -132,7 +138,9 @@
 # Version 2.7
 `The Github release version`
 - Make contribution guide
+- Extract MVC interface from ScriptingEngine / Workflowish into a template
 - Add github todo-to-issue
+- add usage guide for self hosting in README
 - Do versioning with tags rather than the current scheme
 - Autogenerate the changelog rather than forcing users to update it, 
   but also preserve its utility as a planning space. 
@@ -156,7 +164,7 @@
 - Pressing Enter will either insert an item before OR after the current element, based on the current caret index (front or back)
 
 # Version 3.1.2
-- Add github ci
+- Add github ci builds
 - Add automated versions.md file checking: check that past/future versions are in-order
 - Add automated roadmap checking: explicitly alert maintainer when versions past version n+1 have been modified
 

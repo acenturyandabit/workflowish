@@ -86,6 +86,9 @@ const buildTree = (flatItemBlob: FlatItemBlob): ItemTreeNode => {
             virtualRoot.children.push(treeConstructorRecord[orphanedId]);
         }
     }
+    if (virtualRoot.children.length == 0) {
+        virtualRoot.children.push(makeNewItem());
+    }
     return virtualRoot;
 }
 
@@ -114,7 +117,7 @@ const fromTree = (root: ItemTreeNode): FlatItemBlob => {
                     return true;
                 }
             });
-            if (noDuplicateChildren.length != top.children.length){
+            if (noDuplicateChildren.length != top.children.length) {
                 top.children = noDuplicateChildren;
                 top.lastModifiedUnixMillis = Date.now();
             }
