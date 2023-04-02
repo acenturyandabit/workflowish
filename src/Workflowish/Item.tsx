@@ -16,7 +16,7 @@ export type FocusActions = {
 export type FocusedActionReceiver =
     {
         // wrapping required because of the way setState interprets a function - cannot pass a function directly
-        wrappedFunction: (
+        keyCommand: (
             evt: {
                 key: string,
                 shiftKey: boolean,
@@ -25,7 +25,8 @@ export type FocusedActionReceiver =
                 metaKey: boolean,
                 preventDefault: () => void
             }
-        ) => void
+        ) => void,
+        refocusSelf: () => void
     };
 
 const Item = (props: {
@@ -69,8 +70,14 @@ const Item = (props: {
             return "\u25CF";
         }
     })()}</span>;
+
+    const focusThis = () => {
+        thisContentEditable.current?.focus();
+        props.setFocusedActionReceiver(focusedActionReceiver);
+    }
+
     const focusedActionReceiver: FocusedActionReceiver = {
-        wrappedFunction: (evt) => {
+        keyCommand: (evt) => {
             if (evt.key == "Enter") {
                 if (evt.shiftKey) {
                     props.parentActions.getSetSelf(oldSelf => ({
@@ -126,16 +133,12 @@ const Item = (props: {
                     evt.preventDefault();
                 }
             }
-        }
+        },
+        refocusSelf: focusThis
     }
     const onKeyDown = (evt: React.KeyboardEvent) => {
         // TODO: inline this method
-        focusedActionReceiver.wrappedFunction(evt);
-    }
-
-    const focusThis = () => {
-        thisContentEditable.current?.focus();
-        props.setFocusedActionReceiver(focusedActionReceiver);
+        focusedActionReceiver.keyCommand(evt);
     }
 
     const parentFocusActions = {

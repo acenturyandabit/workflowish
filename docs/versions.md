@@ -110,25 +110,11 @@
   - Refactor Navbar Dialogs to idiomatic React
 - Create a wrapper which executes scripts
 - [FIX] mobile bug where clicking doesnt change focus
-
-## TODO
-- Fix unindent creating duplicate entries
-- Add press/hold indicators to mobile buttons
+- Add usage guide for self hosting in README
 - Make it so that when shift/alt/control are pressed in mobile, focus is not lost
-
-# Noncritical technical debt
-- Refactor KVStores so it acts like CoreDataLake in terms of the 'changed' flag
-- Refactor TextImportKVStore so that it doesn't use dirty this.settings hacks
-- Remove the notion of 'id' from items; replace with key
-- Fix mobile bug where on load, Enter key doesn't work because setFocusedActionReceiver is undefined
+- Add press/hold indicators to mobile buttons
 - Fix mobile bug where its possible to use focus buttons to leave focus by spamming 'Up'
-- Fix mobile bug where ctrl/alt/shift hides keyboard
-
-# Unroadmapped features
-- Better (hidden) password prompt
-- Create a SetInterval implementation for the ScriptRunner
-- [devops] Create config-fold-check to fold config files
-- [devops] Add structural readability checker
+- Fix unindent creating duplicate entries
 
 # Version 2.5.1
 - Allow appending imports in the text importer, to allow incremental addition of items
@@ -147,7 +133,6 @@
 - Make contribution guide
 - Extract MVC interface from ScriptingEngine / Workflowish into a template
 - Add github todo-to-issue
-- Add usage guide for self hosting in README
 - Do versioning with tags rather than the current scheme
 - Autogenerate the changelog rather than forcing users to update it manually, 
   but also preserve its utility as a planning space. 
@@ -155,6 +140,7 @@
     changelog.md which keeps all versions in reverse order with newest on top.
 - Add a screenshot in the README to show how it works
 - Create a release flow of the built frontend only
+- Add a premade base document on first start / empty load
 - Push to github
 
 # Version 3.1
@@ -183,4 +169,15 @@
 # Version 4.1 
 - Add a tabbing window manager
 
+# Noncritical technical debt
+- Refactor KVStores so it acts like CoreDataLake in terms of the 'changed' flag
+- Refactor TextImportKVStore so that it doesn't use dirty this.settings hacks
+- Remove the notion of 'id' from items; replace with key
+- Fix mobile bug where on load, Enter key doesn't work because setFocusedActionReceiver is undefined
+
+# Unroadmapped features
+- Better (hidden) password prompt
+- Create a SetInterval implementation for the ScriptRunner
+- [devops] Create config-fold-check to fold config files
+- [devops] Add structural readability checker
 

@@ -12,7 +12,7 @@ import FileNavbarAndDialog from '../Stores/FileDialog';
 import { ScriptingEngineNavbarAndDialog } from '~ScriptingEngine';
 import { KVStoresAndLoadedState } from '~Stores/KVStoreInstances';
 import { BaseStoreDataType, DataAndLoadState } from '~CoreDataLake';
-import { isMobile } from 'react-device-detect';
+import { isMobile } from '~util/isMobile';
 
 export default (props: {
     setKVStores: React.Dispatch<React.SetStateAction<KVStoresAndLoadedState>>,
@@ -20,7 +20,7 @@ export default (props: {
     setData: React.Dispatch<React.SetStateAction<BaseStoreDataType>>,
     dataAndLoadState: DataAndLoadState,
 }) => {
-    const unsavedChangesText = isMobile ? "*" : "Unsaved Changes";
+    const unsavedChangesText = isMobile() ? "*" : "Unsaved Changes";
     return <>
         <ul className="filemenu">
             <li>

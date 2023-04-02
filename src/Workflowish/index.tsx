@@ -3,7 +3,7 @@ import { BaseStoreDataType } from "~CoreDataLake";
 import { makeListActions, TreeNodeArrayGetSetter } from "./controller";
 import Item, { FocusActions, FocusedActionReceiver } from "./Item"
 import { ItemTreeNode, transformData } from "./model"
-import { isMobile } from 'react-device-detect';
+import { isMobile } from '~util/isMobile';
 import { FloatyButtons } from "./FloatyButtons";
 
 export default (props: {
@@ -15,8 +15,11 @@ export default (props: {
         setData: props.setData
     });
     const [focusedActionReceiver, setFocusedActionReceiver] = React.useState<FocusedActionReceiver>({
-        wrappedFunction: () => {
+        keyCommand: () => {
             // Set by children
+        },
+        refocusSelf: () => {
+            // set by children
         }
     });
     const nullSizedArrayForRefs = Array(todoItems.children.length).fill(null);
@@ -36,8 +39,8 @@ export default (props: {
             parentActions={makeListActions({
                 siblingsFocusActions: itemsRefArray,
                 currentSiblingIdx: ii,
-                getSetSiblingArray: (t: TreeNodeArrayGetSetter)=>{
-                    getSetTodoItems((virtualRoot: ItemTreeNode)=>{
+                getSetSiblingArray: (t: TreeNodeArrayGetSetter) => {
+                    getSetTodoItems((virtualRoot: ItemTreeNode) => {
                         const newChildren = t(virtualRoot.children);
                         return {
                             ...virtualRoot,
@@ -52,16 +55,22 @@ export default (props: {
                 parentFocusActions: {
                     triggerFocusFromAbove: topLevelTakeFocus,
                     triggerFocusFromBelow: topLevelTakeFocus,
-                    focusThis: topLevelTakeFocus,
+                    focusThis: () => itemsRefArray.current[ii]?.focusThis(),
                     focusThisEnd: topLevelTakeFocus,
                     focusRecentlyIndentedItem: topLevelTakeFocus,
-                    focusMyNextSibling: topLevelTakeFocus,
+                    focusMyNextSibling: () => {
+                        if (ii < todoItems.children.length - 1) {
+                            itemsRefArray.current[ii + 1]?.focusThis()
+                        } else {
+                            itemsRefArray.current[ii]?.focusThis()
+                        }
+                    },
                 }
             })}
         ></Item >)
     })
     return <div style={{ margin: "10px 5px" }}>
         {itemsList}
-        {isMobile ? <FloatyButtons focusedActionReceiver={focusedActionReceiver}></FloatyButtons> : null}
+        {isMobile() ? <FloatyButtons focusedActionReceiver={focusedActionReceiver}></FloatyButtons> : null}
     </div>
 };

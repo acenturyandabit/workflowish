@@ -117,10 +117,10 @@ export const makeListActions = (props: {
 
             const child = newSiblingArray[props.currentSiblingIdx].children[grandChildIdx];
             newSiblingArray[props.currentSiblingIdx].children.splice(grandChildIdx, 1);
-            newSiblingArray.splice(props.currentSiblingIdx, 0, child);
-
-            child.lastModifiedUnixMillis = Date.now();
             newSiblingArray[props.currentSiblingIdx].lastModifiedUnixMillis = Date.now();
+            
+            newSiblingArray.splice(props.currentSiblingIdx, 0, child);
+            child.lastModifiedUnixMillis = Date.now();
 
             props.siblingsFocusActions.current?.[props.currentSiblingIdx]?.focusThis();
             return newSiblingArray;

@@ -13,7 +13,7 @@ export const FloatyButtons = (props: {
 }) => {
     // code derived from https://developer.mozilla.org/en-US/docs/Web/API/VisualViewport
     const [transformString, setTransformString] = React.useState<string>("");
-    const [, setTristates] = React.useState<FloatyButtonTristates>({
+    const [tristates, setTristates] = React.useState<FloatyButtonTristates>({
         shiftKey: "OFF",
         altKey: "OFF",
         ctrlKey: "OFF",
@@ -47,11 +47,22 @@ export const FloatyButtons = (props: {
             }
         }
     }, [setTransformString])
+    const stateToColor = (state: string) => {
+        const stateBackgroundColorMapping: Record<string, string> = { "ON": "lightblue", "HELD": "blue", "OFF": "" };
+        const stateColorMapping: Record<string, string> = { "ON": "black", "HELD": "white", "OFF": "black" };
+        return {
+            background: stateBackgroundColorMapping[state],
+            color: stateColorMapping[state]
+        };
+    }
+    const restoreFocus = () => {
+        props.focusedActionReceiver.refocusSelf();
+    }
     return <>
         <span className="floatyButtons" style={{ transform: transformString }}>
-            <StateToggleKey _key="Shift" setTristates={setTristates} />
-            <StateToggleKey _key="Ctrl" setTristates={setTristates} />
-            <StateToggleKey _key="Alt" setTristates={setTristates} />
+            <StateToggleKey _key="Shift" sx={stateToColor(tristates["shiftKey"])} restoreFocus={restoreFocus} setTristates={setTristates} />
+            <StateToggleKey _key="Ctrl" sx={stateToColor(tristates["ctrlKey"])} restoreFocus={restoreFocus} setTristates={setTristates} />
+            <StateToggleKey _key="Alt" sx={stateToColor(tristates["altKey"])} restoreFocus={restoreFocus} setTristates={setTristates} />
             <KeyButton
                 _key={"ArrowUp"}
                 text={"Up"}
@@ -82,7 +93,9 @@ export const FloatyButtons = (props: {
 
 const StateToggleKey = (props: {
     _key: string,
+    sx: Record<string, string>
     setTristates: React.Dispatch<React.SetStateAction<FloatyButtonTristates>>
+    restoreFocus: () => void
 }) => {
     const tristateKey = props._key.toLowerCase() + "Key" as typeof tristateSwitches[number];
     const subsequentState = (currentState: typeof tristates[number]) => {
@@ -90,13 +103,16 @@ const StateToggleKey = (props: {
         if (currentIdx == tristates.length - 1) currentIdx = -1;
         return tristates[currentIdx + 1];
     }
-    return <button onClick={() => {
+    return <button style={props.sx} onClick={(evt) => {
         props.setTristates((tristates) => {
             return {
                 ...tristates,
                 [tristateKey]: subsequentState(tristates[tristateKey])
             }
         })
+        props.restoreFocus();
+        evt.preventDefault();
+        return false;
     }}>
         {props._key}
     </button>
@@ -112,7 +128,7 @@ const KeyButton = (props: {
     <button onClick={() => {
         props.setTristates(tristates => {
             const { event, resetTristates } = composeEvent(tristates, props._key);
-            props.focusedActionReceiver.wrappedFunction(event);
+            props.focusedActionReceiver.keyCommand(event);
             return resetTristates;
         })
     }}> {props.text} </button>
@@ -120,7 +136,7 @@ const KeyButton = (props: {
 
 const composeEvent = (tristates: FloatyButtonTristates, key: string): {
     resetTristates: FloatyButtonTristates,
-    event: Parameters<FocusedActionReceiver["wrappedFunction"]>[0]
+    event: Parameters<FocusedActionReceiver["keyCommand"]>[0]
 } => {
     const tristatesAsBoolean: {
         [key in typeof tristateSwitches[number]]?: boolean
@@ -133,7 +149,7 @@ const composeEvent = (tristates: FloatyButtonTristates, key: string): {
             resetTristates[_key] = "OFF";
         }
     }
-    const event: Parameters<FocusedActionReceiver["wrappedFunction"]>[0] = {
+    const event: Parameters<FocusedActionReceiver["keyCommand"]>[0] = {
         key,
         ...tristatesAsBoolean as {
             [key in typeof tristateSwitches[number]]: boolean
