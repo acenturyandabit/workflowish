@@ -1,5 +1,5 @@
 .floatyButtons{
-    position: absolute;
+    position: sticky;
     display: flex;
     left: 0px;
     right: 0px;

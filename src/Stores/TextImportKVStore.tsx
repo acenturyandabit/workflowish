@@ -53,7 +53,7 @@ class TextImportKVStore implements
                 <TextField
                     label="Text to import"
                     multiline
-                    sx={{ mb: 2 }}
+                    sx={{ mb: 2, maxHeight: "30vh", overflow: "auto" }}
                     placeholder="Enter JSON data to import here, then press 'Load'."
                     value={this.settings.outputText}
                     onChange={(evt) => {

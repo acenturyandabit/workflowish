@@ -69,8 +69,14 @@ export default (props: {
             })}
         ></Item >)
     })
-    return <div style={{ margin: "10px 5px" }}>
-        {itemsList}
+    return <div style={{
+        height: "100%",
+        display: "flex",
+        flexDirection: "column"
+    }}>
+        <div style={{ margin: "10px 5px", flex: "1 0 auto" }}>
+            {itemsList}
+        </div>
         {isMobile() ? <FloatyButtons focusedActionReceiver={focusedActionReceiver}></FloatyButtons> : null}
     </div>
 };

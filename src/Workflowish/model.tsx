@@ -82,9 +82,9 @@ const buildTree = (flatItemBlob: FlatItemBlob): ItemTreeNode => {
     } else {
         virtualRoot = makeNewItem();
         virtualRoot.id = "__virtualRoot";
-        for (const orphanedId of orphanedTreeItemCandidates) {
-            virtualRoot.children.push(treeConstructorRecord[orphanedId]);
-        }
+    }
+    for (const orphanedId of orphanedTreeItemCandidates) {
+        if (orphanedId != virtualRoot.id) virtualRoot.children.push(treeConstructorRecord[orphanedId]);
     }
     if (virtualRoot.children.length == 0) {
         virtualRoot.children.push(makeNewItem());

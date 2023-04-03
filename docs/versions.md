@@ -103,7 +103,7 @@
       hierarchy, because if they are duplicated then they're being rendered, which is good
 - Tab to indent also doesn't work, because I missed a lastUpdatedMillis
 
-# (Current) Version 2.5
+# Version 2.5
 `The scripting engine version`
 - Fix nothing shows up on clean start
 - Create a popup scripting engine in the file menu
@@ -116,7 +116,10 @@
 - Fix mobile bug where its possible to use focus buttons to leave focus by spamming 'Up'
 - Fix unindent creating duplicate entries
 
-# Version 2.5.1
+# (Current) Version 2.5.1
+`Support for huge files`
+- Old polymorph upgrade script
+- Fix floaty button positioning for large amounts of items
 - Allow appending imports in the text importer, to allow incremental addition of items
 
 # Version 2.6
@@ -126,7 +129,6 @@
 # Version 2.7
 `The plays nicely with other software version`
 - Context menu export this-and-siblings-and-children as bullet points
-- Old polymorph upgrade script
 
 # Version 2.7
 `The Github release version`
@@ -180,4 +182,3 @@
 - Create a SetInterval implementation for the ScriptRunner
 - [devops] Create config-fold-check to fold config files
 - [devops] Add structural readability checker
-
