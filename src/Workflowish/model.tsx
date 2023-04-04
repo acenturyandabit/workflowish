@@ -1,6 +1,6 @@
 import * as React from "react";
 import { BaseItemType, BaseStoreDataType, makeNewUniqueKey, setToDeleted } from "~CoreDataLake";
-import { SearchOptions } from "./SearchBar";
+import { SearchOptions } from "./Subcomponents/SearchBar";
 export type ItemTreeNode = {
     lastModifiedUnixMillis: number
     id: string,

@@ -140,3 +140,28 @@ export const makeListActions = (props: {
     },
     getSetSiblingArray: props.getSetSiblingArray
 });
+
+export type FocusedActionReceiver =
+    {
+        // wrapping required because of the way setState interprets a function - cannot pass a function directly
+        keyCommand: (
+            evt: {
+                key: string,
+                shiftKey: boolean,
+                altKey: boolean,
+                ctrlKey: boolean,
+                metaKey: boolean,
+                preventDefault: () => void
+            }
+        ) => void,
+        refocusSelf: () => void,
+    };
+
+export const dummyFocusedActionReciever = {
+    keyCommand: () => {
+        // Set by children
+    },
+    refocusSelf: () => {
+        // set by children
+    }
+}

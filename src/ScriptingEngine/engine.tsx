@@ -10,7 +10,8 @@ export const ScriptEngineInstance = (props: {
     setData: React.Dispatch<React.SetStateAction<BaseStoreDataType>>
 }) => {
     const handlers: UserScriptHandles | undefined = React.useMemo(() => {
-        if (props.lastActivateTime) {
+        const userHasPressedRunButton = (props.lastActivateTime != undefined);
+        if (userHasPressedRunButton) {
             return getHandlersFromUserScript({
                 script: props.script
             })

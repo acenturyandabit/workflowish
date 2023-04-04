@@ -129,9 +129,11 @@
 `The plays nicely with other software version`
 - Context menu that exports the current node and its siblings and their children as bullet points to the clipboard
 - scriptRunner: Add an easy way to determine items' parent elements
+  - Press a modifier key to view item IDs, in support of this feature
+- Allow expanding by tapping the arrow bullet on phone
 
 # Version 2.8
-`The Github release version`
+`The up-to-date dev practices version`
 - Do versioning with tags rather than the current scheme
 - Autogenerate the changelog rather than forcing users to update it manually, 
   but also preserve its utility as a planning space. 
@@ -140,32 +142,32 @@
   - turn versions.md into roadmap.js, then use comments to seed todo-to-issue 
   - Make a local script that automatically creates changelogs given commits and tags
     - latest + last tagged version are checked and updated; everything else is mutable
+
+# Version 2.9
+`The symlink version`
+- Add Symlinks
+- them symlink to an item ID.
+- Allow scripting engine to arbitrarily add and delete items; and create symlinks.
+
+
+# Version 3.0
+`The structural refactor`
+- Put stuff in its right place
+
+# Version 3.1
+`The Github release version`
 - Add a premade base document on first start / empty load
 - Add a screenshot in the README to show how it works
 - Push to github
 - Add github todo-to-issue
 - Create a github release flow of the built frontend only
-
-# Version 2.9
-`The symlink version`
-- Add Symlinks
-- Press a modifier key to view item IDs
-- them symlink to an item ID.
-- Allow scripting engine to arbitrarily add and delete items; and create symlinks.
-
-# Version 3.0
-`The contributors welcome version`
 - Make contribution guide
 - Extract MVC interface from ScriptingEngine / Workflowish into a template
 - Add something that automatically credits non-acenturyandabit contributors
 
-# Version 3.1
-`The fix mobile bugs that annoy me version`
-- Allow expanding by tapping the arrow bullet on phone
-
 # I probably won't do the next few because I'll be satisfied with using it for day to day stuff.
 
-# Version 3.1
+# Version 3.2
 `The multifile version`
 - [FIX] load button in file dialog actually merges with data lake not overwrites
 - Add an open different files dialog
@@ -173,7 +175,7 @@
 - Recent documents should show on open file menu
 - Visiting site with blank URL should show open file dialog
 
-# Version 3.1.1
+# Version 3.2.1
 - Visiting site with blank URL should load last opened document
 - Little popup from savesources to give user extra peace of mind when ctrl-s is pressed
 - Alt + Enter will split a line down with the remaining text after the caret. Alt + Shift + Enter will make it a child.
@@ -184,7 +186,7 @@
 - Make load button on savesources overwrite existing coredatalake rather than merge
   - Allow appending imports in the text importer with a sync button, to allow incremental addition of items
 
-# Version 4.1 
+# Version 4.0 
 - Add a tabbing / window manager (back to what polymorph _really_ was at the very beginning)
 
 # Noncritical technical debt

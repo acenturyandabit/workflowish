@@ -1,9 +1,9 @@
 import * as React from "react";
 import ContentEditable, { ContentEditableEvent } from 'react-contenteditable'
 import sanitizeHtml from "sanitize-html"
-import { ControllerActions, makeListActions, TreeNodeArrayGetSetter } from "./controller";
+import { ControllerActions, FocusedActionReceiver, makeListActions, TreeNodeArrayGetSetter } from "./controller";
 import { ItemTreeNode, makeNewItem } from "./model";
-import { CONTEXT_MENU_ID } from "./ContextMenu";
+import { CONTEXT_MENU_ID } from "./Subcomponents/ContextMenu";
 import { useContextMenu } from 'react-contexify';
 
 export type FocusActions = {
@@ -14,22 +14,6 @@ export type FocusActions = {
     focusRecentlyIndentedItem: () => void;
     focusMyNextSibling: () => void;
 }
-
-export type FocusedActionReceiver =
-    {
-        // wrapping required because of the way setState interprets a function - cannot pass a function directly
-        keyCommand: (
-            evt: {
-                key: string,
-                shiftKey: boolean,
-                altKey: boolean,
-                ctrlKey: boolean,
-                metaKey: boolean,
-                preventDefault: () => void
-            }
-        ) => void,
-        refocusSelf: () => void,
-    };
 
 const Item = (props: {
     emptyList?: boolean,
@@ -219,7 +203,7 @@ const Item = (props: {
         event.preventDefault = () => {
             // prevent default context menu from being hidden
         }
-        props.parentActions.getSetSiblingArray((siblings: ItemTreeNode[])=>{
+        props.parentActions.getSetSiblingArray((siblings: ItemTreeNode[]) => {
             show({ event, props: siblings })
             return siblings;
         })

@@ -1,12 +1,12 @@
 import * as React from "react";
 import { BaseStoreDataType } from "~CoreDataLake";
-import { makeListActions, TreeNodeArrayGetSetter } from "./controller";
-import Item, { FocusActions, FocusedActionReceiver } from "./Item"
+import { FocusedActionReceiver, dummyFocusedActionReciever, makeListActions, TreeNodeArrayGetSetter } from "./controller";
+import Item, { FocusActions } from "./Item"
 import { ItemTreeNode, transformData } from "./model"
 import { isMobile } from '~util/isMobile';
-import { FloatyButtons } from "./FloatyButtons";
-import SearchBar, { searchTransform } from "./SearchBar";
-import ContextMenu, { CONTEXT_MENU_ID } from "./ContextMenu";
+import { FloatyButtons } from "./Subcomponents/FloatyButtons";
+import SearchBar, { searchTransform } from "./Subcomponents/SearchBar";
+import ContextMenu, { CONTEXT_MENU_ID } from "./Subcomponents/ContextMenu";
 
 
 export default (props: {
@@ -20,33 +20,50 @@ export default (props: {
     });
     const todoItems = searchTransform(unfilteredTodoItems, searchText);
 
-    const [focusedActionReceiver, setFocusedActionReceiver] = React.useState<FocusedActionReceiver>({
-        keyCommand: () => {
-            // Set by children
-        },
-        refocusSelf: () => {
-            // set by children
-        }
-    });
-    const nullSizedArrayForRefs = Array(todoItems.children.length).fill(null);
-    const itemsRefArray = React.useRef<Array<FocusActions | null>>(nullSizedArrayForRefs);
+    const [focusedActionReceiver, setFocusedActionReceiver] = React.useState<FocusedActionReceiver>(dummyFocusedActionReciever);
+    return <div style={{height: "100%",display: "flex",flexDirection: "column"}}>
+        <SearchBar
+            searchText={searchText}
+            setSearchText={setSearchText}
+        ></SearchBar>
+        <ContextMenu
+            menuId={CONTEXT_MENU_ID}
+        ></ContextMenu>
+        <div style={{ margin: "10px 5px", flex: "1 0 auto" }}>
+            <ItemsList
+                todoItems={todoItems}
+                setFocusedActionReceiver={setFocusedActionReceiver}
+                getSetTodoItems={getSetTodoItems}
+            ></ItemsList>
+        </div>
+        {isMobile() ? <FloatyButtons focusedActionReceiver={focusedActionReceiver}></FloatyButtons> : null}
+    </div>
+};
 
+const ItemsList = (
+    props: {
+        todoItems: ItemTreeNode,
+        setFocusedActionReceiver: React.Dispatch<React.SetStateAction<FocusedActionReceiver>>,
+        getSetTodoItems: React.Dispatch<React.SetStateAction<ItemTreeNode>>
+    }
+) => {
+    const nullSizedArrayForRefs = Array(props.todoItems.children.length).fill(null);
     const topLevelTakeFocus = () => {
         // Top level cannot take focus
     }
-
-    const itemsList = todoItems.children.map((item, ii) => {
+    const itemsRefArray = React.useRef<Array<FocusActions | null>>(nullSizedArrayForRefs);
+    return <>{props.todoItems.children.map((item, ii) => {
         return (<Item
             key={ii}
-            emptyList={todoItems.children.length == 1 && item.data == ""}
+            emptyList={props.todoItems.children.length == 1 && item.data == ""}
             item={item}
             pushRef={(ref: FocusActions) => itemsRefArray.current[ii] = ref}
-            setFocusedActionReceiver={setFocusedActionReceiver}
+            setFocusedActionReceiver={props.setFocusedActionReceiver}
             parentActions={makeListActions({
                 siblingsFocusActions: itemsRefArray,
                 currentSiblingIdx: ii,
                 getSetSiblingArray: (t: TreeNodeArrayGetSetter) => {
-                    getSetTodoItems((virtualRoot: ItemTreeNode) => {
+                    props.getSetTodoItems((virtualRoot: ItemTreeNode) => {
                         const newChildren = t(virtualRoot.children);
                         return {
                             ...virtualRoot,
@@ -65,7 +82,7 @@ export default (props: {
                     focusThisEnd: topLevelTakeFocus,
                     focusRecentlyIndentedItem: topLevelTakeFocus,
                     focusMyNextSibling: () => {
-                        if (ii < todoItems.children.length - 1) {
+                        if (ii < props.todoItems.children.length - 1) {
                             itemsRefArray.current[ii + 1]?.focusThis()
                         } else {
                             itemsRefArray.current[ii]?.focusThis()
@@ -74,25 +91,5 @@ export default (props: {
                 }
             })}
         ></Item >)
-    })
-
-
-    return <div style={{
-        height: "100%",
-        display: "flex",
-        flexDirection: "column"
-    }}
-    >
-        <SearchBar
-            searchText={searchText}
-            setSearchText={setSearchText}
-        ></SearchBar>
-        <ContextMenu
-            menuId={CONTEXT_MENU_ID}
-        ></ContextMenu>
-        <div style={{ margin: "10px 5px", flex: "1 0 auto" }}>
-            {itemsList}
-        </div>
-        {isMobile() ? <FloatyButtons focusedActionReceiver={focusedActionReceiver}></FloatyButtons> : null}
-    </div>
-};
+    })}</>
+}

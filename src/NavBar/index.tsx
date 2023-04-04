@@ -7,7 +7,7 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 
 import "./index.css"
-import HelpDocument from '~Workflowish/HelpDocument';
+import HelpDocument from '~Workflowish/Subcomponents/HelpDocument';
 import FileNavbarAndDialog from '../Stores/FileDialog';
 import { ScriptingEngineNavbarAndDialog } from '~ScriptingEngine';
 import { KVStoresAndLoadedState } from '~Stores/KVStoreInstances';

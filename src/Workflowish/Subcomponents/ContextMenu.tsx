@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Menu, Item } from 'react-contexify';
 import 'react-contexify/ReactContexify.css';
 import './ContextMenu.css'
-import { ItemTreeNode } from './model';
+import { ItemTreeNode } from '../model';
 
 export default (props: {
     menuId: string
