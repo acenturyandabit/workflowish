@@ -29,7 +29,8 @@ it('Renders an item', () => {
                 lastModifiedUnixMillis: 0,
                 data: "Hello world!",
                 children: [],
-                collapsed: true
+                collapsed: true,
+                searchHighlight: "NONE"
             }}
             pushRef={mockEmptyFunction}
             parentActions={dummyParentActions}

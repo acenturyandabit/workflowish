@@ -61,11 +61,15 @@ const Item = (props: {
             data: sanitizeHtml(evt.currentTarget.innerHTML, sanitizeConf)
         }))
     }, [props.parentActions])
-    const bulletPoint: React.ReactElement = <span style={{ paddingLeft: props.item.children.length ? "0px" : "0.2em" }}>{(() => {
+    const shouldUncollapse = !props.item.collapsed || props.item.searchHighlight == "SEARCH_UNCOLLAPSE";
+    const bulletPoint: React.ReactElement = <span style={{
+        paddingLeft: props.item.children.length ? "0px" : "0.2em",
+        color: props.item.searchHighlight == "SEARCH_UNCOLLAPSE" ? "orange" : "white"
+    }}>{(() => {
         if (props.emptyList) return ">";
         else if (props.item.children.length) {
-            if (props.item.collapsed) return "\u25b6";
-            else return "\u25bc";
+            if (shouldUncollapse) return "\u25bc";
+            else return "\u25b6";
         } else {
             return "\u25CF";
         }
@@ -148,7 +152,7 @@ const Item = (props: {
         },
         triggerFocusFromBelow: () => {
             const currentChildItemsRef = itemsRefArray.current;
-            if (!props.item.collapsed && currentChildItemsRef && currentChildItemsRef.length) {
+            if (shouldUncollapse && currentChildItemsRef && currentChildItemsRef.length) {
                 currentChildItemsRef[currentChildItemsRef.length - 1]?.triggerFocusFromBelow();
             } else {
                 focusThis()
@@ -206,7 +210,11 @@ const Item = (props: {
         }
         , []);
     return <span style={{ display: "flex", flexDirection: "column", width: "100%" }}>
-        <span style={{ display: "inline-flex", width: "100%" }}>
+        <span style={{ 
+            display: "inline-flex", 
+            width: "100%",
+            background: props.item.searchHighlight=="SEARCH_TARGET" ? "blue" : ""
+             }}>
             {bulletPoint} &nbsp;<ContentEditable
                 innerRef={memoizedInnerRef}
                 html={props.item.data}
@@ -216,7 +224,7 @@ const Item = (props: {
                 style={{ flex: "1 1 auto" }}
             ></ContentEditable>
         </span>
-        {props.item.collapsed ? null : childItems}
+        {(shouldUncollapse) ? childItems : null}
     </span >
 }
 

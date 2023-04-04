@@ -5,15 +5,20 @@ import Item, { FocusActions, FocusedActionReceiver } from "./Item"
 import { ItemTreeNode, transformData } from "./model"
 import { isMobile } from '~util/isMobile';
 import { FloatyButtons } from "./FloatyButtons";
+import SearchBar, { searchTransform } from "./SearchBar";
 
 export default (props: {
     data: BaseStoreDataType,
-    setData: React.Dispatch<React.SetStateAction<BaseStoreDataType>>
+    updateData: React.Dispatch<React.SetStateAction<BaseStoreDataType>>
 }) => {
-    const [todoItems, getSetTodoItems] = transformData({
+    const [searchText, setSearchText] = React.useState<string>("");
+    const [unfilteredTodoItems, getSetTodoItems] = transformData({
         data: props.data,
-        setData: props.setData
+        updateData: props.updateData,
     });
+
+    const todoItems = searchTransform(unfilteredTodoItems, searchText);
+
     const [focusedActionReceiver, setFocusedActionReceiver] = React.useState<FocusedActionReceiver>({
         keyCommand: () => {
             // Set by children
@@ -74,6 +79,10 @@ export default (props: {
         display: "flex",
         flexDirection: "column"
     }}>
+        <SearchBar
+            searchText={searchText}
+            setSearchText={setSearchText}
+        ></SearchBar>
         <div style={{ margin: "10px 5px", flex: "1 0 auto" }}>
             {itemsList}
         </div>

@@ -1,11 +1,13 @@
 import * as React from "react";
 import { BaseItemType, BaseStoreDataType, makeNewUniqueKey, setToDeleted } from "~CoreDataLake";
+import { SearchOptions } from "./SearchBar";
 export type ItemTreeNode = {
     lastModifiedUnixMillis: number
     id: string,
     data: string,
     children: ItemTreeNode[],
     collapsed: boolean,
+    searchHighlight: SearchOptions,
     markedForCleanup?: boolean
 }
 
@@ -23,20 +25,22 @@ export const makeNewItem = (): ItemTreeNode => ({
     lastModifiedUnixMillis: Date.now(),
     data: "",
     children: [],
+    searchHighlight: "NONE",
     collapsed: false
 });
 
 export const transformData = (props: {
     data: BaseStoreDataType,
-    setData: React.Dispatch<React.SetStateAction<BaseStoreDataType>>
+    updateData: React.Dispatch<React.SetStateAction<BaseStoreDataType>>,
 }): [ItemTreeNode,
         React.Dispatch<React.SetStateAction<ItemTreeNode>>] => {
     const currentTodoItems = buildTree(props.data as FlatItemBlob);
     const setTodoItems = (todoItems: ItemTreeNode |
         ((currentTodoItems: ItemTreeNode) => ItemTreeNode)
     ) => {
-        props.setData((oldData) => {
-            let todoItemsToSet: ItemTreeNode
+        props.updateData((oldData) => {
+            // TODO: Make Workflowish not have to update the entire tree.
+            let todoItemsToSet: ItemTreeNode;
             if (todoItems instanceof Function) {
                 todoItemsToSet = todoItems(buildTree(oldData as FlatItemBlob))
             } else {
@@ -62,6 +66,7 @@ const buildTree = (flatItemBlob: FlatItemBlob): ItemTreeNode => {
                 lastModifiedUnixMillis: flatItemBlob[nodeId].lastModifiedUnixMillis,
                 data: flatItemBlob[nodeId].data,
                 children: [],
+                searchHighlight:"NONE",
                 collapsed: flatItemBlob[nodeId].collapsed
             }
         }

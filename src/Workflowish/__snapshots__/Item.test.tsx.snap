@@ -13,6 +13,7 @@ exports[`Renders an item 1`] = `
   <span
     style={
       {
+        "background": "",
         "display": "inline-flex",
         "width": "100%",
       }
@@ -21,6 +22,7 @@ exports[`Renders an item 1`] = `
     <span
       style={
         {
+          "color": "white",
           "paddingLeft": "0.2em",
         }
       }

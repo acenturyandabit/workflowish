@@ -9,7 +9,7 @@ import Workflowish from "~Workflowish";
 export default () => {
 
   const [kvStores, setKVStores] = useKVStoresList();
-  const [dataAndLoadState, setData, doSave] = useCoreDataLake(kvStores);
+  const [dataAndLoadState, updateData, doSave] = useCoreDataLake(kvStores);
 
   React.useEffect(() => {
     const keydownListener = (e: KeyboardEvent) => {
@@ -31,10 +31,10 @@ export default () => {
       kvStores={kvStores}
       setKVStores={setKVStores}
       dataAndLoadState={dataAndLoadState}
-      setData={setData}
+      setData={updateData}
     ></NavBar>
     <div className="viewContainer">
-      <Workflowish data={dataAndLoadState.data} setData={setData}></Workflowish>
+      <Workflowish data={dataAndLoadState.data} updateData={updateData}></Workflowish>
     </div>
   </div>
 };

@@ -91,7 +91,7 @@ export const useCoreDataLake = (kvStores: KVStoresAndLoadedState): [
         return () => clearTimeout(autoSaveThrottleTimeout);
     }, [kvStores, dataAndLoadState, doSave])
 
-    const setData = (data: BaseStoreDataType |
+    const updateData = (data: BaseStoreDataType |
         ((currentData: BaseStoreDataType) => BaseStoreDataType)) => {
         setDataAndLoadState(olddataAndLoadState => {
             let dataToSet: BaseStoreDataType;
@@ -108,7 +108,7 @@ export const useCoreDataLake = (kvStores: KVStoresAndLoadedState): [
             }
         })
     }
-    return [dataAndLoadState, setData, doSave]
+    return [dataAndLoadState, updateData, doSave]
 }
 
 const resolveAllDocuments = (documents: BaseStoreDataType[]): BaseStoreDataType => {
