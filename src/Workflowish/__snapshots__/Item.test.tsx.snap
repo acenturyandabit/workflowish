@@ -11,6 +11,7 @@ exports[`Renders an item 1`] = `
   }
 >
   <span
+    onContextMenu={[Function]}
     style={
       {
         "background": "",

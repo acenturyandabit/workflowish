@@ -4,5 +4,8 @@ const { compilerOptions } = require('./tsconfig');
 module.exports = {
   preset: 'ts-jest',
   testEnvironment: 'node',
-  moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths, {prefix: "<rootDir>/src"}),
+  moduleNameMapper: {
+    '\\.(css|less)$': '<rootDir>/src/util/jest_css_placeholder.tsx',
+    ...pathsToModuleNameMapper(compilerOptions.paths, { prefix: "<rootDir>/src" })
+  },
 };

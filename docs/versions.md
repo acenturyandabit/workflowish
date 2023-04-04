@@ -121,13 +121,12 @@
 - Old polymorph upgrade script
 - Fix floaty button positioning for large amounts of items
 
-# (Current) Version 2.6
+# Version 2.6
 `The Search version`
 - Add search
 
-# Version 2.7
+# (Current) Version 2.7
 `The plays nicely with other software version`
-- Allow appending imports in the text importer, to allow incremental addition of items
 - Context menu that exports the current node and its siblings and their children as bullet points to the clipboard
 - scriptRunner: Add an easy way to determine items' parent elements
 
@@ -181,6 +180,9 @@
 - Pressing Enter will either insert an item before OR after the current element, based on the current caret index (front or back)
 - Scripting: Add a console
 - Warn if unsaved before closing
+
+- Make load button on savesources overwrite existing coredatalake rather than merge
+  - Allow appending imports in the text importer with a sync button, to allow incremental addition of items
 
 # Version 4.1 
 - Add a tabbing / window manager (back to what polymorph _really_ was at the very beginning)

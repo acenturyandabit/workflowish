@@ -15,7 +15,8 @@ export type ControllerActions = {
     putAfterNext: () => void
     indentSelf: () => void,
     unindentSelf: () => void,
-    unindentGrandchild: (grandChildIdx: number) => void
+    unindentGrandchild: (grandChildIdx: number) => void,
+    getSetSiblingArray: (t: TreeNodeArrayGetSetter) => void
 }
 
 export const makeListActions = (props: {
@@ -118,7 +119,7 @@ export const makeListActions = (props: {
             const child = newSiblingArray[props.currentSiblingIdx].children[grandChildIdx];
             newSiblingArray[props.currentSiblingIdx].children.splice(grandChildIdx, 1);
             newSiblingArray[props.currentSiblingIdx].lastModifiedUnixMillis = Date.now();
-            
+
             newSiblingArray.splice(props.currentSiblingIdx, 0, child);
             child.lastModifiedUnixMillis = Date.now();
 
@@ -136,5 +137,6 @@ export const makeListActions = (props: {
             }
             return newSiblingArray;
         })
-    }
+    },
+    getSetSiblingArray: props.getSetSiblingArray
 });

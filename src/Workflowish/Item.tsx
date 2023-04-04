@@ -3,6 +3,8 @@ import ContentEditable, { ContentEditableEvent } from 'react-contenteditable'
 import sanitizeHtml from "sanitize-html"
 import { ControllerActions, makeListActions, TreeNodeArrayGetSetter } from "./controller";
 import { ItemTreeNode, makeNewItem } from "./model";
+import { CONTEXT_MENU_ID } from "./ContextMenu";
+import { useContextMenu } from 'react-contexify';
 
 export type FocusActions = {
     triggerFocusFromAbove: () => void;
@@ -26,7 +28,7 @@ export type FocusedActionReceiver =
                 preventDefault: () => void
             }
         ) => void,
-        refocusSelf: () => void
+        refocusSelf: () => void,
     };
 
 const Item = (props: {
@@ -138,7 +140,7 @@ const Item = (props: {
                 }
             }
         },
-        refocusSelf: focusThis
+        refocusSelf: focusThis,
     }
     const onKeyDown = (evt: React.KeyboardEvent) => {
         // TODO: inline this method
@@ -209,12 +211,28 @@ const Item = (props: {
             thisContentEditable.current = contenteditableElement;
         }
         , []);
+
+    const { show } = useContextMenu({
+        id: CONTEXT_MENU_ID,
+    });
+    const contextEventHandler: React.MouseEventHandler<HTMLDivElement> = (event) => {
+        event.preventDefault = () => {
+            // prevent default context menu from being hidden
+        }
+        props.parentActions.getSetSiblingArray((siblings: ItemTreeNode[])=>{
+            show({ event, props: siblings })
+            return siblings;
+        })
+    }
+
     return <span style={{ display: "flex", flexDirection: "column", width: "100%" }}>
-        <span style={{ 
-            display: "inline-flex", 
+        <span style={{
+            display: "inline-flex",
             width: "100%",
-            background: props.item.searchHighlight=="SEARCH_TARGET" ? "blue" : ""
-             }}>
+            background: props.item.searchHighlight == "SEARCH_TARGET" ? "blue" : ""
+        }}
+            onContextMenu={contextEventHandler}
+        >
             {bulletPoint} &nbsp;<ContentEditable
                 innerRef={memoizedInnerRef}
                 html={props.item.data}

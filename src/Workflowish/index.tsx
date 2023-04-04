@@ -6,6 +6,8 @@ import { ItemTreeNode, transformData } from "./model"
 import { isMobile } from '~util/isMobile';
 import { FloatyButtons } from "./FloatyButtons";
 import SearchBar, { searchTransform } from "./SearchBar";
+import ContextMenu, { CONTEXT_MENU_ID } from "./ContextMenu";
+
 
 export default (props: {
     data: BaseStoreDataType,
@@ -16,7 +18,6 @@ export default (props: {
         data: props.data,
         updateData: props.updateData,
     });
-
     const todoItems = searchTransform(unfilteredTodoItems, searchText);
 
     const [focusedActionReceiver, setFocusedActionReceiver] = React.useState<FocusedActionReceiver>({
@@ -33,8 +34,8 @@ export default (props: {
     const topLevelTakeFocus = () => {
         // Top level cannot take focus
     }
-    const itemsList = todoItems.children.map((item, ii) => {
 
+    const itemsList = todoItems.children.map((item, ii) => {
         return (<Item
             key={ii}
             emptyList={todoItems.children.length == 1 && item.data == ""}
@@ -74,15 +75,21 @@ export default (props: {
             })}
         ></Item >)
     })
+
+
     return <div style={{
         height: "100%",
         display: "flex",
         flexDirection: "column"
-    }}>
+    }}
+    >
         <SearchBar
             searchText={searchText}
             setSearchText={setSearchText}
         ></SearchBar>
+        <ContextMenu
+            menuId={CONTEXT_MENU_ID}
+        ></ContextMenu>
         <div style={{ margin: "10px 5px", flex: "1 0 auto" }}>
             {itemsList}
         </div>
