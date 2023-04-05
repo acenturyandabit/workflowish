@@ -1,3 +1,6 @@
+# Latest 
+- New Commit System
+
 # Version 2.7
 `The plays nicely with other software version`
 - Context menu that exports the current node and its siblings and their children as bullet points to the clipboard

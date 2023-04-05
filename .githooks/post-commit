@@ -1,0 +1,7 @@
+#!/bin/bash
+# Commit changelog change from prepare-commit-msg
+
+if (git status --porcelain=v1 | grep "docs/changelog.md"); then
+    git add docs/changelog.md
+    git commit --amend -C HEAD --no-verify
+fi

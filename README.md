@@ -29,18 +29,15 @@ See docs/versions.md.
 4. Navigate to localhost:5174.
 
 ## Developing
+This repository uses git hooks to ensure some code quality standards and provide test automation.
+
 ### Roadmap and issue tracking
-My personal roadmap is in `versions.md`. You may pick any unfinished issue you would like to work on, from any version number.
+My personal roadmap is in `roadmap.md`. You may pick any unfinished issue you would like to work on, from any version number.
+
+`changelog.md` is automatically maintained by git hooks.
 
 ### Code style
 Upon `npm run`, this repository will install some githooks which automatically lint your code before you commit. These will be checked by CICD in future. The tests are:
-- Correct (incremented) version number, compared to previous version
-- Corresponding correct 'Current' flag in the `docs/versions.md` file so we have a good changelog.
-    - Philosophy: Fast commits = good 
-    - TODO: Branch versioning should only apply to master branch commits
 - eslint
 - jest testing
-
-## Release process
-- Bump `docs/versions.md`
-- Commit messages should be like: `Version x.x: <message>`
+- At least 10 letters and first letter capital commit messages.
