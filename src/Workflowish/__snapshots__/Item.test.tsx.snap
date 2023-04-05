@@ -21,6 +21,7 @@ exports[`Renders an item 1`] = `
     }
   >
     <span
+      onClick={[Function]}
       style={
         {
           "color": "white",

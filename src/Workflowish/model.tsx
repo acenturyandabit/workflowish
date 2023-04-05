@@ -8,14 +8,16 @@ export type ItemTreeNode = {
     children: ItemTreeNode[],
     collapsed: boolean,
     searchHighlight: SearchOptions,
-    markedForCleanup?: boolean
+    markedForCleanup?: boolean,
+    symlinkedNode?: ItemTreeNode
 }
 
-type FlatItemData = {
+export type FlatItemData = {
     lastModifiedUnixMillis: number
     data: string,
     children: string[],
-    collapsed: boolean
+    collapsed: boolean,
+    lastRememberedParent: string
 }
 
 type FlatItemBlob = Record<string, FlatItemData>;
@@ -66,7 +68,7 @@ const buildTree = (flatItemBlob: FlatItemBlob): ItemTreeNode => {
                 lastModifiedUnixMillis: flatItemBlob[nodeId].lastModifiedUnixMillis,
                 data: flatItemBlob[nodeId].data,
                 children: [],
-                searchHighlight:"NONE",
+                searchHighlight: "NONE",
                 collapsed: flatItemBlob[nodeId].collapsed
             }
         }
@@ -108,16 +110,18 @@ const isValidTreeObject = (item: BaseItemType) => {
 type Queue<T> = Array<T>;
 const fromTree = (root: ItemTreeNode): FlatItemBlob => {
     const flatBlob: FlatItemBlob = {};
+    const lastRememberedParent: Record<string, string> = {};
     const nodeStack: Queue<ItemTreeNode> = [root];
     while (nodeStack.length) {
         const top = nodeStack.shift()
         if (top) {
             const noDuplicateChildren = top.children.filter(child => {
-                if (child.id in flatBlob) {
+                if (child.id in lastRememberedParent) {
                     // Log an error and ignore the duplicate
                     console.error(`Duplicate node ${top.id}! Removing from this parent and moving on.`);
                     return false;
                 } else {
+                    lastRememberedParent[child.id] = top.id;
                     nodeStack.push({ ...child, markedForCleanup: top.markedForCleanup || child.markedForCleanup })
                     return true;
                 }
@@ -130,7 +134,8 @@ const fromTree = (root: ItemTreeNode): FlatItemBlob => {
                 lastModifiedUnixMillis: top.lastModifiedUnixMillis,
                 data: top.data,
                 collapsed: top.collapsed,
-                children: top.children.map(child => child.id)
+                children: top.children.map(child => child.id),
+                lastRememberedParent: lastRememberedParent[top.id]
             }
             if (top.markedForCleanup) {
                 setToDeleted(flatBlob[top.id]);

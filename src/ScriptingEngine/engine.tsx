@@ -3,17 +3,20 @@ import * as React from 'react';
 import { BaseItemType } from "~CoreDataLake";
 import getDiffsAndResolvedItems from "~CoreDataLake/getResolvedItems";
 import stringify from 'json-stable-stringify';
+import { FlatItemData } from "~Workflowish/model";
 export const ScriptEngineInstance = (props: {
     script: string,
     lastActivateTime?: number,
     data: BaseStoreDataType,
     setData: React.Dispatch<React.SetStateAction<BaseStoreDataType>>
 }) => {
+    const [, setStoredRecords] = React.useState(props.data);
     const handlers: UserScriptHandles | undefined = React.useMemo(() => {
         const userHasPressedRunButton = (props.lastActivateTime != undefined);
         if (userHasPressedRunButton) {
             return getHandlersFromUserScript({
-                script: props.script
+                script: props.script,
+                setData: setStoredRecords
             })
         } else {
             return undefined
@@ -21,7 +24,6 @@ export const ScriptEngineInstance = (props: {
     }, [
         props.lastActivateTime
     ])
-    const [, setStoredRecords] = React.useState(props.data);
     React.useEffect(() => {
         if (handlers) {
             setStoredRecords((storedRecords) => {
@@ -42,6 +44,8 @@ export const ScriptEngineInstance = (props: {
                 }
                 return newData;
             })
+        }else{
+            setStoredRecords(props.data);
         }
     }, [props.data])
     return <></>
@@ -55,6 +59,7 @@ type UpdateItemHandler = (id: string, data: BaseItemType) => void;
 
 const getHandlersFromUserScript = (props: {
     script: string,
+    setData: React.Dispatch<React.SetStateAction<BaseStoreDataType>>
 }): UserScriptHandles => {
     let updatesStash: BaseStoreDataType = {};
     const handlerArrays = {
@@ -87,6 +92,30 @@ const getHandlersFromUserScript = (props: {
                 updatesStash[id] = {
                     ...data
                 }
+            }
+        },
+        workflowish: {
+            reparentItem: (id: string, newParent: string) => {
+                props.setData((data) => {
+                    const childItem = data[id] as FlatItemData;
+                    if (childItem) {
+                        const lastParent = childItem.lastRememberedParent;
+                        if (lastParent != newParent){
+                            if (lastParent) {
+                                const oldParentItem = JSON.parse(JSON.stringify(data[lastParent])) as FlatItemData
+                                oldParentItem.children.splice(oldParentItem.children.indexOf(id), 1);
+                                updatesStash[lastParent] = oldParentItem;
+                            }
+                            const currentNewParentItem = data[newParent] as FlatItemData;
+                            if (currentNewParentItem && currentNewParentItem.children) {
+                                const newParentItem = JSON.parse(JSON.stringify(currentNewParentItem)) as FlatItemData;
+                                newParentItem.children.push(id);
+                                updatesStash[newParent] = newParentItem;
+                            }
+                        }
+                    }
+                    return data;
+                })
             }
         }
     }

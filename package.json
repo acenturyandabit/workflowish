@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "description": "",
   "scripts": {
+    "prestart": "node-git-hooks",
     "start": "vite",
     "start-backend": "tsx backend-src/index.ts",
     "build": "vite build --outDir backend-src/static",
@@ -11,8 +12,7 @@
     "typewatch": "tsc --noEmit --watch",
     "test-continuous": "jest --watch",
     "test": "jest",
-    "lint": "eslint . --ext .ts,.tsx --max-warnings=0",
-    "prestart": "node-git-hooks"
+    "lint": "eslint . --ext .ts,.tsx --max-warnings=0"
   },
   "license": "MIT",
   "dependencies": {

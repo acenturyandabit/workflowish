@@ -3,7 +3,7 @@ import ContentEditable, { ContentEditableEvent } from 'react-contenteditable'
 import sanitizeHtml from "sanitize-html"
 import { ControllerActions, FocusedActionReceiver, makeListActions, TreeNodeArrayGetSetter } from "./controller";
 import { ItemTreeNode, makeNewItem } from "./model";
-import { CONTEXT_MENU_ID } from "./Subcomponents/ContextMenu";
+import { ITEM_CONTEXT_MENU_ID, SIDECLIP_CONTEXT_MENU_ID } from "./Subcomponents/ContextMenu";
 import { useContextMenu } from 'react-contexify';
 
 export type FocusActions = {
@@ -18,6 +18,7 @@ export type FocusActions = {
 const Item = (props: {
     emptyList?: boolean,
     item: ItemTreeNode,
+    showId: boolean
     pushRef: (ref: FocusActions) => void,
     parentActions: ControllerActions,
     setFocusedActionReceiver: React.Dispatch<React.SetStateAction<FocusedActionReceiver>>
@@ -51,15 +52,36 @@ const Item = (props: {
     const bulletPoint: React.ReactElement = <span style={{
         paddingLeft: props.item.children.length ? "0px" : "0.2em",
         color: props.item.searchHighlight == "SEARCH_UNCOLLAPSE" ? "orange" : "white"
-    }}>{(() => {
-        if (props.emptyList) return ">";
+    }}
+        onClick={()=>props.parentActions.getSetSelf((self: ItemTreeNode)=>({
+            ...self,
+            collapsed: !self.collapsed
+        }))}
+    >{(() => {
+        let bullet = "\u25CF";
+        if (props.emptyList) bullet = ">";
         else if (props.item.children.length) {
-            if (shouldUncollapse) return "\u25bc";
-            else return "\u25b6";
-        } else {
-            return "\u25CF";
+            if (shouldUncollapse) bullet = "\u25bc";
+            else bullet = "\u25b6";
         }
-    })()}</span>;
+        return bullet;
+    })()}
+        {props.showId ?
+            <span style={{
+                fontSize: "10px", cursor: "pointer"
+            }}
+                onClick={(event) => {
+                    const { show, hideAll } = useContextMenu({
+                        id: SIDECLIP_CONTEXT_MENU_ID,
+                    });
+                    show({ event });
+                    setTimeout(hideAll, 400);
+                    navigator.clipboard.writeText(props.item.id);
+
+                }}
+            >{props.item.id}</span>
+            : null}
+    </span >;
 
     const focusThis = () => {
         thisContentEditable.current?.focus();
@@ -171,6 +193,7 @@ const Item = (props: {
         {props.item.children.map((item, ii) => (<Item
             key={ii}
             item={item}
+            showId={props.showId}
             pushRef={(ref: FocusActions) => itemsRefArray.current[ii] = ref}
             setFocusedActionReceiver={props.setFocusedActionReceiver}
             parentActions={makeListActions({
@@ -197,7 +220,7 @@ const Item = (props: {
         , []);
 
     const { show } = useContextMenu({
-        id: CONTEXT_MENU_ID,
+        id: ITEM_CONTEXT_MENU_ID,
     });
     const contextEventHandler: React.MouseEventHandler<HTMLDivElement> = (event) => {
         event.preventDefault = () => {

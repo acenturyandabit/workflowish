@@ -4,14 +4,18 @@ import 'react-contexify/ReactContexify.css';
 import './ContextMenu.css'
 import { ItemTreeNode } from '../model';
 
-export default (props: {
-    menuId: string
-}) => {
-    return <Menu id={props.menuId} animation={""}>
-        <Item id="exportToList" onClick={exportToList}>Copy with siblings and children</Item>
-    </Menu>
+export const ITEM_CONTEXT_MENU_ID = "workflowish_ctx_menu"
+export const SIDECLIP_CONTEXT_MENU_ID = "sideclip_ctx_menu"
+export default () => {
+    return <>
+        <Menu className={ITEM_CONTEXT_MENU_ID} id={ITEM_CONTEXT_MENU_ID} animation={""}>
+            <Item id="exportToList" onClick={exportToList}>Copy with siblings and children</Item>
+        </Menu>
+        <Menu className={SIDECLIP_CONTEXT_MENU_ID} id={SIDECLIP_CONTEXT_MENU_ID} animation={"flip"}>
+            <Item>📋</Item>
+        </Menu>
+    </>
 }
-export const CONTEXT_MENU_ID = "workflowish_ctx_menu"
 
 
 interface ItemParams {
