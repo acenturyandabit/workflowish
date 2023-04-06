@@ -1,5 +1,6 @@
 # Latest 
 - Add github todo-to-issue
+- Mass issue creation via todo-to-issue
 
 # Version 3.0.0: Github release version 
 - Create base document
