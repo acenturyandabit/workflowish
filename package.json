@@ -13,7 +13,8 @@
     "test-continuous": "jest --watch",
     "test": "jest",
     "lint": "eslint . --ext .ts,.tsx --max-warnings=0",
-    "verbump": "bash .githooks/verbump.sh"
+    "verbump": "bash .githooks/verbump.sh",
+    "deploy-to-gh-pages": "tsx .githooks/deploy-to-gh-pages.ts"
   },
   "license": "MIT",
   "dependencies": {

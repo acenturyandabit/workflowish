@@ -1,6 +1,8 @@
 # Workflowish
 `acenturyandabit`'s personal task management app. Basically a recursive list implementation (think Workflowy), but self-hostable, scriptable, and keyboard-first.
 
+[https://acenturyandabit.github.io/workflowish/]
+
 ![Workflowish Screenshot](./public/readme-screenshot.png)
 
 ## Current Features
