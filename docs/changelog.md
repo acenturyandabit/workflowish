@@ -1,4 +1,4 @@
-# Latest
+# Version 2.8.0: Commit process upgrades
 - Automated version bumping
 - New Commit System
 - Add version bump shell script
