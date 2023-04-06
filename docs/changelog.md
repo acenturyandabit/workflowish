@@ -1,6 +1,7 @@
 # Latest 
 - New Commit System
 - Add version bump shell script
+- Also automate the changelog title
 
 # Version 2.7
 `The plays nicely with other software version`
