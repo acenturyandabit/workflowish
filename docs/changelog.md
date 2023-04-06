@@ -1,7 +1,5 @@
 # Latest 
 - Automated version bumping
-
-# Version 2.11.0: New commit system
 - New Commit System
 - Add version bump shell script
 - Also automate the changelog title
