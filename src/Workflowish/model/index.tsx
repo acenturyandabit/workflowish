@@ -1,6 +1,7 @@
 import * as React from "react";
 import { BaseItemType, BaseStoreDataType, makeNewUniqueKey, setToDeleted } from "~CoreDataLake";
-import { SearchOptions } from "./Subcomponents/SearchBar";
+import { SearchOptions } from "../Subcomponents/SearchBar";
+import { generateFirstTimeDoc } from "./firstTimeDoc";
 export type ItemTreeNode = {
     lastModifiedUnixMillis: number
     id: string,
@@ -94,7 +95,7 @@ const buildTree = (flatItemBlob: FlatItemBlob): ItemTreeNode => {
         if (orphanedId != virtualRoot.id) virtualRoot.children.push(treeConstructorRecord[orphanedId]);
     }
     if (virtualRoot.children.length == 0) {
-        virtualRoot.children.push(makeNewItem());
+        virtualRoot = generateFirstTimeDoc();
     }
     return virtualRoot;
 }

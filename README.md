@@ -38,6 +38,7 @@ My personal roadmap is in `roadmap.md`. You may pick any unfinished issue you wo
 - The 'Latest' commits are filled in by git hooks.
 - Version bumps can be performed by running `npm run verbump -- major/minor/patch MESSAGE`, but this should only be done by the repository owner, to prevent tags going everywhere.
 
+`roadmap.md` is manually maintained. Feel free to clear out sections that have been implemented.
 
 ### Code style
 Upon `npm run`, this repository will install some githooks which automatically lint your code before you commit. These will be checked by CICD in future. The tests are:

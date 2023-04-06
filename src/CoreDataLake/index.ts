@@ -15,8 +15,10 @@ export type DataAndLoadState = {
     changed: boolean
 }
 
+let uniqueCounter = 0;
 export const makeNewUniqueKey = (): string => {
-    return Date.now().toString();
+    uniqueCounter++;
+    return Date.now().toString() + `_${uniqueCounter}`;
 }
 
 export const setToDeleted = (itm: BaseItemType) => {

@@ -1,3 +1,6 @@
+# Latest 
+- Create base document
+
 # Version 2.8.0: Commit process upgrades
 - Automated version bumping
 - New Commit System

@@ -1,23 +1,8 @@
-# Version 2.8
-`The up-to-date dev practices version`
-- Do versioning with tags rather than the current scheme
-  - Make commit messages at least 10 chars + capitalised start to encourage good practice
-- Autogenerate the changelog rather than forcing users to update it manually, 
-  but also preserve its utility as a planning space. 
-  - Separate versions.md which keeps last version + future plans, and 
-    changelog.md which keeps all versions in reverse order with newest on top.
-  - split versions.md into roadmap.md, then use checkbox notation (cool!) to seed todo-to-issue
-  - Make a local script that automatically appends commit message to changelog on each commit
-    - add commit message one above the first heading that isn't 'latest'
-    - create latest if it doesn't exist
-  - Make a tag script in npm scripts that auto tags and edits the changelog
-    - npm run release --major/--minor/--subminor [name]
-      - auto commit and tag after renaming changelog
-
 # Version 3.0
 `The Github release version`
 - Add a premade base document on first start / empty load
 - Add a screenshot in the README to show how it works
+- Rename and relogo to Workflowish
 - Push to github
 - Add github todo-to-issue
 - Create a github release flow of the built frontend only
