@@ -1,3 +1,4 @@
+#!/bin/bash
 VERBUMP_LEVEL=$1
 shift
 MESSAGE=$@
@@ -33,10 +34,18 @@ case "$VERBUMP_LEVEL" in
 esac
 
 ### Check changelog has Latest
+if (cat docs/changelog.md | tr -d '\r' | tr '\n' '%' \
+        | grep -E "^# Version" > /dev/null) ; then
+    cat << EOM
+(Verbump) Error: Cannot do a verbump without a new commit.
+EOM
+    exit 1
+fi
+
 if ! (cat docs/changelog.md | tr -d '\r' | tr '\n' '%' \
         | grep -E "^# Latest[^#]+?(%%#)" > /dev/null) ; then
-    cat << EOM 
-Warning: changelog file format not correct.
+    cat << EOM
+(Verbump) Warning: changelog file format not correct.
 
 The first line should be "# Latest" and there should be two newlines
 before the next version header.
@@ -59,9 +68,9 @@ before the next version header.
 EOM
     exit 1
 fi
-sed -i "s~# Latest~# $NEW_COMMMIT_MESSAGE~g" docs/changelog.md
+sed -i "s~# Latest~# $NEW_COMMIT_MESSAGE~g" docs/changelog.md
 git add docs/changelog.md
-git commit -m $NEW_COMMMIT_MESSAGE --no-verify
+git commit --no-verify -m "$NEW_COMMIT_MESSAGE"
 
 ### Tag new version
 git tag -a "v$NEXT_VERSION" -m "$NEW_COMMIT_MESSAGE"
