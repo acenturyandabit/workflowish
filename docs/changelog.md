@@ -1,6 +1,7 @@
 # Latest 
 - Add github todo-to-issue
 - Mass issue creation via todo-to-issue
+- Partial implementation of deploy-to-github-pages script (hard because windows doesn't mix with bash)
 
 # Version 3.0.0: Github release version 
 - Create base document

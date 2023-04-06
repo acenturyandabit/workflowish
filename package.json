@@ -13,7 +13,9 @@
     "test-continuous": "jest --watch",
     "test": "jest",
     "lint": "eslint . --ext .ts,.tsx --max-warnings=0",
-    "verbump": "bash .githooks/verbump.sh"
+    "verbump": "bash .githooks/verbump.sh",
+    "build-for-gh-pages": "vite build --outDir .githooks/deployment/build --base=/workflowish/",
+    "deploy-to-gh-pages": "bash .githooks/deploy-to-gh-pages.sh"
   },
   "license": "MIT",
   "dependencies": {
