@@ -1,5 +1,6 @@
 # Latest 
 - New Commit System
+- Add version bump shell script
 
 # Version 2.7
 `The plays nicely with other software version`
