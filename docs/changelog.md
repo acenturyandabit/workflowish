@@ -1,4 +1,4 @@
-# Latest 
+# Version 3.0.0: Github release version 
 - Create base document
 - Rebrand to workflowish
 - Alt+shift for showing item IDs
