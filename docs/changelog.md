@@ -3,6 +3,7 @@
 - Rebrand to workflowish
 - Alt+shift for showing item IDs
 - Prevent deleting first item in empty list
+- Prepare for github release
 
 # Version 2.8.0: Commit process upgrades
 - Automated version bumping
