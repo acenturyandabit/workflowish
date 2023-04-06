@@ -1,5 +1,6 @@
 # Latest 
 - Create base document
+- Rebrand to workflowish
 
 # Version 2.8.0: Commit process upgrades
 - Automated version bumping

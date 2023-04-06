@@ -57,6 +57,7 @@ export const generateFirstTimeDoc = (): ItemTreeNode => {
                     children: [
                         "On mobile, you can use the modifiers provided to perform the same actions as on desktop.",
                         "You can configure autosave in the File menu.",
+                        "Workflowish is a Progressive Web App - so you can add it to your homepage and start using it immediately!.",
                     ]
                 }, {
                     data: "For self-hosted storage, clone the github repository (https://github.com/acenturyandabit/workflowish) and follow the README.",

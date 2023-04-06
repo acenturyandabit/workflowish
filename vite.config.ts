@@ -11,10 +11,9 @@ export default {
             // Kudos to the service provided by https://realfavicongenerator.net/.
             includeAssets: ["icon-128.png"],
             manifest: {
-                name: 'Polymorph',
-                short_name: 'Polymorph',
+                name: 'Workflowish',
+                short_name: 'Workflowish',
                 description: 'Recursive List Todo App.',
-                theme_color: '#ffffff',
                 icons: [
                     {
                         "src": "/android-chrome-192x192.png",
@@ -28,8 +27,9 @@ export default {
                         "purpose": "any maskable"
                     }
                 ],
-                background_color: "#ffffff",
-                display: "standalone"
+                "theme_color": "#8365b5",
+                "background_color": "#8365b5",
+                "display": "standalone"
             },
             devOptions: {
                 enabled: true

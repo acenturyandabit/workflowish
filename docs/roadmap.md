@@ -1,15 +1,10 @@
 # Version 3.0
 `The Github release version`
-- Add a premade base document on first start / empty load
-- Add a screenshot in the README to show how it works
-- Rename and relogo to Workflowish
 - Push to github
-- Add github todo-to-issue
-- Create a github release flow of the built frontend only
-- Make contribution guide
-- Extract MVC interface from ScriptingEngine / Workflowish into a template
-- Add something that automatically credits non-acenturyandabit contributors
+- Make alt + shift for showing the IDs.
 - better password entry dialog
+- [FIX] Deleting the first item on an empty document will cause help doc to reappear
+- Add github todo-to-issue
 
 # Version 3.1
 `The symlink version`
@@ -26,20 +21,24 @@
 - Visiting site with blank URL should show open file dialog
 
 # Version 3.2.1
+- Upgrade README screenshot to gif
 - Visiting site with blank URL should load last opened document
 - Little popup from savesources to give user extra peace of mind when ctrl-s is pressed
 - Alt + Enter will split a line down with the remaining text after the caret. Alt + Shift + Enter will make it a child.
 - Pressing Enter will either insert an item before OR after the current element, based on the current caret index (front or back)
 - Scripting: Add a console
 - Warn if unsaved before closing
+- Make Help dialog use the firstTimeDocument
 
 - Make load button on savesources overwrite existing coredatalake rather than merge
   - Allow appending imports in the text importer with a sync button, to allow incremental addition of items
 
 # Version 4.0 
-- Add a tabbing / window manager (back to what polymorph _really_ was at the very beginning)
+- Extract MVC interface from ScriptingEngine / Workflowish into a template
+- Add something that automatically credits non-acenturyandabit contributors
 
 # Noncritical technical debt
+- Create a github release flow of the built frontend only
 - Refactor KVStores so it acts like CoreDataLake in terms of the 'changed' flag
 - Refactor TextImportKVStore so that it doesn't use dirty this.settings hacks
 - Remove the notion of 'id' from items; replace with key

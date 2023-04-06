@@ -1,7 +1,7 @@
-# Polymorph
-`acenturyandabit`'s personal task management app. Basically a recursive list implementation (think Workflowy), but self-hostable, scriptable, and keyboard/mobile-first.
+# Workflowish
+`acenturyandabit`'s personal task management app. Basically a recursive list implementation (think Workflowy), but self-hostable, scriptable, and keyboard-first.
 
-[TODO: Pop a gif here]
+![Workflowish Screenshot](./public/readme-screenshot.png)
 
 ## Current Features
 - A to-do list, with infinitely nestable, collapsible bullet points.
