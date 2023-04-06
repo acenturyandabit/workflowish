@@ -25,6 +25,7 @@ export const makeListActions = (props: {
     siblingsFocusActions: React.RefObject<(FocusActions | null)[]>,
     unindentCaller: () => void,
     parentFocusActions: FocusActions
+    disableDelete?: () => boolean
 }): ControllerActions => ({
     createNewItem: () => {
         props.getSetSiblingArray((siblingArray) => {
@@ -36,20 +37,22 @@ export const makeListActions = (props: {
         })
     },
     deleteThisItem: () => {
-        props.getSetSiblingArray((siblingArray) => {
-            if (siblingArray.length > 0) {
-                const newSiblingArray = [...siblingArray];
-                newSiblingArray[props.currentSiblingIdx].markedForCleanup = true;
-                if (props.currentSiblingIdx - 1 >= 0) {
-                    props.siblingsFocusActions.current?.[props.currentSiblingIdx - 1]?.focusThisEnd()
+        if (!props.disableDelete || props.disableDelete() == false) {
+            props.getSetSiblingArray((siblingArray) => {
+                if (siblingArray.length > 0) {
+                    const newSiblingArray = [...siblingArray];
+                    newSiblingArray[props.currentSiblingIdx].markedForCleanup = true;
+                    if (props.currentSiblingIdx - 1 >= 0) {
+                        props.siblingsFocusActions.current?.[props.currentSiblingIdx - 1]?.focusThisEnd()
+                    } else {
+                        props.parentFocusActions.focusThisEnd();
+                    }
+                    return newSiblingArray;
                 } else {
-                    props.parentFocusActions.focusThisEnd();
+                    return siblingArray
                 }
-                return newSiblingArray;
-            } else {
-                return siblingArray
-            }
-        })
+            })
+        }
     },
     focusMyNextSibling: () => {
         const siblingItemsRef = props.siblingsFocusActions.current;

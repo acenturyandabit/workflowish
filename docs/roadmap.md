@@ -1,8 +1,6 @@
 # Version 3.0
 `The Github release version`
 - Push to github
-- better password entry dialog
-- [FIX] Deleting the first item on an empty document will cause help doc to reappear
 - Add github todo-to-issue
 
 # Version 3.1
@@ -21,6 +19,7 @@
 
 # Version 3.2.1
 - Upgrade README screenshot to gif
+- better password entry dialog
 - Check up on feature documentation
 - Visiting site with blank URL should load last opened document
 - Little popup from savesources to give user extra peace of mind when ctrl-s is pressed

@@ -26,7 +26,7 @@ export default (props: {
     React.useEffect(() => {
         const altModifyToggle = (evt: KeyboardEvent) => {
             setShowIds(evt.altKey && evt.shiftKey);
-            if (evt.key=="Alt") evt.preventDefault();
+            if (evt.key == "Alt") evt.preventDefault();
         }
         window.addEventListener("keydown", altModifyToggle);
         window.addEventListener("keyup", altModifyToggle);
@@ -103,7 +103,8 @@ const ItemsList = (
                             itemsRefArray.current[ii]?.focusThis()
                         }
                     },
-                }
+                },
+                disableDelete: ()=>(props.todoItems.children.length == 1)
             })}
         ></Item >)
     })}</>
