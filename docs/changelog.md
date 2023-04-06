@@ -1,4 +1,4 @@
-# Latest 
+# Latest
 - Automated version bumping
 - New Commit System
 - Add version bump shell script

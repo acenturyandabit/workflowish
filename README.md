@@ -34,7 +34,10 @@ This repository uses git hooks to ensure some code quality standards and provide
 ### Roadmap and issue tracking
 My personal roadmap is in `roadmap.md`. You may pick any unfinished issue you would like to work on, from any version number.
 
-`changelog.md` is automatically maintained by git hooks.
+`changelog.md` is automatically maintained:
+- The 'Latest' commits are filled in by git hooks.
+- Version bumps can be performed by running `npm run verbump -- major/minor/patch MESSAGE`, but this should only be done by the repository owner, to prevent tags going everywhere.
+
 
 ### Code style
 Upon `npm run`, this repository will install some githooks which automatically lint your code before you commit. These will be checked by CICD in future. The tests are:
