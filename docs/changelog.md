@@ -1,5 +1,4 @@
-# Latest 
-- Version 2.11.0: New commit system
+# Latest
 - Automated version bumping
 
 # Version 2.11.0: New commit system

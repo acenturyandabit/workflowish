@@ -70,7 +70,7 @@ EOM
 fi
 sed -i "s~# Latest~# $NEW_COMMIT_MESSAGE~g" docs/changelog.md
 git add docs/changelog.md
-git commit --no-verify -m "$NEW_COMMIT_MESSAGE"
+VERBUMP=true git commit --no-verify -m "$NEW_COMMIT_MESSAGE"
 
 ### Tag new version
 git tag -a "v$NEXT_VERSION" -m "$NEW_COMMIT_MESSAGE"
