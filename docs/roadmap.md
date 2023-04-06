@@ -1,7 +1,6 @@
 # Version 3.0
 `The Github release version`
 - Push to github
-- Make alt + shift for showing the IDs.
 - better password entry dialog
 - [FIX] Deleting the first item on an empty document will cause help doc to reappear
 - Add github todo-to-issue
@@ -22,6 +21,7 @@
 
 # Version 3.2.1
 - Upgrade README screenshot to gif
+- Check up on feature documentation
 - Visiting site with blank URL should load last opened document
 - Little popup from savesources to give user extra peace of mind when ctrl-s is pressed
 - Alt + Enter will split a line down with the remaining text after the caret. Alt + Shift + Enter will make it a child.

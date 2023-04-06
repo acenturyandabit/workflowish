@@ -1,6 +1,7 @@
 # Latest 
 - Create base document
 - Rebrand to workflowish
+- Alt+shift for showing item IDs
 
 # Version 2.8.0: Commit process upgrades
 - Automated version bumping

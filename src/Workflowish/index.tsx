@@ -25,7 +25,7 @@ export default (props: {
     const [showIds, setShowIds] = React.useState<boolean>(false);
     React.useEffect(() => {
         const altModifyToggle = (evt: KeyboardEvent) => {
-            setShowIds(evt.altKey);
+            setShowIds(evt.altKey && evt.shiftKey);
             if (evt.key=="Alt") evt.preventDefault();
         }
         window.addEventListener("keydown", altModifyToggle);
