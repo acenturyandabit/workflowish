@@ -1,6 +1,6 @@
 import * as React from "react";
 import { FocusActions } from "../Item";
-import { ItemTreeNode, makeNewItem } from ".";
+import { ItemTreeNode, makeNewItem } from "./model";
 
 type TreeNodeGetSetter = (oldValue: ItemTreeNode) => ItemTreeNode;
 export type TreeNodeArrayGetSetter = (oldValue: ItemTreeNode[]) => ItemTreeNode[];

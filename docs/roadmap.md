@@ -1,6 +1,8 @@
 # Version 3.1
 `The symlink version`
+- [ ] TODO: Refactor Workflowish to use Context and direct ID based set-ing
 - [ ] TODO: Add Symlinks
+- [ ] TODO: Special behavior for tabbing into a symlink
 - [ ] TODO: Allow scripting engine to arbitrarily add and delete items; and create symlinks.
 - [ ] TODO: Move Workflowy global out of scripting engine
 

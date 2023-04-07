@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Menu, Item } from 'react-contexify';
 import 'react-contexify/ReactContexify.css';
 import './ContextMenu.css'
-import { ItemTreeNode } from '../mvc';
+import { ItemTreeNode } from '../mvc/model';
 
 export const ITEM_CONTEXT_MENU_ID = "workflowish_ctx_menu"
 export const SIDECLIP_CONTEXT_MENU_ID = "sideclip_ctx_menu"

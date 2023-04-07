@@ -84,7 +84,7 @@ const buildTree = (flatItemBlob: FlatItemBlob): ItemTreeNode => {
         flatItemBlob[nodeId].children.forEach(childId => orphanedTreeItemCandidates.delete(childId))
 
         // Symlink linking
-        const symlinkMatch = /\[LN:(.+?)\]/g.exec(flatItemBlob[nodeId].data);
+        const symlinkMatch = /\[LN:\s*(.+?)\]/g.exec(flatItemBlob[nodeId].data);
         if (symlinkMatch && symlinkMatch[1] in treeConstructorRecord) {
             treeConstructorRecord[nodeId].symlinkedNode = treeConstructorRecord[symlinkMatch[1]];
         }

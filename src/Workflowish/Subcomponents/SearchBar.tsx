@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { ItemTreeNode } from '../mvc';
+import { ItemTreeNode } from '../mvc/model';
 
 export default (props: {
     searchText: string,
@@ -28,7 +28,7 @@ export const searchTransform = (rootNode: ItemTreeNode, searchText: string): Ite
                 if (top.data.toLowerCase().includes(searchText.toLowerCase())) {
                     top.searchHighlight = "SEARCH_TARGET";
                 } else {
-                    const shouldUncollapse = top.children.reduce((should_uncollapse, child) => should_uncollapse
+                    const shouldUncollapse = top.children.reduce((shouldUncollapse, child) => shouldUncollapse
                         || child.searchHighlight == "SEARCH_UNCOLLAPSE"
                         || child.searchHighlight == "SEARCH_TARGET",
                         false);

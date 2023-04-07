@@ -1,5 +1,5 @@
 import * as React from "react";
-import { ItemTreeNode } from "~Workflowish/mvc";
+import { ItemTreeNode } from "~Workflowish/mvc/model";
 import Item, { FocusActions, ItemStyleParams } from ".";
 import { ControllerActions, makeListActions, TreeNodeArrayGetSetter } from "../mvc/controller"
 import { FocusedActionReceiver } from "~Workflowish/mvc/focusedActionReceiver";
@@ -44,13 +44,26 @@ export const makeParentFocusActions = (
 
 export const ChildItems = (props: {
     shouldUncollapse: boolean,
-    children: ItemTreeNode[],
+    item: ItemTreeNode,
     styleParams: ItemStyleParams,
     itemsRefArray: React.MutableRefObject<(FocusActions | null)[]>,
     setFocusedActionReceiver: React.Dispatch<React.SetStateAction<FocusedActionReceiver>>,
     parentActions: ControllerActions,
     parentFocusActions: ReturnType<typeof makeParentFocusActions>
 }) => {
+    let childrenToRender: ItemTreeNode[] = props.item.symlinkedNode ?
+        props.item.symlinkedNode.children :
+        props.item.children;
+    if (props.item.id == props.styleParams.symlinkedParent){
+        childrenToRender = [{
+            data: "Infinite loop...",
+            lastModifiedUnixMillis: 0,
+            id: "",
+            children:[],
+            collapsed: true,
+            searchHighlight: "NONE"
+        }]
+    }
     return <>
         {props.shouldUncollapse ?
             <div style={{
@@ -58,11 +71,12 @@ export const ChildItems = (props: {
                 borderLeft: "1px solid white",
                 marginLeft: "0.5em"
             }}>
-                {props.children.map((item, ii) => (<Item
+                {childrenToRender.map((item, ii) => (<Item
                     key={ii}
                     item={item}
                     styleParams={{
-                        showId: props.styleParams.showId
+                        showId: props.styleParams.showId,
+                        symlinkedParent: props.item.symlinkedNode ? props.item.id : props.styleParams.symlinkedParent
                     }}
                     pushRef={(ref: FocusActions) => props.itemsRefArray.current[ii] = ref}
                     setFocusedActionReceiver={props.setFocusedActionReceiver}

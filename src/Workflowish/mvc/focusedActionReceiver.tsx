@@ -1,5 +1,5 @@
 import { FocusActions } from "~Workflowish/Item";
-import { ItemTreeNode, makeNewItem } from ".";
+import { ItemTreeNode, makeNewItem } from "./model";
 import { ControllerActions } from "./controller";
 
 export type FocusedActionReceiver =

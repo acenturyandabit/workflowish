@@ -1,5 +1,5 @@
 import { makeNewUniqueKey } from "~CoreDataLake";
-import { ItemTreeNode } from ".";
+import { ItemTreeNode } from "./model";
 
 type DeflatedItemTreeNode = {
     data: string,

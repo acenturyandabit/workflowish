@@ -3,7 +3,7 @@ import { BaseStoreDataType } from "~CoreDataLake";
 import { makeListActions, TreeNodeArrayGetSetter } from "./mvc/controller";
 import { FocusedActionReceiver, dummyFocusedActionReciever } from "./mvc/focusedActionReceiver"
 import Item, { FocusActions } from "./Item"
-import { ItemTreeNode, transformData } from "./mvc"
+import { ItemTreeNode, transformData } from "./mvc/model"
 import { isMobile } from '~util/isMobile';
 import { FloatyButtons } from "./Subcomponents/FloatyButtons";
 import SearchBar, { searchTransform } from "./Subcomponents/SearchBar";

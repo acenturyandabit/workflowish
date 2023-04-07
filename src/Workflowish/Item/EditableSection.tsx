@@ -2,12 +2,13 @@
 import ContentEditable, { ContentEditableEvent } from 'react-contenteditable'
 import sanitizeHtml from "sanitize-html"
 import * as React from "react";
-import { ItemTreeNode } from "../mvc";
-import { ITEM_CONTEXT_MENU_ID, SIDECLIP_CONTEXT_MENU_ID } from "../Subcomponents/ContextMenu";
+import { ItemTreeNode } from "../mvc/model";
+import { ITEM_CONTEXT_MENU_ID } from "../Subcomponents/ContextMenu";
 import { ControllerActions } from '~Workflowish/mvc/controller';
 import { ItemStyleParams } from '.';
 import { FocusedActionReceiver } from '~Workflowish/mvc/focusedActionReceiver';
 import { useContextMenu } from 'react-contexify';
+import { BulletPoint } from './BulletPoint';
 
 
 export const EditableSection = (props: {
@@ -17,11 +18,29 @@ export const EditableSection = (props: {
     parentActions: ControllerActions,
     styleParams: ItemStyleParams,
     focusedActionReceiver: FocusedActionReceiver,
-    onFocusClick: ()=>void
+    onFocusClick: () => void
 }) => {
-    const onKeyDown = (evt: React.KeyboardEvent) => {
+    let onKeyDown = (evt: React.KeyboardEvent) => {
         // TODO: inline this method
         props.focusedActionReceiver.keyCommand(evt);
+    }
+    if (props.styleParams.symlinkedParent) {
+        onKeyDown = (evt: React.KeyboardEvent) => {
+            evt.preventDefault();
+            if ((evt.key == "ArrowUp" || evt.key == "ArrowDown") &&
+                !(evt.altKey || evt.ctrlKey || evt.shiftKey || evt.metaKey)) {
+                props.focusedActionReceiver.keyCommand({
+                    key: evt.key,
+                    altKey: false,
+                    ctrlKey: false,
+                    shiftKey: false,
+                    metaKey: false,
+                    preventDefault: () => {
+                        // Ignore
+                    }
+                });
+            }
+        }
     }
 
     const onContentChange = React.useCallback((evt: ContentEditableEvent) => {
@@ -45,44 +64,20 @@ export const EditableSection = (props: {
         }
         , []);
 
-
-    const bulletPoint = <span style={{
-        paddingLeft: props.item.children.length ? "0px" : "0.2em",
-        color: props.item.searchHighlight == "SEARCH_UNCOLLAPSE" ? "orange" : "white"
-    }}
-        onClick={() => props.parentActions.getSetSelf((self: ItemTreeNode) => ({
-            ...self,
-            collapsed: !self.collapsed
-        }))}
-    >{(() => {
-        let bullet = "\u25CF";
-        if (props.styleParams.emptyList) bullet = ">";
-        else if (props.item.children.length) {
-            if (props.shouldUncollapse) bullet = "\u25bc";
-            else bullet = "\u25b6";
-        }
-        return bullet;
-    })()}
-        {props.styleParams.showId ?
-            <span style={{
-                fontSize: "10px", cursor: "pointer"
+    let contenteditables: React.ReactElement;
+    if (props.styleParams.symlinkedParent) {
+        contenteditables = <ContentEditable
+            innerRef={memoizedInnerRef}
+            html={props.item.data}
+            onChange={() => {
+                //readonly
             }}
-                onClick={(event) => {
-                    const { show, hideAll } = useContextMenu({
-                        id: SIDECLIP_CONTEXT_MENU_ID,
-                    });
-                    show({ event });
-                    setTimeout(hideAll, 400);
-                    navigator.clipboard.writeText(props.item.id);
-
-                }}
-            >{props.item.id}</span>
-            : null}</span >;
-
-
-    return <span style={{ background: props.item.searchHighlight == "SEARCH_TARGET" ? "blue" : "" }}
-        onContextMenu={contextEventHandler(props.parentActions)}>
-        {bulletPoint}<ContentEditable
+            onKeyDown={onKeyDown}
+            onClick={props.onFocusClick}
+            style={{ flex: "1 1 auto" }}
+        ></ContentEditable>
+    } else if (!props.item.symlinkedNode) {
+        contenteditables = <ContentEditable
             innerRef={memoizedInnerRef}
             html={props.item.data}
             onChange={onContentChange}
@@ -90,8 +85,33 @@ export const EditableSection = (props: {
             onClick={props.onFocusClick}
             style={{ flex: "1 1 auto" }}
         ></ContentEditable>
+    } else {
+        contenteditables = <>
+            <ContentEditable
+                innerRef={memoizedInnerRef}
+                html={props.item.data}
+                onChange={onContentChange}
+                onKeyDown={onKeyDown}
+                style={{ flex: "0 0 auto" }}
+            ></ContentEditable>&nbsp;<span
+                onKeyDown={onKeyDown}
+                onClick={props.onFocusClick}
+                style={{ flex: "1 1 auto" }}
+            >{props.item.symlinkedNode.data}</span> </>
+    }
+
+    return <span style={{ background: props.item.searchHighlight == "SEARCH_TARGET" ? "blue" : "" }}
+        onContextMenu={contextEventHandler(props.parentActions)}>
+        <BulletPoint
+            item={props.item}
+            parentActions={props.parentActions}
+            styleParams={props.styleParams}
+            shouldUncollapse={props.shouldUncollapse}
+        ></BulletPoint>
+        {contenteditables}
     </span>
 }
+
 
 const contextEventHandler = (parentActions: ControllerActions): React.MouseEventHandler<HTMLDivElement> => {
     const { show } = useContextMenu({

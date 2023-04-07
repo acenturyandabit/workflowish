@@ -1,3 +1,6 @@
+# Latest 
+- Rudimentary (readonly) symlinks
+
 # Version 3.1.0: Deploy to github pages 
 - Add github todo-to-issue
 - Mass issue creation via todo-to-issue

@@ -1,7 +1,7 @@
 import * as React from "react";
 import { ControllerActions } from "../mvc/controller";
 import { FocusedActionReceiver, makeFocusedActionReceiver } from "../mvc/focusedActionReceiver";
-import { ItemTreeNode } from "../mvc";
+import { ItemTreeNode } from "../mvc/model";
 import { EditableSection } from "./EditableSection";
 import "./index.css"
 import { ChildItems, makeParentFocusActions } from "./ChildItems";
@@ -17,8 +17,11 @@ export type FocusActions = {
 
 export type ItemStyleParams = {
     emptyList?: boolean,
-    showId: boolean
+    showId: boolean,
+    symlinkedParent?: string
 }
+
+const shouldBeUncollapsed = (item: ItemTreeNode): boolean => !item.collapsed || item.searchHighlight == "SEARCH_UNCOLLAPSE";
 
 const Item = (props: {
     styleParams: ItemStyleParams,
@@ -40,7 +43,7 @@ const Item = (props: {
         itemsRefArray.current.pop();
     }
 
-    const shouldUncollapse = !props.item.collapsed || props.item.searchHighlight == "SEARCH_UNCOLLAPSE";
+    const shouldUncollapse = shouldBeUncollapsed(props.item);
 
 
     const focusThis = () => {
@@ -77,7 +80,7 @@ const Item = (props: {
             styleParams={props.styleParams}
         ></EditableSection>
         <ChildItems
-            children={props.item.children}
+            item={props.item}
             itemsRefArray={itemsRefArray}
             parentFocusActions={parentFocusActions}
             setFocusedActionReceiver={props.setFocusedActionReceiver}
