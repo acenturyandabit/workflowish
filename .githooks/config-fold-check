@@ -1,9 +1,0 @@
-#!/bin/bash
-# This file folds up the gitignored config files in the main directory 
-# into a single file, folded.config.jsons, at commit time; and unfolds 
-# them at install time.
-
-# The problem is that there are too many config files (.eslintrc, 
-# jest.config.js etc) which make the top level directory look like a mess.
-
-# TODO
