@@ -25,5 +25,13 @@ export default () => (
                 You can use Ctrl+Up or Ctrl+Down to collapse / uncollapse an item with children.
             </li>
         </ul>
+        Symlinks
+        <ul>
+            <li>Press 'Alt' to show item IDs next to each bullet point.</li>
+            <li>You can click the IDs to copy them to the clipboard.</li>
+            <li>{"Type [LN: other-item-id] to turn the item into a symlink. The symlink will reflect the item that is linked."}</li>
+            <li>Editing the symlink apart from the bracketed text, or the item's children, will reflect as edits to the original item.</li>
+            <li>To delete the symlink, delete the text in the square brackets first.</li>
+        </ul>
     </>
 )

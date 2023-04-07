@@ -2,7 +2,7 @@ import * as renderer from 'react-test-renderer';
 import * as React from "react";
 import { it, expect } from '@jest/globals';
 import Item from "./Item"
-import { ControllerActions } from "./controller";
+import { ControllerActions } from "./mvc/controller";
 
 const mockEmptyFunction = () => {
     // Mock empty
@@ -36,7 +36,9 @@ it('Renders an item', () => {
             pushRef={mockEmptyFunction}
             parentActions={dummyParentActions}
             setFocusedActionReceiver={mockEmptyFunction}
-            showId={false}
+            styleParams={{
+                showId: false
+            }}
         ></Item>
     )
     const item = component.toJSON();

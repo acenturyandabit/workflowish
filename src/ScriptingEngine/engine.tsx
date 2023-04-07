@@ -3,7 +3,7 @@ import * as React from 'react';
 import { BaseItemType } from "~CoreDataLake";
 import getDiffsAndResolvedItems from "~CoreDataLake/getResolvedItems";
 import stringify from 'json-stable-stringify';
-import { FlatItemData } from "~Workflowish/model";
+import { FlatItemData } from "~Workflowish/mvc";
 export const ScriptEngineInstance = (props: {
     script: string,
     lastActivateTime?: number,

@@ -1,8 +1,9 @@
 import * as React from "react";
 import { BaseStoreDataType } from "~CoreDataLake";
-import { FocusedActionReceiver, dummyFocusedActionReciever, makeListActions, TreeNodeArrayGetSetter } from "./controller";
+import { makeListActions, TreeNodeArrayGetSetter } from "./mvc/controller";
+import { FocusedActionReceiver, dummyFocusedActionReciever } from "./mvc/focusedActionReceiver"
 import Item, { FocusActions } from "./Item"
-import { ItemTreeNode, transformData } from "./model"
+import { ItemTreeNode, transformData } from "./mvc"
 import { isMobile } from '~util/isMobile';
 import { FloatyButtons } from "./Subcomponents/FloatyButtons";
 import SearchBar, { searchTransform } from "./Subcomponents/SearchBar";
@@ -69,8 +70,10 @@ const ItemsList = (
     return <>{props.todoItems.children.map((item, ii) => {
         return (<Item
             key={ii}
-            showId={props.showIds}
-            emptyList={props.todoItems.children.length == 1 && item.data == ""}
+            styleParams={{
+                showId: props.showIds,
+                emptyList: props.todoItems.children.length == 1 && item.data == ""
+            }}
             item={item}
             pushRef={(ref: FocusActions) => itemsRefArray.current[ii] = ref}
             setFocusedActionReceiver={props.setFocusedActionReceiver}
@@ -104,7 +107,7 @@ const ItemsList = (
                         }
                     },
                 },
-                disableDelete: ()=>(props.todoItems.children.length == 1)
+                disableDelete: () => (props.todoItems.children.length == 1)
             })}
         ></Item >)
     })}</>

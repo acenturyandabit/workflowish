@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { ItemTreeNode } from '../model';
+import { ItemTreeNode } from '../mvc';
 
 export default (props: {
     searchText: string,

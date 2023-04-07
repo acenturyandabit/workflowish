@@ -1,0 +1,10 @@
+.itemWrapperClass {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.itemWrapperClass>span {
+    display: inline-flex;
+    width: 100%;
+}

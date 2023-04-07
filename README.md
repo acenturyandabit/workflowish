@@ -47,3 +47,8 @@ Upon `npm run`, this repository will install some githooks which automatically l
 - eslint
 - jest testing
 - At least 10 letters and first letter capital commit messages.
+
+## Release process
+- npm run verbump major/minor/patch message
+- npm run deploy-to-gh-pages
+- git push --force origin gh-pages:gh-pages

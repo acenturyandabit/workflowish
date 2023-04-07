@@ -4,6 +4,7 @@
 - Partial implementation of deploy-to-github-pages script (hard because windows doesn't mix with bash)
 - Github pages build for Version v3.0.0
 - Github pages attempt in typescript
+- Refactor <Item> in preparation for Symlink
 
 # Version 3.0.0: Github release version 
 - Create base document

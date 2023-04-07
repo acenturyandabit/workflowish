@@ -2,21 +2,13 @@
 
 exports[`Renders an item 1`] = `
 <span
-  style={
-    {
-      "display": "flex",
-      "flexDirection": "column",
-      "width": "100%",
-    }
-  }
+  className="itemWrapperClass"
 >
   <span
     onContextMenu={[Function]}
     style={
       {
         "background": "",
-        "display": "inline-flex",
-        "width": "100%",
       }
     }
   >
@@ -31,7 +23,6 @@ exports[`Renders an item 1`] = `
     >
       ●
     </span>
-      
     <div
       contentEditable={true}
       dangerouslySetInnerHTML={
