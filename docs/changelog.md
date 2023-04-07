@@ -1,4 +1,4 @@
-# Latest 
+# Version 3.1.0: Deploy to github pages 
 - Add github todo-to-issue
 - Mass issue creation via todo-to-issue
 - Partial implementation of deploy-to-github-pages script (hard because windows doesn't mix with bash)
