@@ -1,4 +1,4 @@
-# Latest 
+# Version 3.2.0: Rudimentary symlinks 
 - Rudimentary (readonly) symlinks
 
 # Version 3.1.0: Deploy to github pages 
