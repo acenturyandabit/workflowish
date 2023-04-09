@@ -5,7 +5,7 @@
 - [ ] TODO: Special behavior for tabbing into a symlink
 - [ ] TODO: Allow scripting engine to arbitrarily add and delete items; and create symlinks.
 - [ ] TODO: Move Workflowy global out of scripting engine
-
+- [ ] TODO: Frontend version pinning for stability
 # Version 3.2
 `The multifile version`
 - [ ] TODO: [FIX] load button in file dialog actually merges with data lake not overwrites
@@ -25,6 +25,7 @@
 - [ ] TODO: Scripting: Add a console
 - [ ] TODO: Warn if unsaved before closing
 - [ ] TODO: Make Help dialog use the firstTimeDocument
+- [ ] TODO: Add type hints to script editor https://stackoverflow.com/questions/43037243/provide-type-hints-to-monaco-editor
 
 - [ ] TODO: Make load button on savesources overwrite existing coredatalake rather than merge
   - Allow appending imports in the text importer with a sync button, to allow incremental addition of items

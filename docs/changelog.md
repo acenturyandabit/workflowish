@@ -1,3 +1,6 @@
+# Latest 
+- Add workflowish item creation in script engine
+
 # Version 3.2.0: Rudimentary symlinks 
 - Rudimentary (readonly) symlinks
 

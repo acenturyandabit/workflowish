@@ -1,4 +1,6 @@
 /* The scripting engine exposes the following globals: */
+// TODO: instead of making this a plaintext file, wrap it in a monaco 
+// editor (or otherwise) so you get highlighting
 
 /* -----  Global variables ------ */
 // Anything declared in your script scope is guaranteed to persist 
@@ -12,7 +14,14 @@ instance.on("updateItem", (key, item)=>{
     // Do stuff with the item, e.g.
     console.log(item.data)
     item.data = item.data.replace("foo","bar")
-    
+
     // To save your changes:
     instance.updateItem(key, item);
+})
+
+/* ----- workflowy ---- */
+// Create a new list item:
+workflowy.createItem({
+    text: string,
+    parent: id (string) // optional
 })

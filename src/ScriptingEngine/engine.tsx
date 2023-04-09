@@ -1,4 +1,4 @@
-import { BaseStoreDataType } from "~CoreDataLake";
+import { BaseStoreDataType, makeNewUniqueKey } from "~CoreDataLake";
 import * as React from 'react';
 import { BaseItemType } from "~CoreDataLake";
 import getDiffsAndResolvedItems from "~CoreDataLake/getResolvedItems";
@@ -16,7 +16,7 @@ export const ScriptEngineInstance = (props: {
         if (userHasPressedRunButton) {
             return getHandlersFromUserScript({
                 script: props.script,
-                setData: setStoredRecords
+                getSetData: setStoredRecords
             })
         } else {
             return undefined
@@ -44,7 +44,7 @@ export const ScriptEngineInstance = (props: {
                 }
                 return newData;
             })
-        }else{
+        } else {
             setStoredRecords(props.data);
         }
     }, [props.data])
@@ -59,7 +59,7 @@ type UpdateItemHandler = (id: string, data: BaseItemType) => void;
 
 const getHandlersFromUserScript = (props: {
     script: string,
-    setData: React.Dispatch<React.SetStateAction<BaseStoreDataType>>
+    getSetData: React.Dispatch<React.SetStateAction<BaseStoreDataType>>
 }): UserScriptHandles => {
     let updatesStash: BaseStoreDataType = {};
     const handlerArrays = {
@@ -96,11 +96,11 @@ const getHandlersFromUserScript = (props: {
         },
         workflowish: {
             reparentItem: (id: string, newParent: string) => {
-                props.setData((data) => {
+                props.getSetData((data) => {
                     const childItem = data[id] as FlatItemData;
                     if (childItem) {
                         const lastParent = childItem.lastRememberedParent;
-                        if (lastParent != newParent){
+                        if (lastParent != newParent) {
                             if (lastParent) {
                                 const oldParentItem = JSON.parse(JSON.stringify(data[lastParent])) as FlatItemData
                                 oldParentItem.children.splice(oldParentItem.children.indexOf(id), 1);
@@ -116,6 +116,28 @@ const getHandlersFromUserScript = (props: {
                     }
                     return data;
                 })
+            },
+            createItem: (args: { text: string, parent?: string }) => {
+                props.getSetData((data) => {
+                    const id = makeNewUniqueKey();
+                    const newItem: FlatItemData = {
+                        lastModifiedUnixMillis: Date.now(),
+                        data: args.text,
+                        children: [],
+                        collapsed: false,
+                        lastRememberedParent: ""
+                    }
+                    if (args.parent) {
+                        const currentParentItem = data[args.parent] as FlatItemData;
+                        if (currentParentItem && currentParentItem.children) {
+                            const newParentItem = JSON.parse(JSON.stringify(currentParentItem)) as FlatItemData;
+                            newParentItem.children.push(id);
+                            updatesStash[args.parent] = newParentItem;
+                        }
+                    }
+                    updatesStash[id] = newItem;
+                    return data;
+                });
             }
         }
     }
