@@ -23,5 +23,6 @@ instance.on("updateItem", (key, item)=>{
 // Create a new list item:
 workflowy.createItem({
     text: string,
+    id: string, // optional
     parent: id (string) // optional
 })

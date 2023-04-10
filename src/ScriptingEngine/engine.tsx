@@ -117,9 +117,9 @@ const getHandlersFromUserScript = (props: {
                     return data;
                 })
             },
-            createItem: (args: { text: string, parent?: string }) => {
+            createItem: (args: { text: string, parent?: string, id?: string }) => {
                 props.getSetData((data) => {
-                    const id = makeNewUniqueKey();
+                    const id = args.id || makeNewUniqueKey();
                     const newItem: FlatItemData = {
                         lastModifiedUnixMillis: Date.now(),
                         data: args.text,
