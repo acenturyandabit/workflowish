@@ -5,6 +5,7 @@
 - Allow created items to have custom ID
 - Fix pre-commit hook not failing
 - Fix console warning about nested elements
+- Symlinked Nodes should not be readonly, only children should be readonly
 
 # Version 3.2.0: Rudimentary symlinks 
 - Rudimentary (readonly) symlinks

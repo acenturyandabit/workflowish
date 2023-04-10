@@ -57,7 +57,7 @@ export const EditableSection = (props: {
         }))
     }, [props.parentActions])
 
-    const onContenteditableChange = (props.item.symlinkedNode || props.styleParams.symlinkedParent) ?
+    const onContenteditableChange = (props.styleParams.symlinkedParent) ?
         (() => {/* read only*/ })
         : onContentChange;
 
