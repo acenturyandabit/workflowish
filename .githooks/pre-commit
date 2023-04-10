@@ -20,5 +20,6 @@ if ! (git status --porcelain=v1 | cut -c 1 | grep -e "[DAM]" > /dev/null) ; then
   exit 1
 fi
 
-npm run lint 
+set -e
+npm run lint
 npm run test

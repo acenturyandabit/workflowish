@@ -3,6 +3,7 @@
 - Refactor the help screen so it uses workflowky + add symlink info to help screen
 - Fix rearrangement with symlinks
 - Allow created items to have custom ID
+- Fix pre-commit hook not failing
 
 # Version 3.2.0: Rudimentary symlinks 
 - Rudimentary (readonly) symlinks
