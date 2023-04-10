@@ -46,18 +46,22 @@ export default (props: {
 
 const HelpNavbarAndDialog = () => {
     const [open, setOpen] = React.useState<boolean>(false);
+    const [helpDocLastOpen, refreshHelpDoc] = React.useState<number>(Date.now());
     return <li>
-        <Dialog open={open} onClose={() => setOpen(false)}>
+        <Dialog open={open}
+            onClose={() => setOpen(false)}
+            fullWidth
+            maxWidth="md">
             <DialogTitle>Help</DialogTitle>
             <DialogContent dividers={true}>
-                <DialogContentText>
-                    <HelpDocument></HelpDocument>
+                <DialogContentText className='viewContainer' style={{ color: "white" }}>
+                    <HelpDocument helpDocLastOpen={helpDocLastOpen}></HelpDocument>
                 </DialogContentText>
             </DialogContent>
             <DialogActions>
                 <Button onClick={() => setOpen(false)}>Close</Button>
             </DialogActions>
         </Dialog>
-        <a onClick={() => setOpen(true)}>Help</a>
+        <a onClick={() => { setOpen(true); refreshHelpDoc(Date.now()) }}>Help</a>
     </li>
 }

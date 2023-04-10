@@ -1,5 +1,6 @@
 # Latest 
 - Add workflowish item creation in script engine
+- Refactor the help screen so it uses workflowky + add symlink info to help screen
 
 # Version 3.2.0: Rudimentary symlinks 
 - Rudimentary (readonly) symlinks

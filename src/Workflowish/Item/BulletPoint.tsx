@@ -19,12 +19,14 @@ export const BulletPoint = (props: {
         (props.item.symlinkedNode && props.item.symlinkedNode.children.length > 0);
     return <span style={{
         paddingLeft: hasOrSymlinkedToChildren ? "0px" : "0.2em",
+        userSelect: 'none',
+        cursor: "pointer",
         color
     }}
-        onClick={() => props.parentActions.getSetSelf((self: ItemTreeNode) => ({
-            ...self,
-            collapsed: !self.collapsed
-        }))}
+    ><span onClick={() => props.parentActions.getSetSelf((self: ItemTreeNode) => ({
+        ...self,
+        collapsed: !self.collapsed
+    }))}
     >{(() => {
         let bullet = "\u25CF";
         if (props.styleParams.emptyList) bullet = ">";
@@ -33,10 +35,10 @@ export const BulletPoint = (props: {
             else bullet = "\u25b6";
         }
         return bullet;
-    })()}
+    })()}</span>
         {props.styleParams.showId ?
             <span style={{
-                fontSize: "10px", cursor: "pointer"
+                fontSize: "10px"
             }}
                 onClick={(event) => {
                     const { show, hideAll } = useContextMenu({

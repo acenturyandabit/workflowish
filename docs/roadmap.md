@@ -1,18 +1,16 @@
 # Version 3.1
 `The symlink version`
-- [ ] TODO: Refactor Workflowish to use Context and direct ID based set-ing
-- [ ] TODO: Add Symlinks
-- [ ] TODO: Special behavior for tabbing into a symlink
-- [ ] TODO: Allow scripting engine to arbitrarily add and delete items; and create symlinks.
+- [ ] TODO: Put symlinks in the tutorial
+- [ ] TODO: Refactor Workflowish to use Context and direct ID based set-ing to reduce dev complexity on symlinks
+- [ ] TODO: Add editable Symlinks
+- [ ] TODO: Make tab-indenting an item into/out of a symlink work
+- [ ] TODO: Allow scripting engine to arbitrarily delete items
 - [ ] TODO: Move Workflowy global out of scripting engine
+
+# Version 3.2: Presentability V2
 - [ ] TODO: Frontend version pinning for stability
-# Version 3.2
-`The multifile version`
-- [ ] TODO: [FIX] load button in file dialog actually merges with data lake not overwrites
-- [ ] TODO: Add an open different files dialog
-- [ ] TODO: Load configurations from query path, which inform file loading
-- [ ] TODO: Recent documents should show on open file menu
-- [ ] TODO: Visiting site with blank URL should show open file dialog
+- [ ] TODO: Automate build numbers
+
 
 # Version 3.2.1
 - [ ] TODO: Upgrade README screenshot to gif
@@ -47,3 +45,11 @@
 - [ ] TODO: [devops] Create config-fold-check to fold config files
 - [ ] TODO: [devops] Add structural readability checker
   - Main functions should go first.
+
+# Version 3.2
+`The nicer multifile version`
+- [ ] TODO: [FIX] load button in file dialog actually merges with data lake not overwrites
+- [ ] TODO: Add an open different files dialog
+- [ ] TODO: Load configurations from query path, which inform file loading
+- [ ] TODO: Recent documents should show on open file menu
+- [ ] TODO: Visiting site with blank URL should show open file dialog

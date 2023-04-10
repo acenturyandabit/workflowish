@@ -13,15 +13,20 @@ exports[`Renders an item 1`] = `
     }
   >
     <span
-      onClick={[Function]}
       style={
         {
           "color": "white",
+          "cursor": "pointer",
           "paddingLeft": "0.2em",
+          "userSelect": "none",
         }
       }
     >
-      ●
+      <span
+        onClick={[Function]}
+      >
+        ●
+      </span>
     </span>
     <div
       contentEditable={true}

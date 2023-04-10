@@ -118,7 +118,7 @@ const isValidTreeObject = (item: BaseItemType) => {
 }
 
 type Queue<T> = Array<T>;
-const fromTree = (root: ItemTreeNode): FlatItemBlob => {
+export const fromTree = (root: ItemTreeNode): FlatItemBlob => {
     const flatBlob: FlatItemBlob = {};
     const lastRememberedParent: Record<string, string> = {};
     const nodeStack: Queue<ItemTreeNode> = [root];

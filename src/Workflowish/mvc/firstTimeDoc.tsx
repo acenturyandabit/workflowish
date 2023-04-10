@@ -3,6 +3,7 @@ import { ItemTreeNode } from "./model";
 
 type DeflatedItemTreeNode = {
     data: string,
+    id?: string
     children?: Array<DeflatedItemTreeNode | string>,
     collapsed?: boolean
 }
@@ -12,14 +13,24 @@ export const generateFirstTimeDoc = (): ItemTreeNode => {
         data: "__root",
         children: [
             "Welcome to Workflowish!",
-            "Workflowish is a simple recursive listing app.",
+            {
+                data: "Workflowish is a simple recursive listing app.",
+                collapsed: true,
+                children: [
+                    "With a few nifty tricks up its sleeve, like:",
+                    { data: "[LN: symlink_id]", collapsed: true },
+                    { data: "[LN: scripting_engine]", collapsed: true }
+                ]
+            },
             {
                 data: "This means you can nest bullet points...",
                 children: [{
                     data: "Like this,",
                     children: [{
                         data: "And this,",
-                        children: ["And so on."]
+                        children: [{
+                            data: "And so on."
+                        }]
                     }]
                 }]
             },
@@ -64,10 +75,24 @@ export const generateFirstTimeDoc = (): ItemTreeNode => {
                 }]
             },
             {
-                data: "As an extra treat for superusers out there, Workflowish also comes with a scripting engine that allows you to automate your workflows!",
+                data: "As an extra treat for superusers out there, Workflowish also comes with:",
                 collapsed: true,
                 children: [
-                    "See the Scripts menu for more information."
+                    {
+                        data: "A scripting engine to automate your workflow!",
+                        children: ["See the Scripts menu for more information."],
+                        id: "scripting_engine",
+                        collapsed: true
+                    },
+                    {
+                        data: "Symbolic links!",
+                        id: "symlink_id",
+                        children: [
+                            "Write \\[LN: <item id>\\] to create a link to another item.",
+                            "You can determine item IDs by pressing ALT+SHIFT, then clicking on the ID to copy it to your clipboard.",
+                            "Symlinked items have their own collapsed state.",
+                        ]
+                    }
                 ]
             }
         ]
@@ -88,7 +113,7 @@ const fromNestedRecord = (root: DeflatedItemTreeNode | string, id?: string): Ite
         }
     } else return {
         lastModifiedUnixMillis: Date.now(),
-        id: id || makeNewUniqueKey(),
+        id: id || root.id || makeNewUniqueKey(),
         data: root.data,
         children: root.children?.map(i => fromNestedRecord(i)) || [],
         collapsed: root.collapsed || false,
