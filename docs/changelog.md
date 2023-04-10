@@ -1,3 +1,6 @@
+# Latest 
+- Ability to use function to transform items (Not ideal yet - can't fetch arbitrary items synchronously)
+
 # Version 3.3.0: Miscellaneous Bugfixes 
 - Add workflowish item creation in script engine
 - Refactor the help screen so it uses workflowky + add symlink info to help screen

@@ -34,8 +34,13 @@ export const ScriptEngineInstance = (props: {
                 const modifiedKeysList: string[] = [];
                 for (const key in userModifiedItems) {
                     const oldItem = props.data[key];
-                    if (!oldItem || stringify(userModifiedItems[key]) != stringify(oldItem)) {
-                        newData[key] = { ...userModifiedItems[key], lastModifiedUnixMillis: Date.now() }
+                    let concreteUserModifiedItems: BaseItemType = userModifiedItems[key] as BaseItemType
+                    if (typeof userModifiedItems[key] == "function"){
+                        const updateFunction = userModifiedItems[key] as ((oldData: BaseItemType) => BaseItemType);
+                        concreteUserModifiedItems = updateFunction(oldItem);
+                    }
+                    if (!oldItem || stringify(concreteUserModifiedItems) != stringify(oldItem)) {
+                        newData[key] = { ...concreteUserModifiedItems, lastModifiedUnixMillis: Date.now() }
                         modifiedKeysList.push(key);
                     }
                 }
@@ -52,21 +57,22 @@ export const ScriptEngineInstance = (props: {
 }
 
 type UserScriptHandles = {
-    updateItems: (incomingDiffs: BaseStoreDataType) => BaseStoreDataType
+    updateItems: (incomingDiffs: BaseStoreDataType) => Record<string,DataUpdateOrFunction>
 }
 
+type DataUpdateOrFunction = BaseItemType | ((oldData: BaseItemType) => BaseItemType)
 type UpdateItemHandler = (id: string, data: BaseItemType) => void;
 
 const getHandlersFromUserScript = (props: {
     script: string,
     getSetData: React.Dispatch<React.SetStateAction<BaseStoreDataType>>
 }): UserScriptHandles => {
-    let updatesStash: BaseStoreDataType = {};
+    let updatesStash: Record<string,DataUpdateOrFunction> = {};
     const handlerArrays = {
         updateItems: [] as UpdateItemHandler[]
     }
     const handlers: UserScriptHandles = {
-        updateItems: (incomingDiffs: BaseStoreDataType): BaseStoreDataType => {
+        updateItems: (incomingDiffs: BaseStoreDataType): Record<string,DataUpdateOrFunction> => {
             for (const key in incomingDiffs) {
                 handlerArrays.updateItems.forEach(handler => {
                     try {
@@ -88,10 +94,8 @@ const getHandlersFromUserScript = (props: {
                     handlerArrays.updateItems.push(handler);
                 }
             },
-            updateItem: (id: string, data: BaseItemType) => {
-                updatesStash[id] = {
-                    ...data
-                }
+            updateItem: (id: string, dataOrFunction: DataUpdateOrFunction) => {
+                updatesStash[id] = dataOrFunction
             }
         },
         workflowish: {
