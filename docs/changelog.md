@@ -6,6 +6,7 @@
 - Fix pre-commit hook not failing
 - Fix console warning about nested elements
 - Symlinked Nodes should not be readonly, only children should be readonly
+- check for duplication in rendering process to reduce stray items
 
 # Version 3.2.0: Rudimentary symlinks 
 - Rudimentary (readonly) symlinks

@@ -80,7 +80,7 @@ const buildTree = (flatItemBlob: FlatItemBlob): ItemTreeNode => {
             const childWasDeleted = !(childId in treeConstructorRecord)
             return childWasDeleted ? null : treeConstructorRecord[childId]
         }).filter((nodeOrNull): nodeOrNull is ItemTreeNode => nodeOrNull != null);
-        treeConstructorRecord[nodeId].children = nodeChildInstances;
+        treeConstructorRecord[nodeId].children = deduplicate(nodeChildInstances);
         flatItemBlob[nodeId].children.forEach(childId => orphanedTreeItemCandidates.delete(childId))
 
         // Symlink linking
@@ -89,8 +89,6 @@ const buildTree = (flatItemBlob: FlatItemBlob): ItemTreeNode => {
             treeConstructorRecord[nodeId].symlinkedNode = treeConstructorRecord[symlinkMatch[1]];
         }
     }
-
-
 
     const virtualRootId = "__virtualRoot";
     let virtualRoot: ItemTreeNode;
@@ -115,6 +113,17 @@ const isValidTreeObject = (item: BaseItemType) => {
         "data" in item &&
         "collapsed" in item
     )
+}
+
+const deduplicate = (inArray: ItemTreeNode[]): ItemTreeNode[] => {
+    const seenStrs: Record<string, boolean> = {}
+    return inArray.filter(i=>{
+        if (seenStrs[i.id]) return false;
+        else{
+            seenStrs[i.id] = true;
+            return true;
+        }
+    })
 }
 
 type Queue<T> = Array<T>;
