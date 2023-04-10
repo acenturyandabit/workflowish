@@ -57,6 +57,9 @@ export const EditableSection = (props: {
         }))
     }, [props.parentActions])
 
+    const onContenteditableChange = (props.item.symlinkedNode || props.styleParams.symlinkedParent) ?
+        ((evt: ContentEditableEvent) => {/* read only*/ })
+        : onContentChange;
 
     const memoizedInnerRef = React.useCallback(
         (contenteditableElement: HTMLElement) => {
@@ -64,41 +67,14 @@ export const EditableSection = (props: {
         }
         , []);
 
-    let contenteditables: React.ReactElement;
-    if (props.styleParams.symlinkedParent) {
-        contenteditables = <ContentEditable
-            innerRef={memoizedInnerRef}
-            html={props.item.data}
-            onChange={() => {
-                //readonly
-            }}
+    const symlinkText = props.item.symlinkedNode ? <>
+        &nbsp;
+        <span
             onKeyDown={onKeyDown}
             onClick={props.onFocusClick}
             style={{ flex: "1 1 auto" }}
-        ></ContentEditable>
-    } else if (!props.item.symlinkedNode) {
-        contenteditables = <ContentEditable
-            innerRef={memoizedInnerRef}
-            html={props.item.data}
-            onChange={onContentChange}
-            onKeyDown={onKeyDown}
-            onClick={props.onFocusClick}
-            style={{ flex: "1 1 auto" }}
-        ></ContentEditable>
-    } else {
-        contenteditables = <>
-            <ContentEditable
-                innerRef={memoizedInnerRef}
-                html={props.item.data}
-                onChange={onContentChange}
-                onKeyDown={onKeyDown}
-                style={{ flex: "0 0 auto" }}
-            ></ContentEditable>&nbsp;<span
-                onKeyDown={onKeyDown}
-                onClick={props.onFocusClick}
-                style={{ flex: "1 1 auto" }}
-            >{props.item.symlinkedNode.data}</span> </>
-    }
+        >{props.item.symlinkedNode.data}</span>
+    </> : null;
 
     return <span style={{ background: props.item.searchHighlight == "SEARCH_TARGET" ? "blue" : "" }}
         onContextMenu={contextEventHandler(props.parentActions)}>
@@ -108,7 +84,16 @@ export const EditableSection = (props: {
             styleParams={props.styleParams}
             shouldUncollapse={props.shouldUncollapse}
         ></BulletPoint>
-        {contenteditables}
+        {/* The contentEditable needs to persist regardless of whether it is a symlink in order for focus to work correctly */}
+        <ContentEditable
+            innerRef={memoizedInnerRef}
+            html={props.item.data}
+            onChange={onContenteditableChange}
+            onKeyDown={onKeyDown}
+            onClick={props.onFocusClick}
+            style={props.item.symlinkedNode ? { flex: "0 0 auto" } : { flex: "1 1 auto" }}
+        ></ContentEditable>
+        {symlinkText}
     </span>
 }
 
