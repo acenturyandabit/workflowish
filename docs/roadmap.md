@@ -1,20 +1,18 @@
-# Version 3.1
+# Version 3.4
 `The symlink version`
-- [ ] TODO: Put symlinks in the tutorial
 - [ ] TODO: Refactor Workflowish to use Context and direct ID based set-ing to reduce dev complexity on symlinks
 - [ ] TODO: Add editable Symlinks
 - [ ] TODO: Make tab-indenting an item into/out of a symlink work
 - [ ] TODO: Allow scripting engine to arbitrarily delete items
 - [ ] TODO: Move Workflowy global out of scripting engine
 
-# Version 3.2: Presentability V2
+# Version 3.5: Presentability V2
 - [ ] TODO: Frontend version pinning for stability
 - [ ] TODO: Automate build numbers
+- [ ] TODO: Better password entry dialog
 
-
-# Version 3.2.1
+# Version 3.5.1
 - [ ] TODO: Upgrade README screenshot to gif
-- [ ] TODO: better password entry dialog
 - [ ] TODO: Check up on feature documentation
 - [ ] TODO: Visiting site with blank URL should load last opened document
 - [ ] TODO: Little popup from savesources to give user extra peace of mind when ctrl-s is pressed

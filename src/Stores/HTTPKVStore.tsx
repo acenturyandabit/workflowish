@@ -9,6 +9,7 @@ export interface HTTPKVStoreSettings extends KVStoreSettingsStruct {
     saveURL: string
     loadURL: string
     syncURL: string
+    passwordPrefix: string
     usePassword?: boolean
 }
 
@@ -31,6 +32,7 @@ class HTTPKVStore implements
                 saveURL: "",
                 loadURL: "",
                 syncURL: "",
+                passwordPrefix: "",
                 usePassword: false
             };
         }
@@ -78,7 +80,7 @@ class HTTPKVStore implements
                     }}
                 />
                 <FormControlLabel
-                    sx={{ width: "100%" }}
+                    sx={{ width: "100%", mb: 2 }}
                     control={<Checkbox
                         checked={this.settings.usePassword}
                         onChange={(evt) => {
@@ -88,6 +90,19 @@ class HTTPKVStore implements
                     />}
                     label={"Use Password (Prompts on load - press 'load' to retry password)"}
                 />
+                {this.settings.usePassword ? <>
+                    <br></br>
+                    <TextField
+                        label="Password Prefix (optional) - browser remembers this"
+                        type="password"
+                        value={this.settings.passwordPrefix}
+                        fullWidth
+                        onChange={(evt) => {
+                            this.settings.passwordPrefix = evt.target.value;
+                            bumpKVStores();
+                        }}
+                    />
+                </> : null}
             </>
         )
     }
@@ -115,8 +130,6 @@ class HTTPKVStore implements
 
     async load(): Promise<BaseStoreDataType> {
         if (this.settings.usePassword && !this.password) {
-            // TODO: Better security
-
             // TODO: Better password prompting
             this.password = prompt("Please enter your password for " + this.settings.loadURL) || "";
         }
@@ -126,7 +139,7 @@ class HTTPKVStore implements
 
     async authedFetch(url: string, args?: RequestInit): Promise<ReturnType<typeof fetch>> {
         const headers = new Headers(args?.headers)
-        if (this.password) headers.set("password", this.password);
+        if (this.password) headers.set("password", this.settings.passwordPrefix + this.password);
         return await fetch(url, {
             ...args,
             headers: headers,
