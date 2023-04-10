@@ -58,7 +58,7 @@ export const EditableSection = (props: {
     }, [props.parentActions])
 
     const onContenteditableChange = (props.item.symlinkedNode || props.styleParams.symlinkedParent) ?
-        ((evt: ContentEditableEvent) => {/* read only*/ })
+        (() => {/* read only*/ })
         : onContentChange;
 
     const memoizedInnerRef = React.useCallback(

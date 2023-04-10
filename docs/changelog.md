@@ -4,6 +4,7 @@
 - Fix rearrangement with symlinks
 - Allow created items to have custom ID
 - Fix pre-commit hook not failing
+- Fix console warning about nested elements
 
 # Version 3.2.0: Rudimentary symlinks 
 - Rudimentary (readonly) symlinks

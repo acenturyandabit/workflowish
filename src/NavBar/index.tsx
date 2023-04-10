@@ -3,7 +3,6 @@ import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 
 import "./index.css"
@@ -53,10 +52,8 @@ const HelpNavbarAndDialog = () => {
             fullWidth
             maxWidth="md">
             <DialogTitle>Help</DialogTitle>
-            <DialogContent dividers={true}>
-                <DialogContentText className='viewContainer' style={{ color: "white" }}>
-                    <HelpDocument helpDocLastOpen={helpDocLastOpen}></HelpDocument>
-                </DialogContentText>
+            <DialogContent className='viewContainer' style={{ color: "white" }} dividers={true}>
+                <HelpDocument helpDocLastOpen={helpDocLastOpen}></HelpDocument>
             </DialogContent>
             <DialogActions>
                 <Button onClick={() => setOpen(false)}>Close</Button>
