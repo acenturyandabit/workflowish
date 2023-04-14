@@ -14,6 +14,7 @@ export default (props: {
     data: BaseStoreDataType,
     updateData: React.Dispatch<React.SetStateAction<BaseStoreDataType>>
 }) => {
+    const [focusText, setFocusText] = React.useState<string>(""); // created a state to get search focus
     const [searchText, setSearchText] = React.useState<string>("");
     const [unfilteredTodoItems, getSetTodoItems] = transformData({
         data: props.data,
@@ -30,7 +31,15 @@ export default (props: {
             if (evt.key == "Alt") evt.preventDefault();
         }
         window.addEventListener("keydown", altModifyToggle);
-        window.addEventListener("keyup", altModifyToggle);
+        window.addEventListener("keyup", altModifyToggle);       
+        // listens ctrl+f function
+        window.addEventListener("keydown", function (e) {
+          if (e.keyCode === 114 || (e.ctrlKey && e.keyCode === 70)) {
+            e.preventDefault();
+            const val = Math.floor(Math.random() * 99999);
+            setFocusText(val.toString());
+          }
+        });
         return () => {
             window.removeEventListener("keydown", altModifyToggle);
             window.removeEventListener("keyup", altModifyToggle);
@@ -38,6 +47,7 @@ export default (props: {
     }, [])
     return <div style={{ height: "100%", display: "flex", flexDirection: "column" }}>
         <SearchBar
+            focusRef={focusText} // focus ref as props
             searchText={searchText}
             setSearchText={setSearchText}
         ></SearchBar>
