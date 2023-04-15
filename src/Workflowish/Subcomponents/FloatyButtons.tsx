@@ -1,6 +1,6 @@
 import * as React from 'react';
 import "./FloatyButtons.css"
-import { FocusedActionReceiver } from './Item';
+import { FocusedActionReceiver } from '../mvc/focusedActionReceiver';
 
 const tristateSwitches = ["shiftKey", "altKey", "ctrlKey"] as const;
 const tristates = ["ON", "HELD", "OFF"] as const;

@@ -13,7 +13,7 @@ export default () => {
 
   React.useEffect(() => {
     const keydownListener = (e: KeyboardEvent) => {
-      if (e.key == "s" && e.ctrlKey) {
+      if (e.key == "s" && (e.ctrlKey || e.metaKey)) {
         e.preventDefault();
         doSave();
       }

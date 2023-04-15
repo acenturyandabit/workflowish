@@ -1,18 +1,31 @@
 import * as React from 'react';
 import { ItemTreeNode } from '../mvc/model';
-import { useRef, useEffect } from "react";
 
 export default (props: {
-    focusRef: string; // focus ref as props
     searchText: string,
     setSearchText: React.Dispatch<React.SetStateAction<string>>
 }) => {
-    const inputReference = useRef(null);
-      useEffect(() => {
-        inputReference.current.focus();
-      }, [props.focusRef]);
+    const inputReference = React.useRef<HTMLInputElement>(null);
+    React.useEffect(() => {
+        const listenForCtrlF = (e: KeyboardEvent) => {
+            if (e.key == "f" && (e.ctrlKey || e.metaKey)) {
+                const userIsAlreadyInSearchBar = (inputReference.current == document.activeElement);
+                if (!userIsAlreadyInSearchBar){
+                    e.preventDefault();
+                    inputReference.current?.focus();
+                }
+            }
+        }
+        window.addEventListener("keydown", listenForCtrlF);
+        return () => window.removeEventListener("keydown", listenForCtrlF);
+    }, [inputReference.current]);
+
     return <div style={{ display: "flex", padding: "10px 10px 0 10px" }}>
-        <input ref={inputReference} /* focus ref to change the focus */ placeholder={"🔍 Search"} value={props.searchText} onChange={(evt) => props.setSearchText(evt.target.value)} style={{ flex: "1 0 auto", padding: "2px" }}></input>
+        <input ref={inputReference}
+            placeholder={"🔍 Search"}
+            value={props.searchText}
+            onChange={(evt) => props.setSearchText(evt.target.value)}
+            style={{ flex: "1 0 auto", padding: "2px" }}></input>
     </div>
 }
 
