@@ -1,5 +1,5 @@
 import { makeNewUniqueKey } from "~CoreDataLake";
-import { ItemTreeNode } from "./model";
+import { ItemTreeNode, virtualRootId } from "./model";
 
 type DeflatedItemTreeNode = {
     data: string,
@@ -98,7 +98,7 @@ export const generateFirstTimeDoc = (): ItemTreeNode => {
         ]
 
     }
-    return fromNestedRecord(node, "__virtualRoot");
+    return fromNestedRecord(node, virtualRootId);
 }
 
 const fromNestedRecord = (root: DeflatedItemTreeNode | string, id?: string): ItemTreeNode => {

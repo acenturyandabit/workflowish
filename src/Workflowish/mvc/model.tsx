@@ -36,26 +36,30 @@ export const transformData = (props: {
     data: BaseStoreDataType,
     updateData: React.Dispatch<React.SetStateAction<BaseStoreDataType>>,
 }): [ItemTreeNode,
+        Record<string, ItemTreeNode>,
         React.Dispatch<React.SetStateAction<ItemTreeNode>>] => {
-    const currentTodoItems = buildTree(props.data as FlatItemBlob);
-    const setTodoItems = (todoItems: ItemTreeNode |
+    const [currentItemTree, keyedNodes] = buildTree(props.data as FlatItemBlob);
+    const getSetTodoItems = (todoItems: ItemTreeNode |
         ((currentTodoItems: ItemTreeNode) => ItemTreeNode)
     ) => {
         props.updateData((oldData) => {
             // TODO: Make Workflowish not have to update the entire tree.
             let todoItemsToSet: ItemTreeNode;
             if (todoItems instanceof Function) {
-                todoItemsToSet = todoItems(buildTree(oldData as FlatItemBlob))
+                const [oldItemTree] = buildTree(oldData as FlatItemBlob)
+                todoItemsToSet = todoItems(oldItemTree);
             } else {
                 todoItemsToSet = todoItems
             }
             return fromTree(todoItemsToSet)
         })
     }
-    return [currentTodoItems, setTodoItems];
+    return [currentItemTree, keyedNodes, getSetTodoItems];
 }
 
-const buildTree = (flatItemBlob: FlatItemBlob): ItemTreeNode => {
+export const virtualRootId = "__virtualRoot";
+
+const buildTree = (flatItemBlob: FlatItemBlob): [ItemTreeNode, Record<string, ItemTreeNode>] => {
     const treeConstructorRecord: Record<string,
         ItemTreeNode
     > = {};
@@ -90,13 +94,12 @@ const buildTree = (flatItemBlob: FlatItemBlob): ItemTreeNode => {
         }
     }
 
-    const virtualRootId = "__virtualRoot";
     let virtualRoot: ItemTreeNode;
     if (virtualRootId in treeConstructorRecord) {
         virtualRoot = treeConstructorRecord[virtualRootId];
     } else {
         virtualRoot = makeNewItem();
-        virtualRoot.id = "__virtualRoot";
+        virtualRoot.id = virtualRootId;
     }
     for (const orphanedId of orphanedTreeItemCandidates) {
         if (orphanedId != virtualRoot.id) virtualRoot.children.push(treeConstructorRecord[orphanedId]);
@@ -104,7 +107,7 @@ const buildTree = (flatItemBlob: FlatItemBlob): ItemTreeNode => {
     if (virtualRoot.children.length == 0) {
         virtualRoot = generateFirstTimeDoc();
     }
-    return virtualRoot;
+    return [virtualRoot, treeConstructorRecord];
 }
 
 const isValidTreeObject = (item: BaseItemType) => {
@@ -117,9 +120,9 @@ const isValidTreeObject = (item: BaseItemType) => {
 
 const deduplicate = (inArray: ItemTreeNode[]): ItemTreeNode[] => {
     const seenStrs: Record<string, boolean> = {}
-    return inArray.filter(i=>{
+    return inArray.filter(i => {
         if (seenStrs[i.id]) return false;
-        else{
+        else {
             seenStrs[i.id] = true;
             return true;
         }

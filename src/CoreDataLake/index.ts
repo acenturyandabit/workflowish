@@ -61,8 +61,11 @@ export const useCoreDataLake = (kvStores: KVStoresAndLoadedState): [
                         i.save(dataAndLoadState.data)
                     }
                 });
+                return { ...dataAndLoadState, changed: false }
+            }else{
+                // No need to update entire component tree
+                return dataAndLoadState;
             }
-            return { ...dataAndLoadState, changed: false }
         })
     }, [kvStores])
 
@@ -113,7 +116,7 @@ export const useCoreDataLake = (kvStores: KVStoresAndLoadedState): [
     return [dataAndLoadState, updateData, doSave]
 }
 
-const resolveAllDocuments = (documents: BaseStoreDataType[]): BaseStoreDataType => {
+export const resolveAllDocuments = (documents: BaseStoreDataType[]): BaseStoreDataType => {
     const mergedDocument: BaseStoreDataType = documents.reduce((mergedDoc, newDoc) => {
         const { resolved } = getDiffsAndResolvedItems(mergedDoc, newDoc);
         return resolved;

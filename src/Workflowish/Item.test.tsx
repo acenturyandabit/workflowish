@@ -8,7 +8,7 @@ const mockEmptyFunction = () => {
     // Mock empty
 }
 
-const dummyParentActions: ControllerActions = {
+const dummyactions: ControllerActions = {
     getSetSelf: mockEmptyFunction,
     createNewItem: mockEmptyFunction,
     deleteThisItem: mockEmptyFunction,
@@ -19,7 +19,8 @@ const dummyParentActions: ControllerActions = {
     indentSelf: mockEmptyFunction,
     unindentSelf: mockEmptyFunction,
     unindentGrandchild: mockEmptyFunction,
-    getSetSiblingArray: mockEmptyFunction
+    getSetSiblingArray: mockEmptyFunction,
+    getSetItems: mockEmptyFunction
 };
 
 it('Renders an item', () => {
@@ -34,7 +35,7 @@ it('Renders an item', () => {
                 searchHighlight: "NONE"
             }}
             pushRef={mockEmptyFunction}
-            parentActions={dummyParentActions}
+            actions={dummyactions}
             setFocusedActionReceiver={mockEmptyFunction}
             styleParams={{
                 showId: false

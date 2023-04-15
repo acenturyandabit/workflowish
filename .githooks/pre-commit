@@ -1,7 +1,7 @@
 #!/bin/bash
 
 
-if git status --porcelain=v1 | grep MM > /dev/null ; then
+if git status --porcelain=v1 | grep MM ; then
   cat << EOM
 
 Warning, you have double-modified uncommitted changes (above)!

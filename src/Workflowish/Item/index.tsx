@@ -27,7 +27,7 @@ const Item = (props: {
     styleParams: ItemStyleParams,
     item: ItemTreeNode,
     pushRef: (ref: FocusActions) => void,
-    parentActions: ControllerActions,
+    actions: ControllerActions,
     setFocusedActionReceiver: React.Dispatch<React.SetStateAction<FocusedActionReceiver>>
 }) => {
     const item = React.useRef(props.item);
@@ -53,7 +53,7 @@ const Item = (props: {
 
 
     const focusedActionReceiver = makeFocusedActionReceiver({
-        parentActions: props.parentActions,
+        actions: props.actions,
         itemsRefArray,
         item,
         focusThis
@@ -64,7 +64,7 @@ const Item = (props: {
         shouldUncollapse,
         itemsRefArray,
         thisContentEditable,
-        props.parentActions
+        props.actions
     );
     props.pushRef(parentFocusActions);
 
@@ -75,7 +75,7 @@ const Item = (props: {
             focusedActionReceiver={focusedActionReceiver}
             item={props.item}
             onFocusClick={focusThis}
-            parentActions={props.parentActions}
+            actions={props.actions}
             shouldUncollapse={shouldUncollapse}
             styleParams={props.styleParams}
         ></EditableSection>
@@ -84,7 +84,7 @@ const Item = (props: {
             itemsRefArray={itemsRefArray}
             parentFocusActions={parentFocusActions}
             setFocusedActionReceiver={props.setFocusedActionReceiver}
-            parentActions={props.parentActions}
+            actions={props.actions}
             shouldUncollapse={shouldUncollapse}
             styleParams={props.styleParams}
         ></ChildItems>

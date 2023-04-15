@@ -7,7 +7,7 @@ import { SIDECLIP_CONTEXT_MENU_ID } from '~Workflowish/Subcomponents/ContextMenu
 
 export const BulletPoint = (props: {
     item: ItemTreeNode,
-    parentActions: ControllerActions,
+    actions: ControllerActions,
     styleParams: ItemStyleParams,
     shouldUncollapse: boolean
 }) => {
@@ -23,7 +23,7 @@ export const BulletPoint = (props: {
         cursor: "pointer",
         color
     }}
-    ><span onClick={() => props.parentActions.getSetSelf((self: ItemTreeNode) => ({
+    ><span onClick={() => props.actions.getSetSelf((self: ItemTreeNode) => ({
         ...self,
         collapsed: !self.collapsed
     }))}

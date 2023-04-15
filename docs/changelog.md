@@ -1,5 +1,6 @@
 # Latest 
 - Ability to use function to transform items (Not ideal yet - can't fetch arbitrary items synchronously)
+- Allow indenting in and out of symlinks
 
 # Version 3.3.0: Miscellaneous Bugfixes 
 - Add workflowish item creation in script engine

@@ -4,12 +4,86 @@ import Item, { FocusActions, ItemStyleParams } from ".";
 import { ControllerActions, makeListActions, TreeNodeArrayGetSetter } from "../mvc/controller"
 import { FocusedActionReceiver } from "~Workflowish/mvc/focusedActionReceiver";
 
+export const ChildItems = (props: {
+    shouldUncollapse: boolean,
+    item: ItemTreeNode,
+    styleParams: ItemStyleParams,
+    itemsRefArray: React.MutableRefObject<(FocusActions | null)[]>,
+    setFocusedActionReceiver: React.Dispatch<React.SetStateAction<FocusedActionReceiver>>,
+    actions: ControllerActions,
+    parentFocusActions: ReturnType<typeof makeParentFocusActions>
+}) => {
+    let childrenToRender: ItemTreeNode[] = props.item.symlinkedNode ?
+        props.item.symlinkedNode.children :
+        props.item.children;
+    if (props.item.id == props.styleParams.symlinkedParent){
+        childrenToRender = [{
+            data: "Infinite loop...",
+            lastModifiedUnixMillis: 0,
+            id: "",
+            children:[],
+            collapsed: true,
+            searchHighlight: "NONE"
+        }]
+    }
+
+    let getSetSiblingArray = (t: TreeNodeArrayGetSetter) => {
+        props.actions.getSetSelf((item) => ({
+            ...item,
+            children: t(item.children)
+        }))
+    };
+    if (props.item.symlinkedNode){
+        const symlinkedNode = props.item.symlinkedNode;
+        getSetSiblingArray = (t: TreeNodeArrayGetSetter) => {
+            props.actions.getSetItems([symlinkedNode.id], (items) => items.map(item => ({
+                ...item,
+                lastModifiedUnixMillis: Date.now(),
+                children: t(item.children)
+            })))
+        };
+    }
+
+
+    return <>
+        {props.shouldUncollapse ?
+            <div style={{
+                paddingLeft: "5px",
+                borderLeft: "1px solid white",
+                marginLeft: "0.5em"
+            }}>
+                {childrenToRender.map((item, ii) => (<Item
+                    key={ii}
+                    item={item}
+                    styleParams={{
+                        showId: props.styleParams.showId,
+                        symlinkedParent: props.item.symlinkedNode ? props.item.id : props.styleParams.symlinkedParent
+                    }}
+                    pushRef={(ref: FocusActions) => props.itemsRefArray.current[ii] = ref}
+                    setFocusedActionReceiver={props.setFocusedActionReceiver}
+                    actions={makeListActions({
+                        siblingsFocusActions: props.itemsRefArray,
+                        currentSiblingIdx: ii,
+                        getSetSiblingArray,
+                        unindentCaller: () => {
+                            props.actions.unindentGrandchild(ii);
+                        },
+                        parentFocusActions: props.parentFocusActions,
+                        getSetItems: props.actions.getSetItems,
+                        thisItem: props.item
+                    })}
+                ></Item>))}
+            </div > : null
+        }
+    </>
+};
+
 export const makeParentFocusActions = (
     focusThis: () => void,
     shouldUncollapse: boolean,
     itemsRefArray: React.MutableRefObject<(FocusActions | null)[]>,
     thisContentEditable: React.MutableRefObject<HTMLElement | null>,
-    parentActions: ControllerActions
+    actions: ControllerActions
 ) => ({
     focusThis,
     triggerFocusFromAbove: () => {
@@ -34,68 +108,10 @@ export const makeParentFocusActions = (
             }
         }
     },
-    focusMyNextSibling: parentActions.focusMyNextSibling,
+    focusMyNextSibling: actions.focusMyNextSibling,
     focusRecentlyIndentedItem: () => {
         setTimeout(() => {
             itemsRefArray.current?.[itemsRefArray.current.length - 1]?.focusThis();
         })
     }
 });
-
-export const ChildItems = (props: {
-    shouldUncollapse: boolean,
-    item: ItemTreeNode,
-    styleParams: ItemStyleParams,
-    itemsRefArray: React.MutableRefObject<(FocusActions | null)[]>,
-    setFocusedActionReceiver: React.Dispatch<React.SetStateAction<FocusedActionReceiver>>,
-    parentActions: ControllerActions,
-    parentFocusActions: ReturnType<typeof makeParentFocusActions>
-}) => {
-    let childrenToRender: ItemTreeNode[] = props.item.symlinkedNode ?
-        props.item.symlinkedNode.children :
-        props.item.children;
-    if (props.item.id == props.styleParams.symlinkedParent){
-        childrenToRender = [{
-            data: "Infinite loop...",
-            lastModifiedUnixMillis: 0,
-            id: "",
-            children:[],
-            collapsed: true,
-            searchHighlight: "NONE"
-        }]
-    }
-    return <>
-        {props.shouldUncollapse ?
-            <div style={{
-                paddingLeft: "5px",
-                borderLeft: "1px solid white",
-                marginLeft: "0.5em"
-            }}>
-                {childrenToRender.map((item, ii) => (<Item
-                    key={ii}
-                    item={item}
-                    styleParams={{
-                        showId: props.styleParams.showId,
-                        symlinkedParent: props.item.symlinkedNode ? props.item.id : props.styleParams.symlinkedParent
-                    }}
-                    pushRef={(ref: FocusActions) => props.itemsRefArray.current[ii] = ref}
-                    setFocusedActionReceiver={props.setFocusedActionReceiver}
-                    parentActions={makeListActions({
-                        siblingsFocusActions: props.itemsRefArray,
-                        currentSiblingIdx: ii,
-                        getSetSiblingArray: (t: TreeNodeArrayGetSetter) => {
-                            props.parentActions.getSetSelf((item) => ({
-                                ...item,
-                                children: t(item.children)
-                            }))
-                        },
-                        unindentCaller: () => {
-                            props.parentActions.unindentGrandchild(ii);
-                        },
-                        parentFocusActions: props.parentFocusActions
-                    })}
-                ></Item>))}
-            </div > : null
-        }
-    </>
-};

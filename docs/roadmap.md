@@ -1,8 +1,5 @@
 # Version 3.4
 `The symlink version`
-- [ ] TODO: Refactor Workflowish to use Context and direct ID based set-ing to reduce dev complexity on symlinks
-- [ ] TODO: Add editable Symlinks
-- [ ] TODO: Make tab-indenting an item into/out of a symlink work
 - [ ] TODO: Allow scripting engine to arbitrarily delete items
 - [ ] TODO: Move Workflowy global out of scripting engine
 
@@ -36,6 +33,9 @@
 - [ ] TODO: Refactor TextImportKVStore so that it doesn't use dirty this.settings hacks
 - [ ] TODO: Remove the notion of 'id' from items; replace with key
 - [ ] TODO: Fix mobile bug where on load, Enter key doesn't work because setFocusedActionReceiver is undefined
+- [ ] TODO: Clean / simplify controller
+  - There's a mix of focus and rearrangement - differentiate it
+  - can refactor getSetSelf so that it doesn't bubble up and it just sets self directly
 
 # Unroadmapped features
 - [ ] TODO: Better (hidden) password prompt

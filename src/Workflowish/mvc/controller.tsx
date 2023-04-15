@@ -2,7 +2,8 @@ import * as React from "react";
 import { FocusActions } from "../Item";
 import { ItemTreeNode, makeNewItem } from "./model";
 
-type TreeNodeGetSetter = (oldValue: ItemTreeNode) => ItemTreeNode;
+export type TreeNodeGetSetter = (oldValue: ItemTreeNode) => ItemTreeNode;
+export type TreeNodesGetSetter = (oldValue: ItemTreeNode[]) => ItemTreeNode[];
 export type TreeNodeArrayGetSetter = (oldValue: ItemTreeNode[]) => ItemTreeNode[];
 
 export type ControllerActions = {
@@ -16,7 +17,8 @@ export type ControllerActions = {
     indentSelf: () => void,
     unindentSelf: () => void,
     unindentGrandchild: (grandChildIdx: number) => void,
-    getSetSiblingArray: (t: TreeNodeArrayGetSetter) => void
+    getSetSiblingArray: (t: TreeNodeArrayGetSetter) => void,
+    getSetItems: (keys: string[], getSetter: TreeNodesGetSetter) => void
 }
 
 export const makeListActions = (props: {
@@ -25,7 +27,9 @@ export const makeListActions = (props: {
     siblingsFocusActions: React.RefObject<(FocusActions | null)[]>,
     unindentCaller: () => void,
     parentFocusActions: FocusActions
-    disableDelete?: () => boolean
+    disableDelete?: () => boolean,
+    getSetItems: (keys: string[], getSetter: TreeNodesGetSetter) => void,
+    thisItem: ItemTreeNode
 }): ControllerActions => ({
     createNewItem: () => {
         props.getSetSiblingArray((siblingArray) => {
@@ -100,34 +104,45 @@ export const makeListActions = (props: {
         })
     },
     indentSelf: () => {
-        props.getSetSiblingArray((siblingArray) => {
-            if (props.currentSiblingIdx > 0) {
-                const newSiblingArray = [...siblingArray];
-                const [thisItem] = newSiblingArray.splice(props.currentSiblingIdx, 1);
-                newSiblingArray[props.currentSiblingIdx - 1].children.push(thisItem);
-                newSiblingArray[props.currentSiblingIdx - 1].lastModifiedUnixMillis = Date.now()
-                newSiblingArray[props.currentSiblingIdx - 1].collapsed = false
+        if (props.currentSiblingIdx>0){
+            props.getSetItems([props.thisItem.id], ([thisItem]) => {
+                const changedItems = [thisItem];
+                const newSiblingArray = [...thisItem.children];
+                const child = newSiblingArray[props.currentSiblingIdx];
+                let newParentSibling = newSiblingArray[props.currentSiblingIdx-1];
+                if (newParentSibling.symlinkedNode) {
+                    newParentSibling = newParentSibling.symlinkedNode;
+                }
+                changedItems.push(newParentSibling);
+                newParentSibling.lastModifiedUnixMillis = Date.now();
+                newParentSibling.children.push(child);
+                
+                thisItem.children.splice(props.currentSiblingIdx, 1);
+                thisItem.lastModifiedUnixMillis = Date.now();
+                
                 props.siblingsFocusActions.current?.[props.currentSiblingIdx - 1]?.focusRecentlyIndentedItem();
-                return newSiblingArray;
-            } else {
-                return siblingArray;
-            }
-        })
+                return changedItems;
+            })
+        }
     },
     unindentSelf: props.unindentCaller,
     unindentGrandchild: (grandChildIdx: number) => {
-        props.getSetSiblingArray((siblingArray) => {
-            const newSiblingArray = [...siblingArray];
-
-            const child = newSiblingArray[props.currentSiblingIdx].children[grandChildIdx];
-            newSiblingArray[props.currentSiblingIdx].children.splice(grandChildIdx, 1);
-            newSiblingArray[props.currentSiblingIdx].lastModifiedUnixMillis = Date.now();
-
-            newSiblingArray.splice(props.currentSiblingIdx, 0, child);
+        props.getSetItems([props.thisItem.id], ([thisItem]) => {
+            const changedItems = [thisItem];
+            const newSiblingArray = [...thisItem.children];
+            let child = newSiblingArray[props.currentSiblingIdx];
+            if (child.symlinkedNode) {
+                child = child.symlinkedNode;
+            }
+            changedItems.push(child);
+            const [grandChild] = child.children.splice(grandChildIdx, 1);
             child.lastModifiedUnixMillis = Date.now();
-
+            
+            thisItem.children.splice(props.currentSiblingIdx, 0, grandChild);
+            thisItem.lastModifiedUnixMillis = Date.now();
+            
             props.siblingsFocusActions.current?.[props.currentSiblingIdx]?.focusThis();
-            return newSiblingArray;
+            return changedItems;
         })
     },
     getSetSelf: (getSetter: TreeNodeGetSetter) => {
@@ -141,5 +156,7 @@ export const makeListActions = (props: {
             return newSiblingArray;
         })
     },
+    getSetItems: props.getSetItems,
     getSetSiblingArray: props.getSetSiblingArray
+    // Todo: Do not expose the getSetSiblingArray - this encourages breaking separation of concerns
 });

@@ -28,7 +28,7 @@ export const dummyFocusedActionReciever = {
 }
 
 export const makeFocusedActionReceiver = (props: {
-    parentActions: ControllerActions,
+    actions: ControllerActions,
     itemsRefArray: React.MutableRefObject<(FocusActions | null)[]>
     item: React.MutableRefObject<ItemTreeNode>,
     focusThis: () => void
@@ -37,41 +37,41 @@ export const makeFocusedActionReceiver = (props: {
         keyCommand: (evt) => {
             if (evt.key == "Enter") {
                 if (evt.shiftKey) {
-                    props.parentActions.getSetSelf(oldSelf => ({
+                    props.actions.getSetSelf(oldSelf => ({
                         ...oldSelf,
                         children: [makeNewItem(), ...oldSelf.children]
                     }));
                     setTimeout(() => props.itemsRefArray.current?.[0]?.focusThis());
                 } else {
-                    props.parentActions.createNewItem();
+                    props.actions.createNewItem();
                 }
                 evt.preventDefault()
             }
             if (evt.key == "Tab") {
                 if (evt.shiftKey) {
-                    props.parentActions.unindentSelf();
+                    props.actions.unindentSelf();
                 } else {
-                    props.parentActions.indentSelf();
+                    props.actions.indentSelf();
                 }
                 evt.preventDefault()
             }
             if (evt.key == "ArrowUp") {
                 if (evt.altKey) {
-                    props.parentActions.putBeforePrev();
+                    props.actions.putBeforePrev();
                 } else if (evt.ctrlKey || evt.metaKey) {
-                    props.parentActions.getSetSelf(oldSelf => ({
+                    props.actions.getSetSelf(oldSelf => ({
                         ...oldSelf,
                         collapsed: true
                     }))
                 } else {
-                    props.parentActions.focusMyPrevSibling();
+                    props.actions.focusMyPrevSibling();
                 }
             }
             if (evt.key == "ArrowDown") {
                 if (evt.altKey) {
-                    props.parentActions.putAfterNext();
+                    props.actions.putAfterNext();
                 } else if (evt.ctrlKey || evt.metaKey) {
-                    props.parentActions.getSetSelf(oldSelf => ({
+                    props.actions.getSetSelf(oldSelf => ({
                         ...oldSelf,
                         collapsed: false
                     }))
@@ -80,13 +80,13 @@ export const makeFocusedActionReceiver = (props: {
                     if (!props.item.current.collapsed && childrenArray && childrenArray.length) {
                         childrenArray[0]?.triggerFocusFromAbove();
                     } else {
-                        props.parentActions.focusMyNextSibling();
+                        props.actions.focusMyNextSibling();
                     }
                 }
             }
             if (evt.key == "Backspace") {
                 if (props.item.current.data.length == 0) {
-                    props.parentActions.deleteThisItem();
+                    props.actions.deleteThisItem();
                     evt.preventDefault();
                 }
             }
