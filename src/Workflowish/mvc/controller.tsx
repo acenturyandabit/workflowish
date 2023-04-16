@@ -107,7 +107,11 @@ export const makeListActions = (props: {
         if (props.currentSiblingIdx>0){
             props.getSetItems([props.thisItem.id], ([thisItem]) => {
                 const changedItems = [thisItem];
-                const newSiblingArray = [...thisItem.children];
+                let oldSiblingArray = thisItem.children;
+                if (thisItem.symlinkedNode){
+                    oldSiblingArray = thisItem.symlinkedNode.children;
+                }
+                const newSiblingArray = [...oldSiblingArray];
                 const child = newSiblingArray[props.currentSiblingIdx];
                 let newParentSibling = newSiblingArray[props.currentSiblingIdx-1];
                 if (newParentSibling.symlinkedNode) {
@@ -117,7 +121,7 @@ export const makeListActions = (props: {
                 newParentSibling.lastModifiedUnixMillis = Date.now();
                 newParentSibling.children.push(child);
                 
-                thisItem.children.splice(props.currentSiblingIdx, 1);
+                oldSiblingArray.splice(props.currentSiblingIdx, 1);
                 thisItem.lastModifiedUnixMillis = Date.now();
                 
                 props.siblingsFocusActions.current?.[props.currentSiblingIdx - 1]?.focusRecentlyIndentedItem();
