@@ -107,9 +107,13 @@ export const makeListActions = (props: {
         if (props.currentSiblingIdx>0){
             props.getSetItems([props.thisItem.id], ([thisItem]) => {
                 const changedItems = [thisItem];
-                let oldSiblingArray = thisItem.children;
+                let oldSiblingArray: ItemTreeNode[];
                 if (thisItem.symlinkedNode){
                     oldSiblingArray = thisItem.symlinkedNode.children;
+                    thisItem.symlinkedNode.lastModifiedUnixMillis = Date.now();
+                }else{
+                    oldSiblingArray = thisItem.children;
+                    thisItem.lastModifiedUnixMillis = Date.now();
                 }
                 const newSiblingArray = [...oldSiblingArray];
                 const child = newSiblingArray[props.currentSiblingIdx];
@@ -122,7 +126,6 @@ export const makeListActions = (props: {
                 newParentSibling.children.push(child);
                 
                 oldSiblingArray.splice(props.currentSiblingIdx, 1);
-                thisItem.lastModifiedUnixMillis = Date.now();
                 
                 props.siblingsFocusActions.current?.[props.currentSiblingIdx - 1]?.focusRecentlyIndentedItem();
                 return changedItems;
@@ -133,7 +136,15 @@ export const makeListActions = (props: {
     unindentGrandchild: (grandChildIdx: number) => {
         props.getSetItems([props.thisItem.id], ([thisItem]) => {
             const changedItems = [thisItem];
-            const newSiblingArray = [...thisItem.children];
+            let oldSiblingArray: ItemTreeNode[];
+            if (thisItem.symlinkedNode){
+                oldSiblingArray = thisItem.symlinkedNode.children;
+                thisItem.symlinkedNode.lastModifiedUnixMillis = Date.now();
+            }else{
+                oldSiblingArray = thisItem.children;
+                thisItem.lastModifiedUnixMillis = Date.now();
+            }
+            const newSiblingArray = [...oldSiblingArray];
             let child = newSiblingArray[props.currentSiblingIdx];
             if (child.symlinkedNode) {
                 child = child.symlinkedNode;
@@ -142,10 +153,10 @@ export const makeListActions = (props: {
             const [grandChild] = child.children.splice(grandChildIdx, 1);
             child.lastModifiedUnixMillis = Date.now();
             
-            thisItem.children.splice(props.currentSiblingIdx, 0, grandChild);
-            thisItem.lastModifiedUnixMillis = Date.now();
-            
-            props.siblingsFocusActions.current?.[props.currentSiblingIdx]?.focusThis();
+            oldSiblingArray.splice(props.currentSiblingIdx+1, 0, grandChild);
+            setTimeout(()=>{
+                props.siblingsFocusActions.current?.[props.currentSiblingIdx+1]?.focusThis();
+            })
             return changedItems;
         })
     },
