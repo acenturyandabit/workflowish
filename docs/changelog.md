@@ -6,6 +6,7 @@
 - Fix issue where pressing tab on direct child of symlink crashes
 - Add smoke test for workflowish overall
 - Fixed unindent bug for symlinks
+- Make sure symlinked node is passed to update cycle
 
 # Version 3.3.0: Miscellaneous Bugfixes 
 - Add workflowish item creation in script engine

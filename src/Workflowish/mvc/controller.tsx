@@ -111,6 +111,7 @@ export const makeListActions = (props: {
                 if (thisItem.symlinkedNode){
                     oldSiblingArray = thisItem.symlinkedNode.children;
                     thisItem.symlinkedNode.lastModifiedUnixMillis = Date.now();
+                    changedItems.push(thisItem.symlinkedNode);
                 }else{
                     oldSiblingArray = thisItem.children;
                     thisItem.lastModifiedUnixMillis = Date.now();
@@ -140,6 +141,7 @@ export const makeListActions = (props: {
             if (thisItem.symlinkedNode){
                 oldSiblingArray = thisItem.symlinkedNode.children;
                 thisItem.symlinkedNode.lastModifiedUnixMillis = Date.now();
+                changedItems.push(thisItem.symlinkedNode);
             }else{
                 oldSiblingArray = thisItem.children;
                 thisItem.lastModifiedUnixMillis = Date.now();
