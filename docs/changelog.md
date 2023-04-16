@@ -4,6 +4,7 @@
 - Refactor CTRL-F to increase modularity and readability
 - Fix old update issue in symlink children
 - Fix issue where pressing tab on direct child of symlink crashes
+- Add smoke test for workflowish overall
 
 # Version 3.3.0: Miscellaneous Bugfixes 
 - Add workflowish item creation in script engine

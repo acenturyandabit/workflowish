@@ -1,8 +1,8 @@
 import * as renderer from 'react-test-renderer';
 import * as React from "react";
 import { it, expect } from '@jest/globals';
-import Item from "./Item"
-import { ControllerActions } from "./mvc/controller";
+import Item from "."
+import { ControllerActions } from "../mvc/controller";
 
 const mockEmptyFunction = () => {
     // Mock empty
