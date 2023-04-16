@@ -88,7 +88,8 @@ export const generateFirstTimeDoc = (): ItemTreeNode => {
                         data: "Symbolic links!",
                         id: "symlink_id",
                         children: [
-                            "Write \\[LN: <item id>\\] to create a link to another item.",
+                            "Write [LN: <item id>] to create a link to another item.",
+                            // TODO: Add a keyboard shortcut insetad of clicking on IDs.
                             "You can determine item IDs by pressing ALT+SHIFT, then clicking on the ID to copy it to your clipboard.",
                             "Symlinked items have their own collapsed state.",
                         ]

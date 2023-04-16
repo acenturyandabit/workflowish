@@ -3,7 +3,7 @@ import { BaseStoreDataType } from "~CoreDataLake";
 import { makeListActions, TreeNodeArrayGetSetter, TreeNodesGetSetter } from "./mvc/controller";
 import { FocusedActionReceiver, dummyFocusedActionReciever } from "./mvc/focusedActionReceiver"
 import Item, { FocusActions } from "./Item"
-import { ItemTreeNode, transformData, virtualRootId } from "./mvc/model"
+import { ItemTreeNode, TodoItemsGetSetterWithKeyedNodes, transformData, virtualRootId } from "./mvc/model"
 import { isMobile } from '~util/isMobile';
 import { FloatyButtons } from "./Subcomponents/FloatyButtons";
 import SearchBar, { searchTransform } from "./Subcomponents/SearchBar";
@@ -57,7 +57,7 @@ const ItemsList = (
     props: {
         itemTree: ItemTreeNode,
         setFocusedActionReceiver: React.Dispatch<React.SetStateAction<FocusedActionReceiver>>,
-        getSetTodoItems: React.Dispatch<React.SetStateAction<ItemTreeNode>>,
+        getSetTodoItems: TodoItemsGetSetterWithKeyedNodes,
         keyedNodes: Record<string, ItemTreeNode>,
         showIds: boolean
     }
@@ -109,10 +109,12 @@ const ItemsList = (
                 },
                 disableDelete: () => (props.itemTree.children.length == 1),
                 getSetItems: (keys: string[], getSetter: TreeNodesGetSetter) => {
-                    const oldItems = keys.map(key => props.keyedNodes[key])
-                    const newNodes = getSetter(oldItems);
-                    const newRootNode = mergeKeyedNodesAndTree(newNodes, props.keyedNodes[virtualRootId]);
-                    props.getSetTodoItems(newRootNode);
+                    props.getSetTodoItems((_,keyedNodes)=>{
+                        const oldItems = keys.map(key => keyedNodes[key])
+                        const newNodes = getSetter(oldItems);
+                        const newRootNode = mergeKeyedNodesAndTree(newNodes, keyedNodes[virtualRootId]);
+                        return newRootNode;
+                    });
                 },
                 thisItem: props.itemTree
             })}

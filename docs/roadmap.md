@@ -1,23 +1,29 @@
 # Version 3.4
 `The symlink version`
-- [ ] TODO: Allow scripting engine to arbitrarily delete items
-- [ ] TODO: Move Workflowy global out of scripting engine
+- [ ] TODO: CTRL+J to jump to symlinked item
+- [ ] TODO: better actual symlink: Make the [LN:] smaller (remove it and replace with unicode link?) and make it so you can edit the item that is being symlinked to
 
-# Version 3.5: Presentability V2
+# Version 3.4.1
+`Scripting engine upgrades`
 - [ ] TODO: Frontend version pinning for stability
+- [ ] TODO: Move Workflowy global out of scripting engine
+- [ ] TODO: Allow scripting engine to arbitrarily delete items
 - [ ] TODO: Automate build numbers
-- [ ] TODO: Better password entry dialog
+- [ ] TODO: Scripting: Add a console
 
 # Version 3.5.1
+`Extract Polycore as a design system`
+I want to use the underlying save system with another project.
+
+# Version 3.5.2
+- [ ] TODO: Better password entry dialog
 - [ ] TODO: Upgrade README screenshot to gif
 - [ ] TODO: Check up on feature documentation
 - [ ] TODO: Visiting site with blank URL should load last opened document
 - [ ] TODO: Little popup from savesources to give user extra peace of mind when ctrl-s is pressed
 - [ ] TODO: Alt + Enter will split a line down with the remaining text after the caret. Alt + Shift + Enter will make it a child.
 - [ ] TODO: Pressing Enter will either insert an item before OR after the current element, based on the current caret index (front or back)
-- [ ] TODO: Scripting: Add a console
 - [ ] TODO: Warn if unsaved before closing
-- [ ] TODO: Make Help dialog use the firstTimeDocument
 - [ ] TODO: Add type hints to script editor https://stackoverflow.com/questions/43037243/provide-type-hints-to-monaco-editor
 
 - [ ] TODO: Make load button on savesources overwrite existing coredatalake rather than merge

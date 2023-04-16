@@ -2,6 +2,7 @@
 - Ability to use function to transform items (Not ideal yet - can't fetch arbitrary items synchronously)
 - Allow indenting in and out of symlinks
 - Refactor CTRL-F to increase modularity and readability
+- Fix old update issue in symlink children
 
 # Version 3.3.0: Miscellaneous Bugfixes 
 - Add workflowish item creation in script engine

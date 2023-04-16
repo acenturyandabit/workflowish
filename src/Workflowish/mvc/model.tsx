@@ -32,22 +32,27 @@ export const makeNewItem = (): ItemTreeNode => ({
     collapsed: false
 });
 
+export type TodoItemsGetSetterWithKeyedNodes = (
+    getSetterOrTreeNode: (oldRoot: ItemTreeNode, oldKeyedNodes: Record<string, ItemTreeNode>) => ItemTreeNode 
+        | ItemTreeNode
+) => void
+
 export const transformData = (props: {
     data: BaseStoreDataType,
     updateData: React.Dispatch<React.SetStateAction<BaseStoreDataType>>,
 }): [ItemTreeNode,
         Record<string, ItemTreeNode>,
-        React.Dispatch<React.SetStateAction<ItemTreeNode>>] => {
+        TodoItemsGetSetterWithKeyedNodes] => {
     const [currentItemTree, keyedNodes] = buildTree(props.data as FlatItemBlob);
     const getSetTodoItems = (todoItems: ItemTreeNode |
-        ((currentTodoItems: ItemTreeNode) => ItemTreeNode)
+        ((currentTodoItems: ItemTreeNode, keyedTodoItems: Record<string, ItemTreeNode>) => ItemTreeNode)
     ) => {
         props.updateData((oldData) => {
             // TODO: Make Workflowish not have to update the entire tree.
             let todoItemsToSet: ItemTreeNode;
             if (todoItems instanceof Function) {
-                const [oldItemTree] = buildTree(oldData as FlatItemBlob)
-                todoItemsToSet = todoItems(oldItemTree);
+                const [oldItemTree, keyedNodes] = buildTree(oldData as FlatItemBlob)
+                todoItemsToSet = todoItems(oldItemTree, keyedNodes);
             } else {
                 todoItemsToSet = todoItems
             }
