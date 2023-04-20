@@ -10,6 +10,7 @@ import { FocusedActionReceiver } from '~Workflowish/mvc/focusedActionReceiver';
 import { useContextMenu } from 'react-contexify';
 import { BulletPoint } from './BulletPoint';
 
+const linkSymbol = "🔗:";
 
 export const EditableSection = (props: {
     item: ItemTreeNode,
@@ -29,13 +30,31 @@ export const EditableSection = (props: {
         allowedAttributes: { a: ["href"] }
     };
     const onContentChange = (evt: ContentEditableEvent) => {
-        props.actions.getSetSelf(oldSelf => ({
-            // this needs to be a getsetter as the useEffect is run only once, and so 
-            // the self item at construction time is outdated
-            ...oldSelf,
-            lastModifiedUnixMillis: Date.now(),
-            data: sanitizeHtml(evt.currentTarget.innerHTML, sanitizeConf)
-        }))
+        const itemsToFetch = [props.item.id];
+        if (props.item.symlinkedNode) {
+            itemsToFetch.push(props.item.symlinkedNode.id);
+        }
+        props.actions.getSetItems(itemsToFetch, (items: ItemTreeNode[]) => {
+            const currentItem = Object.assign({},items[0]);
+            const newData: string = sanitizeHtml(evt.currentTarget.innerHTML, sanitizeConf);
+            const returnNodes: ItemTreeNode[] = [];
+            if (currentItem.symlinkedNode) {
+                const isStillALink = newData.startsWith(linkSymbol);
+                if (isStillALink) {
+                    const symlinkedItem = Object.assign({},items[1]);
+                    symlinkedItem.data = newData.slice(linkSymbol.length);
+                    returnNodes.push(symlinkedItem);
+                } else {
+                    currentItem.data=`[LN: ${currentItem.symlinkedNode.id}`;
+                    returnNodes.push(currentItem);
+                }
+            }else{
+                currentItem.data = newData;
+                returnNodes.push(currentItem);
+            }
+            returnNodes.forEach(i=>i.lastModifiedUnixMillis=Date.now());
+            return returnNodes;
+        })
     } // Not sure why we used to use useCallback... --> delete this comment next revision
 
     const memoizedInnerRef = React.useCallback(
@@ -44,31 +63,9 @@ export const EditableSection = (props: {
         }
         , []);
 
-    let symlinkElement: React.ReactElement | null = null;
+    let htmlToShow = props.item.data;
     if (props.item.symlinkedNode) {
-        const symlinkedNode = props.item.symlinkedNode;
-        const onSymlinkContenteditableChange = (evt: ContentEditableEvent) => {
-            const sanitizeConf = {
-                allowedTags: ["b", "i", "a", "p"],
-                allowedAttributes: { a: ["href"] }
-            };
-            props.actions.getSetItems([symlinkedNode.id], oldSelfs => oldSelfs.map(oldSelf=>({
-                // this needs to be a getsetter as the useEffect is run only once, and so 
-                // the self item at construction time is outdated
-                ...oldSelf,
-                lastModifiedUnixMillis: Date.now(),
-                data: sanitizeHtml(evt.currentTarget.innerHTML, sanitizeConf)
-            })));
-        };
-        symlinkElement = <>
-            &nbsp;
-            <ContentEditable
-                onKeyDown={onKeyDown}
-                html={props.item.symlinkedNode.data}
-                onChange={onSymlinkContenteditableChange}
-                style={{ flex: "1 1 auto" }}
-            ></ContentEditable>
-        </>;
+        htmlToShow = linkSymbol + props.item.symlinkedNode.data;
     }
 
     return <span style={{ background: props.item.searchHighlight == "SEARCH_TARGET" ? "blue" : "" }}
@@ -82,13 +79,12 @@ export const EditableSection = (props: {
         {/* The contentEditable needs to persist regardless of whether it is a symlink in order for focus to work correctly */}
         <ContentEditable
             innerRef={memoizedInnerRef}
-            html={props.item.data}
+            html={htmlToShow}
             onChange={onContentChange}
             onKeyDown={onKeyDown}
             onClick={props.onFocusClick}
-            style={props.item.symlinkedNode ? { flex: "0 0 auto" } : { flex: "1 1 auto" }}
+            style={{ flex: "1 1 auto" }}
         ></ContentEditable>
-        {symlinkElement}
     </span>
 }
 
