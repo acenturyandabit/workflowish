@@ -5,6 +5,9 @@ import { ItemTreeNode } from "../mvc/model";
 import { EditableSection } from "./EditableSection";
 import "./index.css"
 import { ChildItems, makeParentFocusActions } from "./ChildItems";
+import { SIDECLIP_CONTEXT_MENU_ID } from '~Workflowish/Subcomponents/ContextMenu';
+import { TriggerEvent, useContextMenu } from 'react-contexify';
+
 
 export type FocusActions = {
     triggerFocusFromAbove: () => void;
@@ -27,6 +30,7 @@ const Item = (props: {
     styleParams: ItemStyleParams,
     item: ItemTreeNode,
     pushRef: (ref: FocusActions) => void,
+    pushRefGlobal: (ref: FocusActions, id: string) => void,
     actions: ControllerActions,
     setFocusedActionReceiver: React.Dispatch<React.SetStateAction<FocusedActionReceiver>>
 }) => {
@@ -52,10 +56,30 @@ const Item = (props: {
     }
 
 
+    const { show: showSideclipContextMenu, hideAll } = useContextMenu({
+        id: SIDECLIP_CONTEXT_MENU_ID,
+    });
+    const raiseContextCopyIdEvent = (event: TriggerEvent) => {
+        showSideclipContextMenu({ event });
+        setTimeout(hideAll, 400);
+        navigator.clipboard.writeText(props.item.id);
+    };
+
+    const jumpToSymlink = () => {
+        if (props.item.symlinkedNode) {
+            props.actions.focusItem(props.item.symlinkedNode.id);
+            return true;
+        }else{
+            return false;
+        }
+    }
+
     const focusedActionReceiver = makeFocusedActionReceiver({
         actions: props.actions,
         itemsRefArray,
         item,
+        raiseContextCopyIdEvent,
+        jumpToSymlink,
         focusThis
     })
 
@@ -67,6 +91,7 @@ const Item = (props: {
         props.actions
     );
     props.pushRef(parentFocusActions);
+    props.pushRefGlobal(parentFocusActions, props.item.id);
 
 
     return <span className="itemWrapperClass">
@@ -77,6 +102,7 @@ const Item = (props: {
             onFocusClick={focusThis}
             actions={props.actions}
             shouldUncollapse={shouldUncollapse}
+            raiseContextCopyIdEvent={raiseContextCopyIdEvent}
             styleParams={props.styleParams}
         ></EditableSection>
         <ChildItems
@@ -87,6 +113,7 @@ const Item = (props: {
             actions={props.actions}
             shouldUncollapse={shouldUncollapse}
             styleParams={props.styleParams}
+            pushRefGlobal={props.pushRefGlobal}
         ></ChildItems>
 
     </span >

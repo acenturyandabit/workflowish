@@ -4,9 +4,11 @@ import { FocusedActionReceiver } from '../mvc/focusedActionReceiver';
 
 const tristateSwitches = ["shiftKey", "altKey", "ctrlKey"] as const;
 const tristates = ["ON", "HELD", "OFF"] as const;
+export const MOBILE_ACTION_1 = "MOBILE_ACTION_1";
 type FloatyButtonTristates = {
     [key in typeof tristateSwitches[number]]: typeof tristates[number]
 }
+
 
 export const FloatyButtons = (props: {
     focusedActionReceiver: FocusedActionReceiver
@@ -87,6 +89,12 @@ export const FloatyButtons = (props: {
                 setTristates={setTristates}
                 focusedActionReceiver={props.focusedActionReceiver}
             />
+            <KeyButton
+                _key={MOBILE_ACTION_1}
+                text={"Act"}
+                setTristates={setTristates}
+                focusedActionReceiver={props.focusedActionReceiver}
+            />
         </span>
     </>
 }
@@ -125,10 +133,10 @@ const KeyButton = (props: {
     setTristates: React.Dispatch<React.SetStateAction<FloatyButtonTristates>>,
     focusedActionReceiver: FocusedActionReceiver
 }) => (
-    <button onClick={() => {
+    <button onClick={(rawEvent) => {
         props.setTristates(tristates => {
             const { event, resetTristates } = composeEvent(tristates, props._key);
-            props.focusedActionReceiver.keyCommand(event);
+            props.focusedActionReceiver.keyCommand(event, rawEvent);
             return resetTristates;
         })
     }}> {props.text} </button>

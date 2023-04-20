@@ -1,6 +1,8 @@
 import { FocusActions } from "~Workflowish/Item";
 import { ItemTreeNode, makeNewItem } from "./model";
 import { ControllerActions } from "./controller";
+import { TriggerEvent } from "react-contexify";
+import { MOBILE_ACTION_1 } from "~Workflowish/Subcomponents/FloatyButtons";
 
 export type FocusedActionReceiver =
     {
@@ -13,7 +15,8 @@ export type FocusedActionReceiver =
                 ctrlKey: boolean,
                 metaKey: boolean,
                 preventDefault: () => void
-            }
+            },
+            rawEvent: TriggerEvent
         ) => void,
         refocusSelf: () => void,
     };
@@ -31,10 +34,12 @@ export const makeFocusedActionReceiver = (props: {
     actions: ControllerActions,
     itemsRefArray: React.MutableRefObject<(FocusActions | null)[]>
     item: React.MutableRefObject<ItemTreeNode>,
+    raiseContextCopyIdEvent: (event: TriggerEvent) => void,
+    jumpToSymlink: () => boolean,
     focusThis: () => void
 }): FocusedActionReceiver => (
     {
-        keyCommand: (evt) => {
+        keyCommand: (evt, rawEvent) => {
             if (evt.key == "Enter") {
                 if (evt.shiftKey) {
                     props.actions.getSetSelf(oldSelf => ({
@@ -89,6 +94,12 @@ export const makeFocusedActionReceiver = (props: {
                     props.actions.deleteThisItem();
                     evt.preventDefault();
                 }
+            }
+            if ((evt.key.toLowerCase() == "c" || evt.key == MOBILE_ACTION_1) && evt.altKey && evt.shiftKey) {
+                props.raiseContextCopyIdEvent(rawEvent);
+            }
+            if ((evt.key.toLowerCase() == "j" || evt.key == MOBILE_ACTION_1) && (evt.ctrlKey || evt.metaKey)) {
+                if (props.jumpToSymlink()) rawEvent.preventDefault();
             }
         },
         refocusSelf: props.focusThis,

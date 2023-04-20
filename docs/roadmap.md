@@ -1,8 +1,3 @@
-# Version 3.4
-`The symlink version`
-- [ ] TODO: CTRL+J to jump to symlinked item
-- [ ] TODO: better actual symlink: Make the [LN:] smaller (remove it and replace with unicode link?) and make it so you can edit the item that is being symlinked to
-
 # Version 3.4.1
 `Scripting engine upgrades`
 - [ ] TODO: Frontend version pinning for stability
@@ -16,6 +11,7 @@
 I want to use the underlying save system with another project.
 
 # Version 3.5.2
+- [ ] TODO: Bug where CTRL+J won't work on collapsed items
 - [ ] TODO: Better password entry dialog
 - [ ] TODO: Upgrade README screenshot to gif
 - [ ] TODO: Check up on feature documentation

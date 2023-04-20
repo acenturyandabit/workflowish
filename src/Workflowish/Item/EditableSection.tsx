@@ -7,7 +7,7 @@ import { ITEM_CONTEXT_MENU_ID } from "../Subcomponents/ContextMenu";
 import { ControllerActions } from '~Workflowish/mvc/controller';
 import { ItemStyleParams } from '.';
 import { FocusedActionReceiver } from '~Workflowish/mvc/focusedActionReceiver';
-import { useContextMenu } from 'react-contexify';
+import { TriggerEvent, useContextMenu } from 'react-contexify';
 import { BulletPoint } from './BulletPoint';
 
 const linkSymbol = "🔗:";
@@ -19,10 +19,11 @@ export const EditableSection = (props: {
     actions: ControllerActions,
     styleParams: ItemStyleParams,
     focusedActionReceiver: FocusedActionReceiver,
+    raiseContextCopyIdEvent: (event: TriggerEvent) => void,
     onFocusClick: () => void
 }) => {
     const onKeyDown = (evt: React.KeyboardEvent) => {
-        props.focusedActionReceiver.keyCommand(evt);
+        props.focusedActionReceiver.keyCommand(evt,evt);
     }
 
     const sanitizeConf = {
@@ -74,6 +75,7 @@ export const EditableSection = (props: {
             item={props.item}
             actions={props.actions}
             styleParams={props.styleParams}
+            raiseContextCopyIdEvent={props.raiseContextCopyIdEvent}
             shouldUncollapse={props.shouldUncollapse}
         ></BulletPoint>
         {/* The contentEditable needs to persist regardless of whether it is a symlink in order for focus to work correctly */}

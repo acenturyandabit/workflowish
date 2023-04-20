@@ -12,6 +12,7 @@ export type ControllerActions = {
     deleteThisItem: () => void
     focusMyPrevSibling: () => void
     focusMyNextSibling: () => void
+    focusItem: (id: string) => void,
     putBeforePrev: () => void
     putAfterNext: () => void
     indentSelf: () => void,
@@ -29,7 +30,8 @@ export const makeListActions = (props: {
     parentFocusActions: FocusActions
     disableDelete?: () => boolean,
     getSetItems: (keys: string[], getSetter: TreeNodesGetSetter) => void,
-    thisItem: ItemTreeNode
+    thisItem: ItemTreeNode,
+    focusItem: (id: string) => void
 }): ControllerActions => ({
     createNewItem: () => {
         props.getSetSiblingArray((siblingArray) => {
@@ -78,6 +80,7 @@ export const makeListActions = (props: {
             }
         }
     },
+    focusItem: props.focusItem,
     putBeforePrev: () => {
         if (props.currentSiblingIdx > 0) {
             props.getSetSiblingArray((siblingArray) => {
@@ -104,30 +107,30 @@ export const makeListActions = (props: {
         })
     },
     indentSelf: () => {
-        if (props.currentSiblingIdx>0){
+        if (props.currentSiblingIdx > 0) {
             props.getSetItems([props.thisItem.id], ([thisItem]) => {
                 const changedItems = [thisItem];
                 let oldSiblingArray: ItemTreeNode[];
-                if (thisItem.symlinkedNode){
+                if (thisItem.symlinkedNode) {
                     oldSiblingArray = thisItem.symlinkedNode.children;
                     thisItem.symlinkedNode.lastModifiedUnixMillis = Date.now();
                     changedItems.push(thisItem.symlinkedNode);
-                }else{
+                } else {
                     oldSiblingArray = thisItem.children;
                     thisItem.lastModifiedUnixMillis = Date.now();
                 }
                 const newSiblingArray = [...oldSiblingArray];
                 const child = newSiblingArray[props.currentSiblingIdx];
-                let newParentSibling = newSiblingArray[props.currentSiblingIdx-1];
+                let newParentSibling = newSiblingArray[props.currentSiblingIdx - 1];
                 if (newParentSibling.symlinkedNode) {
                     newParentSibling = newParentSibling.symlinkedNode;
                 }
                 changedItems.push(newParentSibling);
                 newParentSibling.lastModifiedUnixMillis = Date.now();
                 newParentSibling.children.push(child);
-                
+
                 oldSiblingArray.splice(props.currentSiblingIdx, 1);
-                
+
                 props.siblingsFocusActions.current?.[props.currentSiblingIdx - 1]?.focusRecentlyIndentedItem();
                 return changedItems;
             })
@@ -138,11 +141,11 @@ export const makeListActions = (props: {
         props.getSetItems([props.thisItem.id], ([thisItem]) => {
             const changedItems = [thisItem];
             let oldSiblingArray: ItemTreeNode[];
-            if (thisItem.symlinkedNode){
+            if (thisItem.symlinkedNode) {
                 oldSiblingArray = thisItem.symlinkedNode.children;
                 thisItem.symlinkedNode.lastModifiedUnixMillis = Date.now();
                 changedItems.push(thisItem.symlinkedNode);
-            }else{
+            } else {
                 oldSiblingArray = thisItem.children;
                 thisItem.lastModifiedUnixMillis = Date.now();
             }
@@ -154,10 +157,10 @@ export const makeListActions = (props: {
             changedItems.push(child);
             const [grandChild] = child.children.splice(grandChildIdx, 1);
             child.lastModifiedUnixMillis = Date.now();
-            
-            oldSiblingArray.splice(props.currentSiblingIdx+1, 0, grandChild);
-            setTimeout(()=>{
-                props.siblingsFocusActions.current?.[props.currentSiblingIdx+1]?.focusThis();
+
+            oldSiblingArray.splice(props.currentSiblingIdx + 1, 0, grandChild);
+            setTimeout(() => {
+                props.siblingsFocusActions.current?.[props.currentSiblingIdx + 1]?.focusThis();
             })
             return changedItems;
         })

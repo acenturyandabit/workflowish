@@ -67,6 +67,7 @@ const ItemsList = (
         // Top level cannot take focus
     }
     const itemsRefArray = React.useRef<Array<FocusActions | null>>(nullSizedArrayForRefs);
+    const itemsRefDictionary: Record<string, FocusActions> = {};
     return <>{props.itemTree.children.map((item, ii) => {
         return (<Item
             key={ii}
@@ -76,6 +77,7 @@ const ItemsList = (
             }}
             item={item}
             pushRef={(ref: FocusActions) => itemsRefArray.current[ii] = ref}
+            pushRefGlobal={(ref: FocusActions, id: string) => { itemsRefDictionary[id] = ref }}
             setFocusedActionReceiver={props.setFocusedActionReceiver}
             actions={makeListActions({
                 siblingsFocusActions: itemsRefArray,
@@ -93,6 +95,9 @@ const ItemsList = (
                 unindentCaller: () => {
                     // cannot unindent at root level
                 },
+                focusItem: (id: string) => {
+                    itemsRefDictionary[id].focusThis();
+                },
                 parentFocusActions: {
                     triggerFocusFromAbove: topLevelTakeFocus,
                     triggerFocusFromBelow: topLevelTakeFocus,
@@ -109,7 +114,7 @@ const ItemsList = (
                 },
                 disableDelete: () => (props.itemTree.children.length == 1),
                 getSetItems: (keys: string[], getSetter: TreeNodesGetSetter) => {
-                    props.getSetTodoItems((_,keyedNodes)=>{
+                    props.getSetTodoItems((_, keyedNodes) => {
                         const oldItems = keys.map(key => keyedNodes[key])
                         const newNodes = getSetter(oldItems);
                         const newRootNode = mergeKeyedNodesAndTree(newNodes, keyedNodes[virtualRootId]);
@@ -140,7 +145,7 @@ const mergeKeyedNodesAndTree = (newNodes: ItemTreeNode[], oldRoot: ItemTreeNode)
                 newNodesByKey[child.id] || child
             );
             top.children.forEach(child => {
-                if (!cycleDetectionSet.has(child.id)){
+                if (!cycleDetectionSet.has(child.id)) {
                     cycleDetectionSet.add(child.id);
                     DFSStack.push(child)
                 }

@@ -11,7 +11,8 @@ export const ChildItems = (props: {
     itemsRefArray: React.MutableRefObject<(FocusActions | null)[]>,
     setFocusedActionReceiver: React.Dispatch<React.SetStateAction<FocusedActionReceiver>>,
     actions: ControllerActions,
-    parentFocusActions: ReturnType<typeof makeParentFocusActions>
+    parentFocusActions: ReturnType<typeof makeParentFocusActions>,
+    pushRefGlobal: (ref: FocusActions, id: string) => void
 }) => {
     let childrenToRender: ItemTreeNode[] = props.item.symlinkedNode ?
         props.item.symlinkedNode.children :
@@ -60,6 +61,7 @@ export const ChildItems = (props: {
                         symlinkedParent: props.item.symlinkedNode ? props.item.id : props.styleParams.symlinkedParent
                     }}
                     pushRef={(ref: FocusActions) => props.itemsRefArray.current[ii] = ref}
+                    pushRefGlobal={props.pushRefGlobal}
                     setFocusedActionReceiver={props.setFocusedActionReceiver}
                     actions={makeListActions({
                         siblingsFocusActions: props.itemsRefArray,
@@ -70,7 +72,8 @@ export const ChildItems = (props: {
                         },
                         parentFocusActions: props.parentFocusActions,
                         getSetItems: props.actions.getSetItems,
-                        thisItem: props.item
+                        thisItem: props.item,
+                        focusItem: props.actions.focusItem
                     })}
                 ></Item>))}
             </div > : null

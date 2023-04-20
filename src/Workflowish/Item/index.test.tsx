@@ -20,20 +20,22 @@ const dummyactions: ControllerActions = {
     unindentSelf: mockEmptyFunction,
     unindentGrandchild: mockEmptyFunction,
     getSetSiblingArray: mockEmptyFunction,
-    getSetItems: mockEmptyFunction
+    getSetItems: mockEmptyFunction,
+    focusItem: mockEmptyFunction
 };
 
 it('Renders an item', () => {
     const component = renderer.create(
         <Item
-            item={{
-                id: "test-id",
-                lastModifiedUnixMillis: 0,
-                data: "Hello world!",
-                children: [],
-                collapsed: true,
-                searchHighlight: "NONE"
-            }}
+        item={{
+            id: "test-id",
+            lastModifiedUnixMillis: 0,
+            data: "Hello world!",
+            children: [],
+            collapsed: true,
+            searchHighlight: "NONE"
+        }}
+            pushRefGlobal={mockEmptyFunction}
             pushRef={mockEmptyFunction}
             actions={dummyactions}
             setFocusedActionReceiver={mockEmptyFunction}

@@ -2,13 +2,13 @@ import * as React from 'react';
 import { ItemTreeNode } from "~Workflowish/mvc/model";
 import { ControllerActions } from "~Workflowish/mvc/controller";
 import { ItemStyleParams } from ".";
-import { useContextMenu } from 'react-contexify';
-import { SIDECLIP_CONTEXT_MENU_ID } from '~Workflowish/Subcomponents/ContextMenu';
+import { TriggerEvent } from 'react-contexify';
 
 export const BulletPoint = (props: {
     item: ItemTreeNode,
     actions: ControllerActions,
     styleParams: ItemStyleParams,
+    raiseContextCopyIdEvent: (event: TriggerEvent) => void,
     shouldUncollapse: boolean
 }) => {
     let color = "white";
@@ -37,18 +37,8 @@ export const BulletPoint = (props: {
         return bullet;
     })()}</span>
         {props.styleParams.showId ?
-            <span style={{
-                fontSize: "10px"
-            }}
-                onClick={(event) => {
-                    const { show, hideAll } = useContextMenu({
-                        id: SIDECLIP_CONTEXT_MENU_ID,
-                    });
-                    show({ event });
-                    setTimeout(hideAll, 400);
-                    navigator.clipboard.writeText(props.item.id);
-
-                }}
+            <span style={{ fontSize: "10px" }}
+                onClick={props.raiseContextCopyIdEvent}
             >{props.item.id}</span>
             : null}</span >;
 }
