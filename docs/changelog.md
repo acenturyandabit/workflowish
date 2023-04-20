@@ -1,4 +1,4 @@
-# Latest 
+# Version 3.4.0: The Symlink Version 
 - Ability to use function to transform items (Not ideal yet - can't fetch arbitrary items synchronously)
 - Allow indenting in and out of symlinks
 - Refactor CTRL-F to increase modularity and readability
