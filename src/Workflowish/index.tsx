@@ -25,8 +25,8 @@ export default (props: {
     return <div style={{ height: "100%", display: "flex", flexDirection: "column" }}>
         <ContextMenu></ContextMenu>
         <ModelContext.Provider value={unfileredRootNode}>
-            <SearchBarWrapper itemRefsDictionary={itemsRefDictionary.current} getSetTodoItems={getSetTodoItems}>
-                <div style={{ margin: "0 5px 10px 5px", flex: "1 0 auto" }}>
+            <div style={{ margin: "0 5px 10px 5px", flex: "1 0 auto" }}>
+                <SearchBarWrapper itemRefsDictionary={itemsRefDictionary.current} getSetTodoItems={getSetTodoItems}>
                     <ItemsList
                         showIds={showIds}
                         itemRefsDictionary={itemsRefDictionary.current}
@@ -34,8 +34,8 @@ export default (props: {
                         getSetTodoItems={getSetTodoItems}
                         keyedNodes={keyedNodes}
                     ></ItemsList>
-                </div>
-            </SearchBarWrapper>
+                </SearchBarWrapper>
+            </div>
         </ModelContext.Provider>
         {isMobile() ? <FloatyButtons focusedActionReceiver={focusedActionReceiver}></FloatyButtons> : null}
     </div>

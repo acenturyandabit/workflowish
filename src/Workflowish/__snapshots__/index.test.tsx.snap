@@ -11,22 +11,6 @@ exports[`Renders the new document if no document is provided 1`] = `
   }
 >
   <div
-    className="search-bar"
-  >
-    <input
-      onChange={[Function]}
-      onKeyDown={[Function]}
-      placeholder="🔍 Search"
-      style={
-        {
-          "flex": "1 0 auto",
-          "padding": "2px",
-        }
-      }
-      value=""
-    />
-  </div>
-  <div
     style={
       {
         "flex": "1 0 auto",
@@ -34,6 +18,22 @@ exports[`Renders the new document if no document is provided 1`] = `
       }
     }
   >
+    <div
+      className="search-bar"
+    >
+      <input
+        onChange={[Function]}
+        onKeyDown={[Function]}
+        placeholder="🔍 Search"
+        style={
+          {
+            "flex": "1 0 auto",
+            "padding": "2px",
+          }
+        }
+        value=""
+      />
+    </div>
     <span
       className="itemWrapperClass"
     >

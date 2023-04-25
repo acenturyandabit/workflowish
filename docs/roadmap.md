@@ -1,13 +1,19 @@
 # Verison 3.4.1
-`More useful search and jumping`
-- [ ] TODO: Bug where CTRL+J won't work on collapsed items
+`More useful search`
+- [ ] Fix bug where sticky fails on EXTREMELY long documents
 
 # Version 3.4.2
+`Symlinks via keyboard: Link-to command`
+- [ ] TODO: Bug where CTRL+J won't work on collapsed items
+
+
+# Version 3.4.3
 `Scripting engine upgrades`
 - [ ] TODO: Scripting: Add a console
 - [ ] TODO: Move Workflowy global out of scripting engine
 - [ ] TODO: Allow scripting engine to arbitrarily delete items
 - [ ] TODO: Automate build numbers
+
 
 # Version 3.5.1
 `Extract Polycore as a design system`

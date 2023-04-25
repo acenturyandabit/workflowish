@@ -4,6 +4,7 @@
 - Press enter to jump to searched item
 - Press enter to jump to searched item
 - Press enter to jump to searched item
+- Fix sticky search not sticking in extremely long documents
 
 # Version 3.4.0: The Symlink Version 
 - Ability to use function to transform items (Not ideal yet - can't fetch arbitrary items synchronously)
