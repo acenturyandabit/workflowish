@@ -6,18 +6,18 @@ import Item, { FocusActions } from "./Item"
 import { ItemTreeNode, TodoItemsGetSetterWithKeyedNodes, transformData, virtualRootId } from "./mvc/model"
 import { isMobile } from '~util/isMobile';
 import { FloatyButtons } from "./Subcomponents/FloatyButtons";
-import SearchBar, { searchTransform } from "./Subcomponents/SearchBar";
+import SearchBarWrapper from "./Subcomponents/SearchBar";
 import ContextMenu from "./Subcomponents/ContextMenu";
+import { ModelContext } from "./mvc/context";
 
 
 export default (props: {
     data: BaseStoreDataType,
     updateData: React.Dispatch<React.SetStateAction<BaseStoreDataType>>
 }) => {
-    const [unfilteredItemTree, keyedNodes, getSetTodoItems] = transformData(props);
+    const [unfileredRootNode, keyedNodes, getSetTodoItems] = transformData(props);
 
-    const [searchText, setSearchText] = React.useState<string>("");
-    const itemTree = searchTransform(unfilteredItemTree, searchText);
+
 
     const [focusedActionReceiver, setFocusedActionReceiver] = React.useState<FocusedActionReceiver>(dummyFocusedActionReciever);
 
@@ -25,17 +25,19 @@ export default (props: {
     React.useEffect(AltShouldToggleShowIds(setShowIds), []);
 
     return <div style={{ height: "100%", display: "flex", flexDirection: "column" }}>
-        <SearchBar searchText={searchText} setSearchText={setSearchText}></SearchBar>
         <ContextMenu></ContextMenu>
-        <div style={{ margin: "10px 5px", flex: "1 0 auto" }}>
-            <ItemsList
-                showIds={showIds}
-                itemTree={itemTree}
-                setFocusedActionReceiver={setFocusedActionReceiver}
-                getSetTodoItems={getSetTodoItems}
-                keyedNodes={keyedNodes}
-            ></ItemsList>
-        </div>
+        <ModelContext.Provider value={unfileredRootNode}>
+            <SearchBarWrapper>
+                <div style={{ margin: "10px 5px", flex: "1 0 auto" }}>
+                    <ItemsList
+                        showIds={showIds}
+                        setFocusedActionReceiver={setFocusedActionReceiver}
+                        getSetTodoItems={getSetTodoItems}
+                        keyedNodes={keyedNodes}
+                    ></ItemsList>
+                </div>
+            </SearchBarWrapper>
+        </ModelContext.Provider>
         {isMobile() ? <FloatyButtons focusedActionReceiver={focusedActionReceiver}></FloatyButtons> : null}
     </div>
 };
@@ -55,25 +57,25 @@ const AltShouldToggleShowIds = (setShowIds: React.Dispatch<React.SetStateAction<
 
 const ItemsList = (
     props: {
-        itemTree: ItemTreeNode,
         setFocusedActionReceiver: React.Dispatch<React.SetStateAction<FocusedActionReceiver>>,
         getSetTodoItems: TodoItemsGetSetterWithKeyedNodes,
         keyedNodes: Record<string, ItemTreeNode>,
         showIds: boolean
     }
 ) => {
-    const nullSizedArrayForRefs = Array(props.itemTree.children.length).fill(null);
+    const itemTree = React.useContext<ItemTreeNode>(ModelContext);
+    const nullSizedArrayForRefs = Array(itemTree.children.length).fill(null);
     const topLevelTakeFocus = () => {
         // Top level cannot take focus
     }
     const itemsRefArray = React.useRef<Array<FocusActions | null>>(nullSizedArrayForRefs);
     const [itemsRefDictionary,] = React.useState<Record<string, FocusActions>>({});
-    return <>{props.itemTree.children.map((item, ii) => {
+    return <>{itemTree.children.map((item, ii) => {
         return (<Item
             key={ii}
             styleParams={{
                 showId: props.showIds,
-                emptyList: props.itemTree.children.length == 1 && item.data == ""
+                emptyList: itemTree.children.length == 1 && item.data == ""
             }}
             item={item}
             pushRef={(ref: FocusActions) => itemsRefArray.current[ii] = ref}
@@ -105,14 +107,14 @@ const ItemsList = (
                     focusThisEnd: topLevelTakeFocus,
                     focusRecentlyIndentedItem: topLevelTakeFocus,
                     focusMyNextSibling: () => {
-                        if (ii < props.itemTree.children.length - 1) {
+                        if (ii < itemTree.children.length - 1) {
                             itemsRefArray.current[ii + 1]?.focusThis()
                         } else {
                             itemsRefArray.current[ii]?.focusThis()
                         }
                     },
                 },
-                disableDelete: () => (props.itemTree.children.length == 1),
+                disableDelete: () => (itemTree.children.length == 1),
                 getSetItems: (keys: string[], getSetter: TreeNodesGetSetter) => {
                     props.getSetTodoItems((_, keyedNodes) => {
                         const oldItems = keys.map(key => keyedNodes[key])
@@ -121,7 +123,7 @@ const ItemsList = (
                         return newRootNode;
                     });
                 },
-                thisItem: props.itemTree
+                thisItem: itemTree
             })}
         ></Item >)
     })}</>

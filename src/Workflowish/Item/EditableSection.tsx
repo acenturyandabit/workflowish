@@ -69,7 +69,7 @@ export const EditableSection = (props: {
         htmlToShow = linkSymbol + props.item.symlinkedNode.data;
     }
 
-    return <span style={{ background: props.item.searchHighlight == "SEARCH_TARGET" ? "blue" : "" }}
+    return <span style={{ background: props.item.searchHighlight.includes("SEARCH_TARGET") ? "blue" : "" }}
         onContextMenu={contextEventHandler(props.actions)}>
         <BulletPoint
             item={props.item}

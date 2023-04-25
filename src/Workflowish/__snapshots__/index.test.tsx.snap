@@ -126,7 +126,7 @@ exports[`Renders the new document if no document is provided 1`] = `
           contentEditable={true}
           dangerouslySetInnerHTML={
             {
-              "__html": "Workflowish is a simple recursive listing app.",
+              "__html": "Workflowish is a keyboard-focused nested listing app.",
             }
           }
           onBlur={[Function]}

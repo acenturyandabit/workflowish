@@ -1,6 +1,6 @@
 import * as React from "react";
 import { BaseItemType, BaseStoreDataType, makeNewUniqueKey, setToDeleted } from "~CoreDataLake";
-import { SearchOptions } from "../Subcomponents/SearchBar";
+import { HighlightStates } from "../Subcomponents/SearchBar";
 import { generateFirstTimeDoc } from "./firstTimeDoc";
 export type ItemTreeNode = {
     lastModifiedUnixMillis: number
@@ -8,7 +8,7 @@ export type ItemTreeNode = {
     data: string,
     children: ItemTreeNode[],
     collapsed: boolean,
-    searchHighlight: SearchOptions,
+    searchHighlight: HighlightStates[],
     markedForCleanup?: boolean,
     symlinkedNode?: ItemTreeNode
 }
@@ -28,7 +28,7 @@ export const makeNewItem = (): ItemTreeNode => ({
     lastModifiedUnixMillis: Date.now(),
     data: "",
     children: [],
-    searchHighlight: "NONE",
+    searchHighlight: [],
     collapsed: false
 });
 
@@ -78,7 +78,7 @@ const buildTree = (flatItemBlob: FlatItemBlob): [ItemTreeNode, Record<string, It
                 lastModifiedUnixMillis: flatItemBlob[nodeId].lastModifiedUnixMillis,
                 data: flatItemBlob[nodeId].data,
                 children: [],
-                searchHighlight: "NONE",
+                searchHighlight: [],
                 collapsed: flatItemBlob[nodeId].collapsed
             }
         }

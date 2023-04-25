@@ -1,5 +1,6 @@
 # Latest 
 - Fix minor focus bug
+- Fix bug where matches under an existing match arent revealed
 
 # Version 3.4.0: The Symlink Version 
 - Ability to use function to transform items (Not ideal yet - can't fetch arbitrary items synchronously)

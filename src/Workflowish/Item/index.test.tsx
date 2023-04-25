@@ -33,7 +33,7 @@ it('Renders an item', () => {
             data: "Hello world!",
             children: [],
             collapsed: true,
-            searchHighlight: "NONE"
+            searchHighlight: []
         }}
             pushRefGlobal={mockEmptyFunction}
             pushRef={mockEmptyFunction}

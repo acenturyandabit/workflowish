@@ -1,17 +1,21 @@
 # Version 3.4.1
+`omnibar version`
+- [ ] TODO: One clearly selected searched item; up and down to select item; enter to jump to item
+
+# Version 3.4.2
 `Scripting engine upgrades`
-- [ ] TODO: Frontend version pinning for stability
+- [ ] TODO: Scripting: Add a console
+- [ ] TODO: Bug where CTRL+J won't work on collapsed items
 - [ ] TODO: Move Workflowy global out of scripting engine
 - [ ] TODO: Allow scripting engine to arbitrarily delete items
 - [ ] TODO: Automate build numbers
-- [ ] TODO: Scripting: Add a console
 
 # Version 3.5.1
 `Extract Polycore as a design system`
+- [ ] TODO: Frontend version pinning for stability
 I want to use the underlying save system with another project.
 
 # Version 3.5.2
-- [ ] TODO: Bug where CTRL+J won't work on collapsed items
 - [ ] TODO: Better password entry dialog
 - [ ] TODO: Upgrade README screenshot to gif
 - [ ] TODO: Check up on feature documentation
@@ -21,7 +25,6 @@ I want to use the underlying save system with another project.
 - [ ] TODO: Pressing Enter will either insert an item before OR after the current element, based on the current caret index (front or back)
 - [ ] TODO: Warn if unsaved before closing
 - [ ] TODO: Add type hints to script editor https://stackoverflow.com/questions/43037243/provide-type-hints-to-monaco-editor
-
 - [ ] TODO: Make load button on savesources overwrite existing coredatalake rather than merge
   - Allow appending imports in the text importer with a sync button, to allow incremental addition of items
 

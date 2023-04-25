@@ -14,7 +14,7 @@ export const generateFirstTimeDoc = (): ItemTreeNode => {
         children: [
             "Welcome to Workflowish!",
             {
-                data: "Workflowish is a simple recursive listing app.",
+                data: "Workflowish is a keyboard-focused nested listing app.",
                 collapsed: true,
                 children: [
                     "With a few nifty tricks up its sleeve, like:",
@@ -112,7 +112,7 @@ const fromNestedRecord = (root: DeflatedItemTreeNode | string, id?: string): Ite
             data: root,
             children: [],
             collapsed: false,
-            searchHighlight: "NONE"
+            searchHighlight: []
         }
     } else return {
         lastModifiedUnixMillis: Date.now(),
@@ -120,6 +120,6 @@ const fromNestedRecord = (root: DeflatedItemTreeNode | string, id?: string): Ite
         data: root.data,
         children: root.children?.map(i => fromNestedRecord(i)) || [],
         collapsed: root.collapsed || false,
-        searchHighlight: "NONE"
+        searchHighlight: []
     }
 }

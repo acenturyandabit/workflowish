@@ -24,7 +24,7 @@ export type ItemStyleParams = {
     symlinkedParent?: string
 }
 
-const shouldBeUncollapsed = (item: ItemTreeNode): boolean => !item.collapsed || item.searchHighlight == "SEARCH_UNCOLLAPSE";
+const shouldBeUncollapsed = (item: ItemTreeNode): boolean => !item.collapsed || item.searchHighlight.includes("SEARCH_UNCOLLAPSE");
 
 const Item = (props: {
     styleParams: ItemStyleParams,
