@@ -1,5 +1,7 @@
 # Verison 3.4.1
 `More useful search and jumping`
+- [ ] TODO: Search bar should be pinned
+- [ ] TODO: Search highlighted items should scroll into view
 - [ ] TODO: Bug where CTRL+J won't work on collapsed items
 
 # Version 3.4.2

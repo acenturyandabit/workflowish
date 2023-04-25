@@ -2,6 +2,7 @@ import * as React from 'react';
 import { ItemTreeNode, TodoItemsGetSetterWithKeyedNodes, virtualRootId } from '../mvc/model';
 import { ModelContext } from '~Workflowish/mvc/context';
 import { FocusActions } from '~Workflowish/Item';
+import "./SearchBar.css"
 
 type SearchParams = {
     searchText: string,
@@ -62,7 +63,7 @@ const SearchBar = (props: {
 
     const matchMessage = props.nMatches > 0 ? `${props.searchParams.searchSelectionIdx + 1} / ${props.nMatches} matches` : "No matches"
 
-    return <div style={{ display: "flex", padding: "10px 10px 0 10px" }}>
+    return <div className="search-bar">
         <input ref={inputReference}
             placeholder={"🔍 Search"}
             value={props.searchParams.searchText}

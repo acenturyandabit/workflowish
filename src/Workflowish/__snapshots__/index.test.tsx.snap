@@ -11,12 +11,7 @@ exports[`Renders the new document if no document is provided 1`] = `
   }
 >
   <div
-    style={
-      {
-        "display": "flex",
-        "padding": "10px 10px 0 10px",
-      }
-    }
+    className="search-bar"
   >
     <input
       onChange={[Function]}
@@ -35,7 +30,7 @@ exports[`Renders the new document if no document is provided 1`] = `
     style={
       {
         "flex": "1 0 auto",
-        "margin": "10px 5px",
+        "margin": "0 5px 10px 5px",
       }
     }
   >

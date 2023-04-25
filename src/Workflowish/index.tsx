@@ -26,7 +26,7 @@ export default (props: {
         <ContextMenu></ContextMenu>
         <ModelContext.Provider value={unfileredRootNode}>
             <SearchBarWrapper itemRefsDictionary={itemsRefDictionary.current} getSetTodoItems={getSetTodoItems}>
-                <div style={{ margin: "10px 5px", flex: "1 0 auto" }}>
+                <div style={{ margin: "0 5px 10px 5px", flex: "1 0 auto" }}>
                     <ItemsList
                         showIds={showIds}
                         itemRefsDictionary={itemsRefDictionary.current}

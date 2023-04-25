@@ -1,0 +1,11 @@
+.search-bar {
+    display: flex;
+    padding: 10px;
+    position: sticky;
+    top: 0;
+    background: var(--main-bg-color);
+    box-shadow: rgba(0, 0, 0, 0.05) 0px 4px 6px -2px;
+    /* TODO: Add a sticky shadow
+        Like this: https://medium.com/walmartglobaltech/activatable-drop-shadow-on-sticky-elements-d0c12f1ebfdf
+    */
+}
