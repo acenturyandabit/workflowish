@@ -32,8 +32,17 @@ export default (props: {
         })
         props.itemRefsDictionary[currentMatchId].focusThis();
     }
+    const scrollToCurrentItem = () => {
+        props.itemRefsDictionary[currentMatchId].scrollThisIntoView();
+    }
     return <>
-        <SearchBar searchParams={searchParams} setSearchParams={setSearchParams} nMatches={nMatches} focusOnCurrentItem={focusOnCurrentItem}></SearchBar>
+        <SearchBar 
+            searchParams={searchParams} 
+            setSearchParams={setSearchParams} 
+            nMatches={nMatches} 
+            focusOnCurrentItem={focusOnCurrentItem}
+            scrollToCurrentItem={scrollToCurrentItem}
+        ></SearchBar>
         <ModelContext.Provider value={rootNode}>
             {props.children}
         </ModelContext.Provider>
@@ -44,6 +53,7 @@ const SearchBar = (props: {
     searchParams: SearchParams,
     setSearchParams: React.Dispatch<React.SetStateAction<SearchParams>>,
     focusOnCurrentItem: () => void,
+    scrollToCurrentItem: () => void,
     nMatches: number
 }) => {
     const inputReference = React.useRef<HTMLInputElement>(null);
@@ -71,10 +81,15 @@ const SearchBar = (props: {
             onKeyDown={(evt) => {
                 if (evt.key == "ArrowUp") {
                     props.setSearchParams(searchParams => ({ ...searchParams, searchSelectionIdx: searchParams.searchSelectionIdx - 1 }))
+                    window.setTimeout(props.scrollToCurrentItem,1);
                 } else if (evt.key == "ArrowDown") {
-                    props.setSearchParams(searchParams => ({ ...searchParams, searchSelectionIdx: searchParams.searchSelectionIdx + 1 }))
+                    props.setSearchParams(searchParams => ({ ...searchParams, searchSelectionIdx: searchParams.searchSelectionIdx + 1 }));
+                    window.setTimeout(props.scrollToCurrentItem,1);
                 } else if (evt.key == "Enter") {
                     props.focusOnCurrentItem();
+                }else{
+                    // Search query was changed
+                    window.setTimeout(props.scrollToCurrentItem,1);
                 }
             }}
             style={{ flex: "1 0 auto", padding: "2px" }}></input>
@@ -162,8 +177,7 @@ export const searchTransform = (rootNode: ItemTreeNode,
     if (searchMatchArray.length > 0) {
         if (searchParams.searchSelectionIdx < 0) {
             setSearchParams({ ...searchParams, searchSelectionIdx: 0 });
-        }
-        if (searchParams.searchSelectionIdx > searchMatchArray.length - 1) {
+        }else if (searchParams.searchSelectionIdx > searchMatchArray.length - 1) {
             setSearchParams({ ...searchParams, searchSelectionIdx: searchMatchArray.length - 1 });
         } else {
             searchMatchArray[searchParams.searchSelectionIdx].node.searchHighlight.push("SEARCH_SELECTED");

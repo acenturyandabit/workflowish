@@ -3,6 +3,7 @@
 - Fix bug where matches under an existing match arent revealed
 - Press enter to jump to searched item
 - Press enter to jump to searched item
+- Press enter to jump to searched item
 
 # Version 3.4.0: The Symlink Version 
 - Ability to use function to transform items (Not ideal yet - can't fetch arbitrary items synchronously)

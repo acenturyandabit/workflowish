@@ -13,6 +13,7 @@ export type FocusActions = {
     triggerFocusFromAbove: () => void;
     triggerFocusFromBelow: () => void;
     focusThis: () => void;
+    scrollThisIntoView: () => void;
     focusThisEnd: () => void;
     focusRecentlyIndentedItem: () => void;
     focusMyNextSibling: () => void;
@@ -55,6 +56,9 @@ const Item = (props: {
         props.setFocusedActionReceiver(focusedActionReceiver);
     }
 
+    const scrollThisIntoView = ()=>{
+        thisContentEditable.current?.scrollIntoView();
+    }
 
     const { show: showSideclipContextMenu, hideAll } = useContextMenu({
         id: SIDECLIP_CONTEXT_MENU_ID,
@@ -85,6 +89,7 @@ const Item = (props: {
 
     const parentFocusActions = makeParentFocusActions(
         focusThis,
+        scrollThisIntoView,
         shouldUncollapse,
         itemsRefArray,
         thisContentEditable,

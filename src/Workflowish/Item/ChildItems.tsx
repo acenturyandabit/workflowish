@@ -83,11 +83,12 @@ export const ChildItems = (props: {
 
 export const makeParentFocusActions = (
     focusThis: () => void,
+    scrollThisIntoView: ()=> void,
     shouldUncollapse: boolean,
     itemsRefArray: React.MutableRefObject<(FocusActions | null)[]>,
     thisContentEditable: React.MutableRefObject<HTMLElement | null>,
     actions: ControllerActions
-) => ({
+): FocusActions => ({
     focusThis,
     triggerFocusFromAbove: () => {
         focusThis()
@@ -111,6 +112,7 @@ export const makeParentFocusActions = (
             }
         }
     },
+    scrollThisIntoView,
     focusMyNextSibling: actions.focusMyNextSibling,
     focusRecentlyIndentedItem: () => {
         setTimeout(() => {

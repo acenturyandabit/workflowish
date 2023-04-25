@@ -65,7 +65,7 @@ const ItemsList = (
 ) => {
     const itemTree = React.useContext<ItemTreeNode>(ModelContext);
     const nullSizedArrayForRefs = Array(itemTree.children.length).fill(null);
-    const topLevelTakeFocus = () => {
+    const topLevelNullFunction = () => {
         // Top level cannot take focus
     }
     const itemsRefArray = React.useRef<Array<FocusActions | null>>(nullSizedArrayForRefs);
@@ -100,11 +100,11 @@ const ItemsList = (
                     props.itemRefsDictionary[id].focusThis();
                 },
                 parentFocusActions: {
-                    triggerFocusFromAbove: topLevelTakeFocus,
-                    triggerFocusFromBelow: topLevelTakeFocus,
+                    triggerFocusFromAbove: topLevelNullFunction,
+                    triggerFocusFromBelow: topLevelNullFunction,
                     focusThis: () => itemsRefArray.current[ii]?.focusThis(),
-                    focusThisEnd: topLevelTakeFocus,
-                    focusRecentlyIndentedItem: topLevelTakeFocus,
+                    focusThisEnd: topLevelNullFunction,
+                    focusRecentlyIndentedItem: topLevelNullFunction,
                     focusMyNextSibling: () => {
                         if (ii < itemTree.children.length - 1) {
                             itemsRefArray.current[ii + 1]?.focusThis()
@@ -112,6 +112,7 @@ const ItemsList = (
                             itemsRefArray.current[ii]?.focusThis()
                         }
                     },
+                    scrollThisIntoView: topLevelNullFunction
                 },
                 disableDelete: () => (itemTree.children.length == 1),
                 getSetItems: (keys: string[], getSetter: TreeNodesGetSetter) => {

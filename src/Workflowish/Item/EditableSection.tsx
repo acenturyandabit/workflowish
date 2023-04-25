@@ -72,7 +72,7 @@ export const EditableSection = (props: {
     let searchHighlightBackground = "";
     if (props.item.searchHighlight.includes("SEARCH_SELECTED")) {
         searchHighlightBackground = "blue";
-    }else if (props.item.searchHighlight.includes("SEARCH_MATCH")){
+    } else if (props.item.searchHighlight.includes("SEARCH_MATCH")) {
         searchHighlightBackground = "darkslateblue";
     }
 
@@ -92,7 +92,10 @@ export const EditableSection = (props: {
             onChange={onContentChange}
             onKeyDown={onKeyDown}
             onClick={props.onFocusClick}
-            style={{ flex: "1 1 auto" }}
+            style={{
+                flex: "1 1 auto", 
+                scrollMarginTop: "100px"
+            }}
         ></ContentEditable>
     </span>
 }
