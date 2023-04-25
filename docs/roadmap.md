@@ -1,11 +1,10 @@
-# Version 3.4.1
-`omnibar version`
-- [ ] TODO: One clearly selected searched item; up and down to select item; enter to jump to item
+# Verison 3.4.1
+`More useful search and jumping`
+- [ ] TODO: Bug where CTRL+J won't work on collapsed items
 
 # Version 3.4.2
 `Scripting engine upgrades`
 - [ ] TODO: Scripting: Add a console
-- [ ] TODO: Bug where CTRL+J won't work on collapsed items
 - [ ] TODO: Move Workflowy global out of scripting engine
 - [ ] TODO: Allow scripting engine to arbitrarily delete items
 - [ ] TODO: Automate build numbers

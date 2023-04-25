@@ -23,7 +23,7 @@ export const EditableSection = (props: {
     onFocusClick: () => void
 }) => {
     const onKeyDown = (evt: React.KeyboardEvent) => {
-        props.focusedActionReceiver.keyCommand(evt,evt);
+        props.focusedActionReceiver.keyCommand(evt, evt);
     }
 
     const sanitizeConf = {
@@ -36,24 +36,24 @@ export const EditableSection = (props: {
             itemsToFetch.push(props.item.symlinkedNode.id);
         }
         props.actions.getSetItems(itemsToFetch, (items: ItemTreeNode[]) => {
-            const currentItem = Object.assign({},items[0]);
+            const currentItem = Object.assign({}, items[0]);
             const newData: string = sanitizeHtml(evt.currentTarget.innerHTML, sanitizeConf);
             const returnNodes: ItemTreeNode[] = [];
             if (currentItem.symlinkedNode) {
                 const isStillALink = newData.startsWith(linkSymbol);
                 if (isStillALink) {
-                    const symlinkedItem = Object.assign({},items[1]);
+                    const symlinkedItem = Object.assign({}, items[1]);
                     symlinkedItem.data = newData.slice(linkSymbol.length);
                     returnNodes.push(symlinkedItem);
                 } else {
-                    currentItem.data=`[LN: ${currentItem.symlinkedNode.id}`;
+                    currentItem.data = `[LN: ${currentItem.symlinkedNode.id}`;
                     returnNodes.push(currentItem);
                 }
-            }else{
+            } else {
                 currentItem.data = newData;
                 returnNodes.push(currentItem);
             }
-            returnNodes.forEach(i=>i.lastModifiedUnixMillis=Date.now());
+            returnNodes.forEach(i => i.lastModifiedUnixMillis = Date.now());
             return returnNodes;
         })
     } // Not sure why we used to use useCallback... --> delete this comment next revision
@@ -69,7 +69,14 @@ export const EditableSection = (props: {
         htmlToShow = linkSymbol + props.item.symlinkedNode.data;
     }
 
-    return <span style={{ background: props.item.searchHighlight.includes("SEARCH_TARGET") ? "blue" : "" }}
+    let searchHighlightBackground = "";
+    if (props.item.searchHighlight.includes("SEARCH_SELECTED")) {
+        searchHighlightBackground = "blue";
+    }else if (props.item.searchHighlight.includes("SEARCH_MATCH")){
+        searchHighlightBackground = "darkslateblue";
+    }
+
+    return <span style={{ background: searchHighlightBackground }}
         onContextMenu={contextEventHandler(props.actions)}>
         <BulletPoint
             item={props.item}

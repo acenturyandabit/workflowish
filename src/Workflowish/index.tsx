@@ -16,10 +16,8 @@ export default (props: {
     updateData: React.Dispatch<React.SetStateAction<BaseStoreDataType>>
 }) => {
     const [unfileredRootNode, keyedNodes, getSetTodoItems] = transformData(props);
-
-
-
     const [focusedActionReceiver, setFocusedActionReceiver] = React.useState<FocusedActionReceiver>(dummyFocusedActionReciever);
+    const itemsRefDictionary = React.useRef<Record<string, FocusActions>>({});
 
     const [showIds, setShowIds] = React.useState<boolean>(false);
     React.useEffect(AltShouldToggleShowIds(setShowIds), []);
@@ -27,10 +25,11 @@ export default (props: {
     return <div style={{ height: "100%", display: "flex", flexDirection: "column" }}>
         <ContextMenu></ContextMenu>
         <ModelContext.Provider value={unfileredRootNode}>
-            <SearchBarWrapper>
+            <SearchBarWrapper itemRefsDictionary={itemsRefDictionary.current} getSetTodoItems={getSetTodoItems}>
                 <div style={{ margin: "10px 5px", flex: "1 0 auto" }}>
                     <ItemsList
                         showIds={showIds}
+                        itemRefsDictionary={itemsRefDictionary.current}
                         setFocusedActionReceiver={setFocusedActionReceiver}
                         getSetTodoItems={getSetTodoItems}
                         keyedNodes={keyedNodes}
@@ -58,6 +57,7 @@ const AltShouldToggleShowIds = (setShowIds: React.Dispatch<React.SetStateAction<
 const ItemsList = (
     props: {
         setFocusedActionReceiver: React.Dispatch<React.SetStateAction<FocusedActionReceiver>>,
+        itemRefsDictionary: Record<string, FocusActions>,
         getSetTodoItems: TodoItemsGetSetterWithKeyedNodes,
         keyedNodes: Record<string, ItemTreeNode>,
         showIds: boolean
@@ -69,7 +69,6 @@ const ItemsList = (
         // Top level cannot take focus
     }
     const itemsRefArray = React.useRef<Array<FocusActions | null>>(nullSizedArrayForRefs);
-    const [itemsRefDictionary,] = React.useState<Record<string, FocusActions>>({});
     return <>{itemTree.children.map((item, ii) => {
         return (<Item
             key={ii}
@@ -79,7 +78,7 @@ const ItemsList = (
             }}
             item={item}
             pushRef={(ref: FocusActions) => itemsRefArray.current[ii] = ref}
-            pushRefGlobal={(ref: FocusActions, id: string) => { itemsRefDictionary[id] = ref }}
+            pushRefGlobal={(ref: FocusActions, id: string) => { props.itemRefsDictionary[id] = ref }}
             setFocusedActionReceiver={props.setFocusedActionReceiver}
             actions={makeListActions({
                 siblingsFocusActions: itemsRefArray,
@@ -98,7 +97,7 @@ const ItemsList = (
                     // cannot unindent at root level
                 },
                 focusItem: (id: string) => {
-                    itemsRefDictionary[id].focusThis();
+                    props.itemRefsDictionary[id].focusThis();
                 },
                 parentFocusActions: {
                     triggerFocusFromAbove: topLevelTakeFocus,
