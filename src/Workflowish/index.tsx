@@ -67,7 +67,7 @@ const ItemsList = (
         // Top level cannot take focus
     }
     const itemsRefArray = React.useRef<Array<FocusActions | null>>(nullSizedArrayForRefs);
-    const itemsRefDictionary: Record<string, FocusActions> = {};
+    const [itemsRefDictionary,] = React.useState<Record<string, FocusActions>>({});
     return <>{props.itemTree.children.map((item, ii) => {
         return (<Item
             key={ii}
