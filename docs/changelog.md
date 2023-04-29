@@ -1,8 +1,6 @@
-# Latest 
+# Version 3.5.0: More useful search 
 - Fix minor focus bug
 - Fix bug where matches under an existing match arent revealed
-- Press enter to jump to searched item
-- Press enter to jump to searched item
 - Press enter to jump to searched item
 - Fix sticky search not sticking in extremely long documents
 
