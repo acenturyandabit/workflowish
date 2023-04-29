@@ -11,6 +11,7 @@ export interface HTTPKVStoreSettings extends KVStoreSettingsStruct {
     syncURL: string
     passwordPrefix: string
     usePassword?: boolean
+    promptPassword?: boolean
 }
 
 const isHTTPKVStoreSettings = (x: KVStoreSettingsStruct | DefaultKVConstructionArgs):
@@ -21,7 +22,7 @@ const isHTTPKVStoreSettings = (x: KVStoreSettingsStruct | DefaultKVConstructionA
 class HTTPKVStore implements
     KVStore<HTTPKVStoreSettings>{
     settings: HTTPKVStoreSettings
-    password?: string
+    password: string
     static type = HTTPKVStoreType
     constructor(_settings: HTTPKVStoreSettings | DefaultKVConstructionArgs) {
         if (isHTTPKVStoreSettings(_settings)) {
@@ -33,9 +34,11 @@ class HTTPKVStore implements
                 loadURL: "",
                 syncURL: "",
                 passwordPrefix: "",
-                usePassword: false
+                usePassword: false,
+                promptPassword: true
             };
         }
+        this.password=""
         this.sync = this.sync.bind(this)
     }
 
@@ -93,7 +96,8 @@ class HTTPKVStore implements
                 {this.settings.usePassword ? <>
                     <br></br>
                     <TextField
-                        label="Password Prefix (optional) - browser remembers this"
+                        label="Saved password (or password prefix) in browser -- optional"
+                        sx={{ width: "100%", mb: 2 }}
                         type="password"
                         value={this.settings.passwordPrefix}
                         fullWidth
@@ -102,6 +106,20 @@ class HTTPKVStore implements
                             bumpKVStores();
                         }}
                     />
+                </> : null}
+                {this.settings.usePassword && this.settings.passwordPrefix.length > 0 ? <>
+                    <br></br>
+                    <FormControlLabel
+                    control={<Checkbox
+                        checked={this.settings.promptPassword}
+                        onChange={(evt) => {
+                            this.settings.promptPassword = evt.target.checked;
+                            bumpKVStores();
+                        }}
+                    />}
+                    label={"Prompt for Password (Otherwise just use password prefix)"}
+                    />
+                    <br></br>
                 </> : null}
             </>
         )
@@ -129,7 +147,7 @@ class HTTPKVStore implements
     }
 
     async load(): Promise<BaseStoreDataType> {
-        if (this.settings.usePassword && !this.password) {
+        if (this.settings.usePassword && this.settings.promptPassword) {
             // TODO: Better password prompting
             this.password = prompt("Please enter your password for " + this.settings.loadURL) || "";
         }
@@ -139,7 +157,7 @@ class HTTPKVStore implements
 
     async authedFetch(url: string, args?: RequestInit): Promise<ReturnType<typeof fetch>> {
         const headers = new Headers(args?.headers)
-        if (this.password) headers.set("password", this.settings.passwordPrefix + this.password);
+        if (this.settings.usePassword) headers.set("password", this.settings.passwordPrefix + this.password);
         return await fetch(url, {
             ...args,
             headers: headers,

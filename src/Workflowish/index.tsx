@@ -6,7 +6,7 @@ import Item, { FocusActions } from "./Item"
 import { ItemTreeNode, TodoItemsGetSetterWithKeyedNodes, transformData, virtualRootId } from "./mvc/model"
 import { isMobile } from '~util/isMobile';
 import { FloatyButtons } from "./Subcomponents/FloatyButtons";
-import SearchBarWrapper from "./Subcomponents/SearchBar";
+import OmnibarWrapper from "./Subcomponents/OmnibarWrapper";
 import ContextMenu from "./Subcomponents/ContextMenu";
 import { ModelContext } from "./mvc/context";
 
@@ -26,7 +26,7 @@ export default (props: {
         <ContextMenu></ContextMenu>
         <ModelContext.Provider value={unfileredRootNode}>
             <div style={{ margin: "0 5px 10px 5px", flex: "1 0 auto" }}>
-                <SearchBarWrapper itemRefsDictionary={itemsRefDictionary.current} getSetTodoItems={getSetTodoItems}>
+                <OmnibarWrapper itemRefsDictionary={itemsRefDictionary.current} getSetTodoItems={getSetTodoItems}>
                     <ItemsList
                         showIds={showIds}
                         itemRefsDictionary={itemsRefDictionary.current}
@@ -34,7 +34,7 @@ export default (props: {
                         getSetTodoItems={getSetTodoItems}
                         keyedNodes={keyedNodes}
                     ></ItemsList>
-                </SearchBarWrapper>
+                </OmnibarWrapper>
             </div>
         </ModelContext.Provider>
         {isMobile() ? <FloatyButtons focusedActionReceiver={focusedActionReceiver}></FloatyButtons> : null}

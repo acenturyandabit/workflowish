@@ -1,6 +1,6 @@
 import * as React from "react";
 import { BaseItemType, BaseStoreDataType, makeNewUniqueKey, setToDeleted } from "~CoreDataLake";
-import { HighlightStates } from "../Subcomponents/SearchBar";
+import { HighlightStates } from "../Subcomponents/OmnibarWrapper/Search";
 import { generateFirstTimeDoc } from "./firstTimeDoc";
 export type ItemTreeNode = {
     lastModifiedUnixMillis: number

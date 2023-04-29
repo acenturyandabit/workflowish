@@ -1,3 +1,6 @@
+# Latest 
+- Refactor to separate omnibar and search
+
 # Version 3.5.0: More useful search 
 - Fix minor focus bug
 - Fix bug where matches under an existing match arent revealed
