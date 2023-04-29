@@ -62,17 +62,34 @@ const OmniBar = (props: {
 }) => {
     const inputReference = React.useRef<HTMLInputElement>(null);
     React.useEffect(() => {
-        const listenForCtrlF = (e: KeyboardEvent) => {
-            if (e.key == "f" && (e.ctrlKey || e.metaKey)) {
+        const listenForCtrlFP = (e: KeyboardEvent) => {
+            if ((e.key == "f" || e.key == "p") && (e.ctrlKey || e.metaKey)) {
+                let visibleChangeOccured = false;
                 const userIsAlreadyInSearchBar = (inputReference.current == document.activeElement);
                 if (!userIsAlreadyInSearchBar) {
-                    e.preventDefault();
                     inputReference.current?.focus();
+                    visibleChangeOccured = true;
+                }
+                if (e.key == "p") {
+                    props.setOmniBarState((currentState) => {
+                        if (!currentState.barContents.startsWith(">")) {
+                            return {
+                                ...currentState,
+                                barContents: ">"
+                            }
+                        } else {
+                            return currentState;
+                        }
+                    })
+                    visibleChangeOccured=true;
+                }
+                if (visibleChangeOccured) {
+                    e.preventDefault();
                 }
             }
         }
-        window.addEventListener("keydown", listenForCtrlF);
-        return () => window.removeEventListener("keydown", listenForCtrlF);
+        window.addEventListener("keydown", listenForCtrlFP);
+        return () => window.removeEventListener("keydown", listenForCtrlFP);
     }, [inputReference.current]);
 
     const matchMessage = props.nMatches > 0 ? `${props.omniBarState.searchState.searchSelectionIdx + 1} / ${props.nMatches} matches` : "No matches"

@@ -28,10 +28,16 @@ const omniBarStateProxy = (
     searchState: SearchState,
     setSearchState: React.Dispatch<React.SetStateAction<SearchState>>
 } => {
-    const omniBarStateToSearchState = (omniBarState: OmniBarState): SearchState => ({
-        ...omniBarState.searchState,
-        searchText: omniBarState.barContents
-    });
+    const omniBarStateToSearchState = (omniBarState: OmniBarState): SearchState => {
+        let searchText = omniBarState.barContents;
+        if (searchText.startsWith(">")) {
+            searchText = "";
+        }
+        return {
+            ...omniBarState.searchState,
+            searchText
+        }
+    };
     return {
         searchState: omniBarStateToSearchState(omniBarState),
         setSearchState: (newSearchStateOrSetter: SearchState | ((old: SearchState) => SearchState)) => {
