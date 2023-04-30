@@ -10,7 +10,9 @@ export const resetSearchState = (): SearchPartialState => ({
     searchSelectionIdx: 0
 })
 
-export type HighlightStates = "SEARCH_UNCOLLAPSE" | "SEARCH_MATCH" | "SEARCH_SELECTED"
+const HighlightStatesArray = ["SEARCH_UNCOLLAPSE" , "SEARCH_MATCH" , "SEARCH_SELECTED"] as const;
+export type HighlightStates = typeof HighlightStatesArray[number];
+export const NO_MATCH="";
 
 export const searchTransformFromOmnibarState = (
     rootNode: ItemTreeNode,
@@ -88,9 +90,9 @@ const searchTransform = (rootNode: ItemTreeNode,
             parentChain: [rootNode.id]
         }
     };
-    rootNode.searchHighlight = [];
+    rootNode.searchHighlight = rootNode.searchHighlight.filter(state=>!HighlightStatesArray.includes(state as HighlightStates));
     let nMatches = 0;
-    let currentMatchId = "";
+    let currentMatchId = NO_MATCH;
     let currentMatchParentChain: string[] = [];
     while (nodeStack.length) {
         const top: ItemTreeNode = nodeStack.pop() as ItemTreeNode;
@@ -108,7 +110,7 @@ const searchTransform = (rootNode: ItemTreeNode,
                     dfsOrder: -1,
                     parentChain: [...dfsSeenList[top.id].parentChain, child.id]
                 }
-                child.searchHighlight = [];
+                child.searchHighlight = child.searchHighlight.filter(state=>!HighlightStatesArray.includes(state as HighlightStates));
             });
             const reversedChildrenForDFS = [...top.children].reverse();
             nodeStack.push(...reversedChildrenForDFS);

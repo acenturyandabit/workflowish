@@ -1,7 +1,10 @@
 import * as React from "react";
 import { BaseItemType, BaseStoreDataType, makeNewUniqueKey, setToDeleted } from "~CoreDataLake";
-import { HighlightStates } from "../Subcomponents/OmnibarWrapper/Search";
+import { HighlightStates as SearchHighlightStates } from "../Subcomponents/OmnibarWrapper/Search";
 import { generateFirstTimeDoc } from "./firstTimeDoc";
+
+type HighlightStates = SearchHighlightStates;
+
 export type ItemTreeNode = {
     lastModifiedUnixMillis: number
     id: string,

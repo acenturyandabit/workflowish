@@ -9,6 +9,7 @@ import { ItemStyleParams } from '.';
 import { FocusedActionReceiver } from '~Workflowish/mvc/focusedActionReceiver';
 import { TriggerEvent, useContextMenu } from 'react-contexify';
 import { BulletPoint } from './BulletPoint';
+import { RenderTimeContext } from '~Workflowish/mvc/context';
 
 const linkSymbol = "🔗:";
 
@@ -69,9 +70,12 @@ export const EditableSection = (props: {
         htmlToShow = linkSymbol + props.item.symlinkedNode.data;
     }
 
+    const renderTimeContext = React.useContext<RenderTimeContext>(RenderTimeContext) 
     let searchHighlightBackground = "";
     if (props.item.searchHighlight.includes("SEARCH_SELECTED")) {
         searchHighlightBackground = "blue";
+    } else if (renderTimeContext.currentFocusedItem == props.item.id) {
+        searchHighlightBackground = "#b36200";
     } else if (props.item.searchHighlight.includes("SEARCH_MATCH")) {
         searchHighlightBackground = "darkslateblue";
     }
@@ -93,7 +97,7 @@ export const EditableSection = (props: {
             onKeyDown={onKeyDown}
             onClick={props.onFocusClick}
             style={{
-                flex: "1 1 auto", 
+                flex: "1 1 auto",
                 scrollMarginTop: "100px"
             }}
         ></ContentEditable>

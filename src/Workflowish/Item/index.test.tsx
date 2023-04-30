@@ -38,7 +38,7 @@ it('Renders an item', () => {
             pushRefGlobal={mockEmptyFunction}
             pushRef={mockEmptyFunction}
             actions={dummyactions}
-            setFocusedActionReceiver={mockEmptyFunction}
+            setThisAsFocused={mockEmptyFunction}
             styleParams={{
                 showId: false
             }}

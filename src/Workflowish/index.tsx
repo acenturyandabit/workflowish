@@ -8,7 +8,7 @@ import { isMobile } from '~util/isMobile';
 import { FloatyButtons } from "./Subcomponents/FloatyButtons";
 import OmnibarWrapper from "./Subcomponents/OmnibarWrapper";
 import ContextMenu from "./Subcomponents/ContextMenu";
-import { ModelContext } from "./mvc/context";
+import { ModelContext, RenderTimeContext } from "./mvc/context";
 
 
 export default (props: {
@@ -68,8 +68,17 @@ const ItemsList = (
     const topLevelNullFunction = () => {
         // Top level cannot take focus
     }
+
+    const [lastFocusedItem, setLastFocusedItem] = React.useState<string>("");
+    const setFocusedItem = (focusedActionReceiver: FocusedActionReceiver, focusItemKey: string) => {
+        props.setFocusedActionReceiver(focusedActionReceiver);
+        setLastFocusedItem(focusItemKey);
+    }
+
     const itemsRefArray = React.useRef<Array<FocusActions | null>>(nullSizedArrayForRefs);
-    return <>{itemTree.children.map((item, ii) => {
+    return <RenderTimeContext.Provider value={{
+        currentFocusedItem: lastFocusedItem
+    }}>{itemTree.children.map((item, ii) => {
         return (<Item
             key={ii}
             styleParams={{
@@ -79,7 +88,7 @@ const ItemsList = (
             item={item}
             pushRef={(ref: FocusActions) => itemsRefArray.current[ii] = ref}
             pushRefGlobal={(ref: FocusActions, id: string) => { props.itemRefsDictionary[id] = ref }}
-            setFocusedActionReceiver={props.setFocusedActionReceiver}
+            setThisAsFocused={setFocusedItem}
             actions={makeListActions({
                 siblingsFocusActions: itemsRefArray,
                 currentSiblingIdx: ii,
@@ -126,7 +135,7 @@ const ItemsList = (
                 thisItem: itemTree
             })}
         ></Item >)
-    })}</>
+    })}</RenderTimeContext.Provider>
 }
 
 // TODO: move this function into the Model class, so that we can optimize it with the memory of the parents

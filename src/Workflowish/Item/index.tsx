@@ -33,7 +33,7 @@ const Item = (props: {
     pushRef: (ref: FocusActions) => void,
     pushRefGlobal: (ref: FocusActions, id: string) => void,
     actions: ControllerActions,
-    setFocusedActionReceiver: React.Dispatch<React.SetStateAction<FocusedActionReceiver>>
+    setThisAsFocused: (focusedActionReceiver: FocusedActionReceiver, focusItemKey: string) => void
 }) => {
     const item = React.useRef(props.item);
     React.useEffect(() => {
@@ -53,10 +53,10 @@ const Item = (props: {
 
     const focusThis = () => {
         thisContentEditable.current?.focus();
-        props.setFocusedActionReceiver(focusedActionReceiver);
+        props.setThisAsFocused(focusedActionReceiver, item.current.id);
     }
 
-    const scrollThisIntoView = ()=>{
+    const scrollThisIntoView = () => {
         thisContentEditable.current?.scrollIntoView();
     }
 
@@ -73,7 +73,7 @@ const Item = (props: {
         if (props.item.symlinkedNode) {
             props.actions.focusItem(props.item.symlinkedNode.id);
             return true;
-        }else{
+        } else {
             return false;
         }
     }
@@ -114,7 +114,7 @@ const Item = (props: {
             item={props.item}
             itemsRefArray={itemsRefArray}
             parentFocusActions={parentFocusActions}
-            setFocusedActionReceiver={props.setFocusedActionReceiver}
+            setThisAsFocused={props.setThisAsFocused}
             actions={props.actions}
             shouldUncollapse={shouldUncollapse}
             styleParams={props.styleParams}

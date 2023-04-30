@@ -3,7 +3,7 @@ import { ItemTreeNode, TodoItemsGetSetterWithKeyedNodes } from '../../mvc/model'
 import { ModelContext } from '~Workflowish/mvc/context';
 import { FocusActions } from '~Workflowish/Item';
 import "./index.css"
-import { resetSearchState, searchTransformFromOmnibarState } from './Search';
+import { NO_MATCH, resetSearchState, searchTransformFromOmnibarState } from './Search';
 import { OmniBarState } from './States';
 
 
@@ -32,7 +32,9 @@ export default (props: {
             })
             return oldRoot;
         })
-        props.itemRefsDictionary[currentMatchId].focusThis();
+        if (currentMatchId != NO_MATCH) {
+            props.itemRefsDictionary[currentMatchId].focusThis();
+        }
     }
     const scrollToCurrentItem = () => {
         props.itemRefsDictionary[currentMatchId]?.scrollThisIntoView();
@@ -81,7 +83,7 @@ const OmniBar = (props: {
                             return currentState;
                         }
                     })
-                    visibleChangeOccured=true;
+                    visibleChangeOccured = true;
                 }
                 if (visibleChangeOccured) {
                     e.preventDefault();

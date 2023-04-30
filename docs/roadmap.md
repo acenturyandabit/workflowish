@@ -1,16 +1,16 @@
 # Version 3.6.0
 `Symlinks via keyboard: Link-to command`
-- [ ] Use a single chording gateway key CTRL+P
-  - chording gateway opens omnibar
-  - esc from omnibar returns focus to original item
-  - Overrides print but thats ok, noone uses print anyways
+- [ ] esc from omnibar returns focus to original item
 - [ ] Implement commands under CTRL+P
   - C-p-l: Replace empty item with link to {query}
   - C-p-S-l: link focused item to {query}
   - C-p-j: Jump to original item of link
   - C-p-k: Copy key of item (old alt+shift+c)
 - [ ] TODO: Bug where {Jump to original item of link} won't work on collapsed items
-
+- [ ] Improve Mobile search experience
+- [ ] Redesign TodoItemsGetSetterWithKeyedNodes
+  - What should it return? A root node? A reconstructed root node?
+  - Should be updateTreeKeys, and return a `Record<string, ItemRootNode>`, and reconstruct the tree itself in implementation
 
 # Version 3.7.0
 `Scripting engine upgrades`

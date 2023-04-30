@@ -9,7 +9,7 @@ export const ChildItems = (props: {
     item: ItemTreeNode,
     styleParams: ItemStyleParams,
     itemsRefArray: React.MutableRefObject<(FocusActions | null)[]>,
-    setFocusedActionReceiver: React.Dispatch<React.SetStateAction<FocusedActionReceiver>>,
+    setThisAsFocused: (focusedActionReceiver: FocusedActionReceiver, focusItemKey: string) => void,
     actions: ControllerActions,
     parentFocusActions: ReturnType<typeof makeParentFocusActions>,
     pushRefGlobal: (ref: FocusActions, id: string) => void
@@ -17,12 +17,12 @@ export const ChildItems = (props: {
     let childrenToRender: ItemTreeNode[] = props.item.symlinkedNode ?
         props.item.symlinkedNode.children :
         props.item.children;
-    if (props.item.id == props.styleParams.symlinkedParent){
+    if (props.item.id == props.styleParams.symlinkedParent) {
         childrenToRender = [{
             data: "Infinite loop...",
             lastModifiedUnixMillis: 0,
             id: "",
-            children:[],
+            children: [],
             collapsed: true,
             searchHighlight: []
         }]
@@ -34,7 +34,7 @@ export const ChildItems = (props: {
             children: t(item.children)
         }))
     };
-    if (props.item.symlinkedNode){
+    if (props.item.symlinkedNode) {
         const symlinkedNode = props.item.symlinkedNode;
         getSetSiblingArray = (t: TreeNodeArrayGetSetter) => {
             props.actions.getSetItems([symlinkedNode.id], (items) => items.map(item => ({
@@ -62,7 +62,7 @@ export const ChildItems = (props: {
                     }}
                     pushRef={(ref: FocusActions) => props.itemsRefArray.current[ii] = ref}
                     pushRefGlobal={props.pushRefGlobal}
-                    setFocusedActionReceiver={props.setFocusedActionReceiver}
+                    setThisAsFocused={props.setThisAsFocused}
                     actions={makeListActions({
                         siblingsFocusActions: props.itemsRefArray,
                         currentSiblingIdx: ii,
@@ -83,7 +83,7 @@ export const ChildItems = (props: {
 
 export const makeParentFocusActions = (
     focusThis: () => void,
-    scrollThisIntoView: ()=> void,
+    scrollThisIntoView: () => void,
     shouldUncollapse: boolean,
     itemsRefArray: React.MutableRefObject<(FocusActions | null)[]>,
     thisContentEditable: React.MutableRefObject<HTMLElement | null>,

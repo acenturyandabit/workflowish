@@ -9,3 +9,11 @@ export const ModelContext = React.createContext<ItemTreeNode>({
     collapsed: false,
     searchHighlight: []
 });
+
+export type RenderTimeContext = {
+    currentFocusedItem: string
+}
+
+export const RenderTimeContext = React.createContext<RenderTimeContext>({
+    currentFocusedItem: ""
+});
