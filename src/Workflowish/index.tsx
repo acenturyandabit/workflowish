@@ -10,7 +10,6 @@ import OmnibarWrapper from "./Subcomponents/OmnibarWrapper";
 import ContextMenu from "./Subcomponents/ContextMenu";
 import { ModelContext, RenderTimeContext } from "./mvc/context";
 
-
 export default (props: {
     data: BaseStoreDataType,
     updateData: React.Dispatch<React.SetStateAction<BaseStoreDataType>>
@@ -18,6 +17,7 @@ export default (props: {
     const [unfileredRootNode, keyedNodes, getSetTodoItems] = transformData(props);
     const [focusedActionReceiver, setFocusedActionReceiver] = React.useState<FocusedActionReceiver>(dummyFocusedActionReciever);
     const itemsRefDictionary = React.useRef<Record<string, FocusActions>>({});
+    const [lastFocusedItem, setLastFocusedItem] = React.useState<string>("");
 
     const [showIds, setShowIds] = React.useState<boolean>(false);
     React.useEffect(AltShouldToggleShowIds(setShowIds), []);
@@ -26,11 +26,17 @@ export default (props: {
         <ContextMenu></ContextMenu>
         <ModelContext.Provider value={unfileredRootNode}>
             <div style={{ margin: "0 5px 10px 5px", flex: "1 0 auto" }}>
-                <OmnibarWrapper itemRefsDictionary={itemsRefDictionary.current} getSetTodoItems={getSetTodoItems}>
+                <OmnibarWrapper
+                    itemRefsDictionary={itemsRefDictionary.current}
+                    getSetTodoItems={getSetTodoItems}
+                    lastFocusedItem={lastFocusedItem}
+                >
                     <ItemsList
                         showIds={showIds}
                         itemRefsDictionary={itemsRefDictionary.current}
                         setFocusedActionReceiver={setFocusedActionReceiver}
+                        lastFocusedItem={lastFocusedItem}
+                        setLastFocusedItem={setLastFocusedItem}
                         getSetTodoItems={getSetTodoItems}
                         keyedNodes={keyedNodes}
                     ></ItemsList>
@@ -59,6 +65,8 @@ const ItemsList = (
         setFocusedActionReceiver: React.Dispatch<React.SetStateAction<FocusedActionReceiver>>,
         itemRefsDictionary: Record<string, FocusActions>,
         getSetTodoItems: TodoItemsGetSetterWithKeyedNodes,
+        lastFocusedItem: string,
+        setLastFocusedItem: React.Dispatch<React.SetStateAction<string>>
         keyedNodes: Record<string, ItemTreeNode>,
         showIds: boolean
     }
@@ -69,15 +77,14 @@ const ItemsList = (
         // Top level cannot take focus
     }
 
-    const [lastFocusedItem, setLastFocusedItem] = React.useState<string>("");
     const setFocusedItem = (focusedActionReceiver: FocusedActionReceiver, focusItemKey: string) => {
         props.setFocusedActionReceiver(focusedActionReceiver);
-        setLastFocusedItem(focusItemKey);
+        props.setLastFocusedItem(focusItemKey);
     }
 
     const itemsRefArray = React.useRef<Array<FocusActions | null>>(nullSizedArrayForRefs);
     return <RenderTimeContext.Provider value={{
-        currentFocusedItem: lastFocusedItem
+        currentFocusedItem: props.lastFocusedItem
     }}>{itemTree.children.map((item, ii) => {
         return (<Item
             key={ii}

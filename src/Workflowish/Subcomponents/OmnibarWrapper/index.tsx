@@ -11,7 +11,8 @@ import { OmniBarState } from './States';
 export default (props: {
     children: React.ReactElement,
     itemRefsDictionary: Record<string, FocusActions>,
-    getSetTodoItems: TodoItemsGetSetterWithKeyedNodes
+    getSetTodoItems: TodoItemsGetSetterWithKeyedNodes,
+    lastFocusedItem: string
 }) => {
     const [omniBarState, setOmniBarState] = React.useState<OmniBarState>({
         barContents: "",
@@ -34,6 +35,8 @@ export default (props: {
         })
         if (currentMatchId != NO_MATCH) {
             props.itemRefsDictionary[currentMatchId].focusThis();
+        } else {
+            props.itemRefsDictionary[props.lastFocusedItem].focusThis();
         }
     }
     const scrollToCurrentItem = () => {
@@ -110,6 +113,8 @@ const OmniBar = (props: {
                     window.setTimeout(props.scrollToCurrentItem, 1);
                 } else if (evt.key == "Enter") {
                     props.focusOnCurrentItem();
+                } else if (evt.key == "Escape") {
+                    props.focusOnCurrentItem();
                 } else {
                     // Search query was changed
                     window.setTimeout(props.scrollToCurrentItem, 1);
@@ -121,5 +126,5 @@ const OmniBar = (props: {
                 <span>{matchMessage}</span> :
                 null
         }
-    </div >
+    </div>
 }
