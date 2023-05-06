@@ -85,15 +85,31 @@ export const generateFirstTimeDoc = (): ItemTreeNode => {
                         collapsed: true
                     },
                     {
+                        data: "An omni-bar like VSCode with search and a command palette.",
+                        children: [
+                            "Press CTRL+F to search in workflowy; or if you really want to use the browser search, press CTRL+F twice.",
+                            "Press CTRL+P to open the command palette; then type the short name of the command to use it.",
+                            "Use the arrrow keys to navigate between the options of the search / commands.",
+                        ]
+                    },
+                    {
                         data: "Symbolic links!",
                         id: "symlink_id",
                         children: [
-                            "Write [LN: <item id>] to create a link to another item.",
-                            // TODO: Add a keyboard shortcut insetad of clicking on IDs.
-                            "You can determine item IDs by pressing ALT+SHIFT, then clicking on the ID to copy it to your clipboard.",
-                            "The keyboard shortcut for copying IDs is ALT+SHIFT+C. or ALT+SHIFT+ACT on mobile.",
-                            "You can also jump to a linked item using CTRL+J CTRL+ACT on mobile.",
-                            "Symlinked items have their own collapsed state.",
+                            "Symlinked items will have the same text and children as the item they refer to.",
+                            "However, symlinked items have their own collapsed state.",
+                            "You can create symlinks using the omnibar: Press CTRL+P then type 'l:' followed by the item you want to link to.",
+                            {
+                                data: "Or, you can use the legacy method...",
+                                collapsed: true,
+                                children: [
+                                    "Write [LN: <item id>] to create a link to another item.",
+                                    // TODO: Add a keyboard shortcut insetad of clicking on IDs.
+                                    "You can determine item IDs by pressing ALT+SHIFT, then clicking on the ID to copy it to your clipboard.",
+                                    "The keyboard shortcut for copying IDs is ALT+SHIFT+C. or ALT+SHIFT+ACT on mobile.",
+                                    "You can also jump to a linked item using CTRL+J CTRL+ACT on mobile.",
+                                ]
+                            },
                         ]
                     }
                 ]

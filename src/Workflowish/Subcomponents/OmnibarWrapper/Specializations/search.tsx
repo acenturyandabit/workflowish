@@ -39,7 +39,7 @@ export const searchPropsFactory: SpecializedPropsFactory = (
             expandCurrentItem
         ),
         rootNode,
-        extraAnnotations: <span>{matchMessage}</span>
+        extraAnnotations: omniBarState.barContents.length ? <span>{matchMessage}</span> : <></>
     }
 }
 

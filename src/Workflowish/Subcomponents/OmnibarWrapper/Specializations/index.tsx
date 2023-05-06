@@ -25,7 +25,7 @@ export const getSpecializedProps: SpecializedPropsFactory = (
 ) => {
     let omniBarSubtype: OmniBarSubtype = "None";
     if (omniBarState.barContents.startsWith(">")) omniBarSubtype = "Command";
-    else if (omniBarState.barContents.length > 0) omniBarSubtype = "Search";
+    else omniBarSubtype = "Search";
     return specializations[omniBarSubtype](
         omniBarState,
         setOmniBarState,

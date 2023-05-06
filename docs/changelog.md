@@ -4,6 +4,7 @@
 - Highlight currently selected item
 - Make Escape on omnibar return focus to last focused item
 - Refactor to make Omnibar jump work
+- Add link under command
 
 # Version 3.5.0: More useful search 
 - Fix minor focus bug

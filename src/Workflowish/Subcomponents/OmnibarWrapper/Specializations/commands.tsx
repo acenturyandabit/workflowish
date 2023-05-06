@@ -5,24 +5,106 @@ import { SpecializedPropsFactory } from '.'
 import { FocusActions } from '~Workflowish/Item'
 import { getDefaultOmnibarState } from '..'
 import { expandParentsAndFocusItem } from './utilities'
+import { makeNewUniqueKey } from '~CoreDataLake'
 
 type Command = {
-    shortcut?: string,
-    fullName: string,
+    commandName: string,
+    prettyName: string,
     command: (commandFunctions: {
         itemGetSetter: TransformedDataAndSetter,
         searchedItemId: string,
-        focusItem: (id: string) => void
-    }) => void
+        currentItemId: string,
+        focusItem: (id: string) => void,
+        transformedDataAndSetter: TransformedDataAndSetter
+    }) => void,
 }
 
 const commands: Command[] = [
     {
-        shortcut: "g",
-        fullName: "Jump to item",
+        commandName: "g",
+        prettyName: "Jump to item",
         command: (commandFunctions) => {
             commandFunctions.focusItem(commandFunctions.searchedItemId);
         }
+    },
+    {
+        commandName: "l",
+        prettyName: "Add sibling with link to...",
+        command: (commandFunctions) => {
+            commandFunctions.transformedDataAndSetter.setItemsByKey((transformedData) => {
+                const currentItem = transformedData.keyedNodes[commandFunctions.currentItemId]
+                const parentItemId = transformedData.parentById[commandFunctions.currentItemId];
+                const parentItem = transformedData.keyedNodes[parentItemId];
+                const currentChildIdx = parentItem.children.indexOf(currentItem);
+                const newNode: ItemTreeNode = {
+                    id: makeNewUniqueKey(),
+                    data: `[LN: ${commandFunctions.searchedItemId}]`,
+                    children: [],
+                    collapsed: false,
+                    searchHighlight: [],
+                    lastModifiedUnixMillis: Date.now()
+                }
+                parentItem.children.splice(currentChildIdx + 1, 0, newNode);
+                parentItem.lastModifiedUnixMillis = Date.now();
+                return {
+                    [parentItemId]: parentItem,
+                    [newNode.id]: newNode
+                }
+            })
+            commandFunctions.focusItem(commandFunctions.currentItemId);
+        },
+    },
+    {
+        commandName: "lc",
+        prettyName: "Add child with link to...",
+        command: (commandFunctions) => {
+            commandFunctions.transformedDataAndSetter.setItemsByKey((transformedData) => {
+                const currentItem = transformedData.keyedNodes[commandFunctions.currentItemId]
+                const newNode: ItemTreeNode = {
+                    id: makeNewUniqueKey(),
+                    data: `[LN: ${commandFunctions.searchedItemId}]`,
+                    children: [],
+                    collapsed: false,
+                    searchHighlight: [],
+                    lastModifiedUnixMillis: Date.now()
+                }
+                return {
+                    [currentItem.id]: {
+                        ...currentItem, 
+                        lastModifiedUnixMillis: Date.now(),
+                        children: [...currentItem.children, newNode]
+                    },
+                    [newNode.id]: newNode
+                }
+            })
+            commandFunctions.focusItem(commandFunctions.currentItemId);
+        },
+    },
+    {
+        commandName: "lu",
+        prettyName: "Link this item under another...",
+        command: (commandFunctions) => {
+            const newNode: ItemTreeNode = {
+                id: makeNewUniqueKey(),
+                data: `[LN: ${commandFunctions.currentItemId}]`,
+                children: [],
+                collapsed: false,
+                searchHighlight: [],
+                lastModifiedUnixMillis: Date.now()
+            }
+            commandFunctions.transformedDataAndSetter.setItemsByKey((transformedData) => {
+                const searchedItem = transformedData.keyedNodes[commandFunctions.searchedItemId]
+                return {
+                    [searchedItem.id]: {
+                        ...searchedItem, 
+                        lastModifiedUnixMillis: Date.now(),
+                        children: [...searchedItem.children, newNode]
+                    },
+                    [newNode.id]: newNode
+                }
+            })
+            commandFunctions.focusItem(newNode.id);
+        },
     }
 ]
 
@@ -45,7 +127,9 @@ export const commandPropsFactory: SpecializedPropsFactory = (
                     matchedCommand.command({
                         itemGetSetter: transformedDataAndSetter,
                         searchedItemId: matchingNodes[omniBarState.selectionIdx].id,
-                        focusItem: (id: string) => expandParentsAndFocusItem(transformedDataAndSetter, itemsRefDictionary, id)
+                        currentItemId: omniBarState.preOmnibarFocusItemId || "",
+                        focusItem: (id: string) => expandParentsAndFocusItem(transformedDataAndSetter, itemsRefDictionary, id),
+                        transformedDataAndSetter
                     })
                     setOmniBarState(getDefaultOmnibarState());
                 }
@@ -88,26 +172,30 @@ const getMatchedCommandAndMatchingNodes = (omniBarState: OmniBarState, transform
 
 
 const commandMatchesFilter = (command: Command, omniBarContents: string): boolean => {
-    return (command.shortcut && omniBarContents.startsWith(command.shortcut))
-        || command.fullName.includes(omniBarContents);
+    return omniBarContents == command.commandName;
 }
 
 export const CommandHints = (props: { omniBarState: OmniBarState, matchingNodes: ItemTreeNode[], matchedCommand: Command | null }) => {
     let elementToReturn: React.ReactElement;
     if (props.matchedCommand) {
         elementToReturn = <>
-            <p className="selected-command">{props.matchedCommand.shortcut}: {props.matchedCommand.fullName}</p>
+            <p className="selected-command">{props.matchedCommand.commandName}: {props.matchedCommand.prettyName}</p>
             {props.matchingNodes.map((node, idx) => (<p className={idx == props.omniBarState.selectionIdx ? "selected" : ""} key={idx}>{node.data}</p>))}
         </>
     } else {
-        const matchingCommands = commands.filter((command) => commandMatchesFilter(command, props.omniBarState.barContents.slice(">".length)));
+        const matchingCommands = commands.filter((command) => commandPartiallyMatchesFilter(command, props.omniBarState.barContents.slice(">".length)));
         if (matchingCommands.length) {
             elementToReturn = <>
-                {matchingCommands.map((command, idx) => (<p key={idx}>{command.shortcut}: {command.fullName}</p>))}
+                {matchingCommands.map((command, idx) => (<p key={idx}>{command.commandName}: {command.prettyName}</p>))}
             </>
         } else {
             elementToReturn = <p>No matching command</p>
         }
     }
     return elementToReturn;
+}
+
+const commandPartiallyMatchesFilter = (command: Command, omniBarContents: string): boolean => {
+    return (command.commandName && omniBarContents.startsWith(command.commandName))
+        || command.prettyName.includes(omniBarContents);
 }

@@ -1,8 +1,6 @@
 # Version 3.6.0
 `Symlinks via keyboard: Link-to command`
-- [ ] Implement Goto command for starters
 - [ ] Implement commands under CTRL+P
-  - C-p-l(ink to): Replace empty item with link to {query}
   - C-p-S-l(ink from): link focused item to {query}
   - C-p-j(ump to link): Jump to original item of link
   - C-p-k(ey of item): Copy key of item (old alt+shift+c)
