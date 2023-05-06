@@ -6,6 +6,7 @@
 - Refactor to make Omnibar jump work
 - Add link under command
 - Fix bug where symlink children don't get expanded
+- Fix grand+children of symlinked nodes not collapsing
 
 # Version 3.5.0: More useful search 
 - Fix minor focus bug

@@ -160,7 +160,34 @@ const ItemsList = (
                         const newNodes = getSetter(oldItems);
                         return newNodes.reduce((nodeDict, node) => {
                             nodeDict[node.id] = node;
-                            node.children.forEach(child => nodeDict[child.id] = child);
+                            // another implicit constraint that the _ENTIRE TREE_ shall also be updated
+                            const nodeStack = [node];
+                            while (nodeStack.length) {
+                                const top = nodeStack.shift()
+                                const subtreeUniquenessRecord: Record<string, boolean> = {};
+                                if (top) {
+                                    const noDuplicateChildren = top.children.filter(child => {
+                                        if (child.id in subtreeUniquenessRecord) {
+                                            // Log an error and ignore the duplicate
+                                            console.error(`Duplicate node ${top.id}! Removing from this parent and moving on.`);
+                                            return false;
+                                        } else {
+                                            nodeDict[child.id] = child;
+                                            subtreeUniquenessRecord[child.id] = true;
+                                            nodeStack.push({ ...child, markedForCleanup: top.markedForCleanup || child.markedForCleanup })
+                                            return true;
+                                        }
+                                    });
+                                    if (noDuplicateChildren.length != top.children.length) {
+                                        top.children = noDuplicateChildren;
+                                        top.lastModifiedUnixMillis = Date.now();
+                                    }
+                                }
+                            }
+
+
+
+
                             return nodeDict;
                         }, {} as Record<string, ItemTreeNode>);
                     });
