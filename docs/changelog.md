@@ -5,6 +5,7 @@
 - Make Escape on omnibar return focus to last focused item
 - Refactor to make Omnibar jump work
 - Add link under command
+- Fix bug where symlink children don't get expanded
 
 # Version 3.5.0: More useful search 
 - Fix minor focus bug

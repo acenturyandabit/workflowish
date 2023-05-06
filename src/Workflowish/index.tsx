@@ -160,6 +160,7 @@ const ItemsList = (
                         const newNodes = getSetter(oldItems);
                         return newNodes.reduce((nodeDict, node) => {
                             nodeDict[node.id] = node;
+                            node.children.forEach(child => nodeDict[child.id] = child);
                             return nodeDict;
                         }, {} as Record<string, ItemTreeNode>);
                     });

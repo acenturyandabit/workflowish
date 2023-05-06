@@ -19,5 +19,7 @@ try{
     // Git commit will fail with warning on windows
 }
 child_process.execSync('git push')
-process.chdir("../..")
+process.chdir("..")
+fs.rmSync("deployment");
+process.chdir("..")
 console.log("All done! You may push the gh-pages branch now.")
