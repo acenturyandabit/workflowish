@@ -38,7 +38,7 @@ export const makeListActions = (props: {
             const newSiblingArray = [...siblingArray];
             newSiblingArray.splice(props.currentSiblingIdx + 1, 0, makeNewItem());
             // New items won't be created yet, so delay the setfocus
-            setTimeout(() => props.siblingsFocusActions.current?.[props.currentSiblingIdx + 1]?.focusThis());
+            setTimeout(() => props.siblingsFocusActions.current?.[props.currentSiblingIdx + 1]?.focusThis(),1);
             return newSiblingArray;
         })
     },

@@ -23,8 +23,27 @@ export const EditableSection = (props: {
     raiseContextCopyIdEvent: (event: TriggerEvent) => void,
     onFocusClick: () => void
 }) => {
+
+    // onKeyDown is memorized by ContentEditable which results in it pointing to an outdated function in some cases
+    // We add the latest version using the getter function. 
+    // There's probably a better way to do this.
+    const [, getSetFocusedActionReceiver] = React.useState<FocusedActionReceiver>({
+        keyCommand: () => {
+            // dummy
+        },
+        refocusSelf: () => {
+            // dummy for init of focusedActionReciever
+        }
+    });
+    React.useEffect(() => {
+        getSetFocusedActionReceiver(props.focusedActionReceiver);
+    }, [props.focusedActionReceiver]);
     const onKeyDown = (evt: React.KeyboardEvent) => {
-        props.focusedActionReceiver.keyCommand(evt, evt);
+        getSetFocusedActionReceiver((focusedActionReceiver) => {
+            // Need to delay this call otherwise it upsets an upstream setState call (setFocusedItem)
+            setTimeout(() => focusedActionReceiver.keyCommand(evt, evt), 1);
+            return focusedActionReceiver;
+        })
     }
 
     const sanitizeConf = {
@@ -70,7 +89,7 @@ export const EditableSection = (props: {
         htmlToShow = linkSymbol + props.item.symlinkedNode.data;
     }
 
-    const renderTimeContext = React.useContext<RenderTimeContext>(RenderTimeContext) 
+    const renderTimeContext = React.useContext<RenderTimeContext>(RenderTimeContext)
     let searchHighlightBackground = "";
     if (props.item.searchHighlight.includes("SEARCH_SELECTED")) {
         searchHighlightBackground = "blue";
@@ -79,6 +98,8 @@ export const EditableSection = (props: {
     } else if (props.item.searchHighlight.includes("SEARCH_MATCH")) {
         searchHighlightBackground = "darkslateblue";
     }
+
+
 
     return <span style={{ background: searchHighlightBackground }}
         onContextMenu={contextEventHandler(props.actions)}>

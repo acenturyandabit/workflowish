@@ -3,7 +3,8 @@ import * as React from 'react';
 import { BaseItemType } from "~CoreDataLake";
 import getDiffsAndResolvedItems from "~CoreDataLake/getResolvedItems";
 import stringify from 'json-stable-stringify';
-import { FlatItemData } from "~Workflowish/mvc/model";
+import { FlatItemBlob, FlatItemData } from "~Workflowish/mvc/model";
+import { transformData as workflowishTransformData } from "~Workflowish/mvc/model";
 export const ScriptEngineInstance = (props: {
     script: string,
     lastActivateTime?: number,
@@ -35,7 +36,7 @@ export const ScriptEngineInstance = (props: {
                 for (const key in userModifiedItems) {
                     const oldItem = props.data[key];
                     let concreteUserModifiedItems: BaseItemType = userModifiedItems[key] as BaseItemType
-                    if (typeof userModifiedItems[key] == "function"){
+                    if (typeof userModifiedItems[key] == "function") {
                         const updateFunction = userModifiedItems[key] as ((oldData: BaseItemType) => BaseItemType);
                         concreteUserModifiedItems = updateFunction(oldItem);
                     }
@@ -57,7 +58,7 @@ export const ScriptEngineInstance = (props: {
 }
 
 type UserScriptHandles = {
-    updateItems: (incomingDiffs: BaseStoreDataType) => Record<string,DataUpdateOrFunction>
+    updateItems: (incomingDiffs: BaseStoreDataType) => Record<string, DataUpdateOrFunction>
 }
 
 type DataUpdateOrFunction = BaseItemType | ((oldData: BaseItemType) => BaseItemType)
@@ -67,12 +68,12 @@ const getHandlersFromUserScript = (props: {
     script: string,
     getSetData: React.Dispatch<React.SetStateAction<BaseStoreDataType>>
 }): UserScriptHandles => {
-    let updatesStash: Record<string,DataUpdateOrFunction> = {};
+    let updatesStash: Record<string, DataUpdateOrFunction> = {};
     const handlerArrays = {
         updateItems: [] as UpdateItemHandler[]
     }
     const handlers: UserScriptHandles = {
-        updateItems: (incomingDiffs: BaseStoreDataType): Record<string,DataUpdateOrFunction> => {
+        updateItems: (incomingDiffs: BaseStoreDataType): Record<string, DataUpdateOrFunction> => {
             for (const key in incomingDiffs) {
                 handlerArrays.updateItems.forEach(handler => {
                     try {
@@ -101,9 +102,10 @@ const getHandlersFromUserScript = (props: {
         workflowish: {
             reparentItem: (id: string, newParent: string) => {
                 props.getSetData((data) => {
+                    const transformedData = workflowishTransformData(data as FlatItemBlob);
                     const childItem = data[id] as FlatItemData;
                     if (childItem) {
-                        const lastParent = childItem.lastRememberedParent;
+                        const lastParent = transformedData.parentById[id];
                         if (lastParent != newParent) {
                             if (lastParent) {
                                 const oldParentItem = JSON.parse(JSON.stringify(data[lastParent])) as FlatItemData
@@ -129,7 +131,6 @@ const getHandlersFromUserScript = (props: {
                         data: args.text,
                         children: [],
                         collapsed: false,
-                        lastRememberedParent: ""
                     }
                     if (args.parent) {
                         const currentParentItem = data[args.parent] as FlatItemData;

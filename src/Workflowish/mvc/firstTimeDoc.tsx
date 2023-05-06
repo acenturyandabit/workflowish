@@ -10,7 +10,7 @@ type DeflatedItemTreeNode = {
 
 export const generateFirstTimeDoc = (): ItemTreeNode => {
     const node: DeflatedItemTreeNode = {
-        data: "__root",
+        data: virtualRootId,
         children: [
             "Welcome to Workflowish!",
             {

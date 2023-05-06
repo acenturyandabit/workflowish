@@ -18,7 +18,7 @@ export type FocusedActionReceiver =
             },
             rawEvent: TriggerEvent
         ) => void,
-        refocusSelf: () => void,
+        refocusSelf: () => void
     };
 
 export const dummyFocusedActionReciever = {
@@ -36,7 +36,7 @@ export const makeFocusedActionReceiver = (props: {
     item: React.MutableRefObject<ItemTreeNode>,
     raiseContextCopyIdEvent: (event: TriggerEvent) => void,
     jumpToSymlink: () => boolean,
-    focusThis: () => void
+    focusThis: () => void,
 }): FocusedActionReceiver => (
     {
         keyCommand: (evt, rawEvent) => {

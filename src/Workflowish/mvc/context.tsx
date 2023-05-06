@@ -1,6 +1,8 @@
 import * as React from 'react';
 import { ItemTreeNode } from './model';
 
+// TODO: Consider using TransformedData instead of ItemTreeNode here
+// would need to refactor Items to use full capabilities of TransformedData 
 export const ModelContext = React.createContext<ItemTreeNode>({
     lastModifiedUnixMillis: 0,
     id: "MODEL_CONTEXT_DEFAULT",

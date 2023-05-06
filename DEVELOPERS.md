@@ -20,3 +20,10 @@ Upon `npm run`, this repository will install some githooks which automatically l
 - npm run verbump major/minor/patch message
 - npm run deploy-to-gh-pages
 - git push --force origin gh-pages:gh-pages
+
+## Code style rules
+To be enforced by linter, some day in the future. I know i am using terms like 'importance' which are heuristic and may not be determinable by a machine, but we can try our best
+- default export functions should come first in the file, only to be preceded by higher importance types
+    - default export can be exported as the last thing in the file, if it is a named default export
+- a default export must have the same name as its file. if it has a different name, make it not a default export
+- DOMASSERTION: DOM does not have assertions; but assertions are useful. Making DomAssert a function causes the throw statement to always appear in the DomAssert function, which is not helpful. Hence we use a non-idiomatic non braced if statement with the DOMASSERTION comment to mark assertions. 

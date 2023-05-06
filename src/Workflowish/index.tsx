@@ -3,7 +3,7 @@ import { BaseStoreDataType } from "~CoreDataLake";
 import { makeListActions, TreeNodeArrayGetSetter, TreeNodesGetSetter } from "./mvc/controller";
 import { FocusedActionReceiver, dummyFocusedActionReciever } from "./mvc/focusedActionReceiver"
 import Item, { FocusActions } from "./Item"
-import { ItemTreeNode, TodoItemsGetSetterWithKeyedNodes, transformData, virtualRootId } from "./mvc/model"
+import { ItemTreeNode, getTransformedDataAndSetter, TransformedDataAndSetter, virtualRootId, TransformedData } from "./mvc/model"
 import { isMobile } from '~util/isMobile';
 import { FloatyButtons } from "./Subcomponents/FloatyButtons";
 import OmnibarWrapper from "./Subcomponents/OmnibarWrapper";
@@ -14,7 +14,7 @@ export default (props: {
     data: BaseStoreDataType,
     updateData: React.Dispatch<React.SetStateAction<BaseStoreDataType>>
 }) => {
-    const [unfileredRootNode, keyedNodes, getSetTodoItems] = transformData(props);
+    const transformedDataAndSetter = getTransformedDataAndSetter({ data: props.data, updateData: props.updateData });
     const [focusedActionReceiver, setFocusedActionReceiver] = React.useState<FocusedActionReceiver>(dummyFocusedActionReciever);
     const itemsRefDictionary = React.useRef<Record<string, FocusActions>>({});
     const [lastFocusedItem, setLastFocusedItem] = React.useState<string>("");
@@ -24,11 +24,11 @@ export default (props: {
 
     return <div style={{ height: "100%", display: "flex", flexDirection: "column" }}>
         <ContextMenu></ContextMenu>
-        <ModelContext.Provider value={unfileredRootNode}>
+        <ModelContext.Provider value={transformedDataAndSetter.transformedData.rootNode}>
             <div style={{ margin: "0 5px 10px 5px", flex: "1 0 auto" }}>
                 <OmnibarWrapper
                     itemRefsDictionary={itemsRefDictionary.current}
-                    getSetTodoItems={getSetTodoItems}
+                    transformedDataAndSetter={transformedDataAndSetter}
                     lastFocusedItem={lastFocusedItem}
                 >
                     <ItemsList
@@ -37,8 +37,7 @@ export default (props: {
                         setFocusedActionReceiver={setFocusedActionReceiver}
                         lastFocusedItem={lastFocusedItem}
                         setLastFocusedItem={setLastFocusedItem}
-                        getSetTodoItems={getSetTodoItems}
-                        keyedNodes={keyedNodes}
+                        transformedDataAndSetter={transformedDataAndSetter}
                     ></ItemsList>
                 </OmnibarWrapper>
             </div>
@@ -64,10 +63,9 @@ const ItemsList = (
     props: {
         setFocusedActionReceiver: React.Dispatch<React.SetStateAction<FocusedActionReceiver>>,
         itemRefsDictionary: Record<string, FocusActions>,
-        getSetTodoItems: TodoItemsGetSetterWithKeyedNodes,
+        transformedDataAndSetter: TransformedDataAndSetter,
         lastFocusedItem: string,
         setLastFocusedItem: React.Dispatch<React.SetStateAction<string>>
-        keyedNodes: Record<string, ItemTreeNode>,
         showIds: boolean
     }
 ) => {
@@ -100,13 +98,37 @@ const ItemsList = (
                 siblingsFocusActions: itemsRefArray,
                 currentSiblingIdx: ii,
                 getSetSiblingArray: (t: TreeNodeArrayGetSetter) => {
-                    props.getSetTodoItems((virtualRoot: ItemTreeNode) => {
-                        const newChildren = t(virtualRoot.children);
-                        return {
-                            ...virtualRoot,
-                            lastModifiedUnixMillis: Date.now(),
-                            children: newChildren
+                    props.transformedDataAndSetter.setItemsByKey((oldData: TransformedData) => {
+                        const newChildren = t(oldData.rootNode.children);
+                        // There was an implicit constraint that the _ENTIRE TREE_ shall also be updated
+                        // in the old fromTree-based getSetSiblingArray. When we delete getSetSiblingArray
+                        // we should also delete this.
+                        const nodeStack: ItemTreeNode[] = newChildren;
+                        // initialize flatTree with the top level children + the virtualRoot
+                        const flatTree: Record<string, ItemTreeNode> = newChildren.reduce((aggregate, itm) =>
+                            ({ ...aggregate, [itm.id]: itm }), {} as Record<string, ItemTreeNode>);
+                        flatTree[virtualRootId] = { ...oldData.rootNode, children: [...newChildren] }
+                        while (nodeStack.length) {
+                            const top = nodeStack.shift()
+                            if (top) {
+                                const noDuplicateChildren = top.children.filter(child => {
+                                    if (child.id in flatTree) {
+                                        // Log an error and ignore the duplicate
+                                        console.error(`Duplicate node ${top.id}! Removing from this parent and moving on.`);
+                                        return false;
+                                    } else {
+                                        flatTree[child.id] = child;
+                                        nodeStack.push({ ...child, markedForCleanup: top.markedForCleanup || child.markedForCleanup })
+                                        return true;
+                                    }
+                                });
+                                if (noDuplicateChildren.length != top.children.length) {
+                                    top.children = noDuplicateChildren;
+                                    top.lastModifiedUnixMillis = Date.now();
+                                }
+                            }
                         }
+                        return flatTree;
                     })
                 },
                 unindentCaller: () => {
@@ -132,43 +154,18 @@ const ItemsList = (
                 },
                 disableDelete: () => (itemTree.children.length == 1),
                 getSetItems: (keys: string[], getSetter: TreeNodesGetSetter) => {
-                    props.getSetTodoItems((_, keyedNodes) => {
-                        const oldItems = keys.map(key => keyedNodes[key])
+                    props.transformedDataAndSetter.setItemsByKey((oldData: TransformedData) => {
+                        // TODO: Remove all instances of this getSetItems interface and replace it with just setItemsByKey
+                        const oldItems = keys.map(key => oldData.keyedNodes[key])
                         const newNodes = getSetter(oldItems);
-                        const newRootNode = mergeKeyedNodesAndTree(newNodes, keyedNodes[virtualRootId]);
-                        return newRootNode;
+                        return newNodes.reduce((nodeDict, node) => {
+                            nodeDict[node.id] = node;
+                            return nodeDict;
+                        }, {} as Record<string, ItemTreeNode>);
                     });
                 },
                 thisItem: itemTree
             })}
         ></Item >)
     })}</RenderTimeContext.Provider>
-}
-
-// TODO: move this function into the Model class, so that we can optimize it with the memory of the parents
-const mergeKeyedNodesAndTree = (newNodes: ItemTreeNode[], oldRoot: ItemTreeNode): ItemTreeNode => {
-    const newNodesByKey: Record<string, ItemTreeNode> = newNodes.reduce((nodesByKey, current) => {
-        nodesByKey[current.id] = current;
-        return nodesByKey;
-    }, {} as Record<string, ItemTreeNode>)
-
-    const newRootNode = newNodesByKey[virtualRootId] || oldRoot;
-
-    const DFSStack: ItemTreeNode[] = [newRootNode];
-    const cycleDetectionSet: Set<string> = new Set([virtualRootId]);
-    while (DFSStack.length > 0) {
-        const top = DFSStack.pop();
-        if (top) {
-            top.children = top.children.map((child) =>
-                newNodesByKey[child.id] || child
-            );
-            top.children.forEach(child => {
-                if (!cycleDetectionSet.has(child.id)) {
-                    cycleDetectionSet.add(child.id);
-                    DFSStack.push(child)
-                }
-            });
-        }
-    }
-    return newRootNode;
 }

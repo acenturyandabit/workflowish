@@ -1,6 +1,6 @@
 import * as React from "react";
 import { BaseItemType, BaseStoreDataType, makeNewUniqueKey, setToDeleted } from "~CoreDataLake";
-import { HighlightStates as SearchHighlightStates } from "../Subcomponents/OmnibarWrapper/Search";
+import { HighlightStates as SearchHighlightStates } from "../Subcomponents/OmnibarWrapper/Specializations/search";
 import { generateFirstTimeDoc } from "./firstTimeDoc";
 
 type HighlightStates = SearchHighlightStates;
@@ -20,11 +20,10 @@ export type FlatItemData = {
     lastModifiedUnixMillis: number
     data: string,
     children: string[],
-    collapsed: boolean,
-    lastRememberedParent: string
+    collapsed: boolean
 }
 
-type FlatItemBlob = Record<string, FlatItemData>;
+export type FlatItemBlob = Record<string, FlatItemData>;
 
 export const makeNewItem = (): ItemTreeNode => ({
     id: makeNewUniqueKey(),
@@ -35,43 +34,68 @@ export const makeNewItem = (): ItemTreeNode => ({
     collapsed: false
 });
 
-export type TodoItemsGetSetterWithKeyedNodes = (
-    getSetterOrTreeNode: (oldRoot: ItemTreeNode, oldKeyedNodes: Record<string, ItemTreeNode>) => ItemTreeNode 
-        | ItemTreeNode
-) => void
-
-export const transformData = (props: {
+export const getTransformedDataAndSetter = (props: {
     data: BaseStoreDataType,
     updateData: React.Dispatch<React.SetStateAction<BaseStoreDataType>>,
-}): [ItemTreeNode,
-        Record<string, ItemTreeNode>,
-        TodoItemsGetSetterWithKeyedNodes] => {
-    const [currentItemTree, keyedNodes] = buildTree(props.data as FlatItemBlob);
-    const getSetTodoItems = (todoItems: ItemTreeNode |
-        ((currentTodoItems: ItemTreeNode, keyedTodoItems: Record<string, ItemTreeNode>) => ItemTreeNode)
-    ) => {
-        props.updateData((oldData) => {
-            // TODO: Make Workflowish not have to update the entire tree.
-            let todoItemsToSet: ItemTreeNode;
-            if (todoItems instanceof Function) {
-                const [oldItemTree, keyedNodes] = buildTree(oldData as FlatItemBlob)
-                todoItemsToSet = todoItems(oldItemTree, keyedNodes);
-            } else {
-                todoItemsToSet = todoItems
-            }
-            return fromTree(todoItemsToSet)
-        })
+}) => {
+
+    let transformedData: ReturnType<typeof transformData>;
+    let setItemsByKey: ReturnType<typeof getItemSetterByKey>
+    if (!(virtualRootId in props.data)) {
+        const firstTimeData = fromTree(generateFirstTimeDoc());
+        setTimeout(() => props.updateData((data) => {
+            // Must check second time otherwise this is called multiple times.
+            // feels like locks all over again
+            if (!(virtualRootId in data)) return firstTimeData; 
+            else return data;
+        }), 1);
+        setItemsByKey = () => {
+            // Don't allow user modifications before first load
+        };
+        transformedData = transformData(firstTimeData);
+    } else {
+        setItemsByKey = getItemSetterByKey(props.updateData);
+        transformedData = transformData(props.data as FlatItemBlob);
     }
-    return [currentItemTree, keyedNodes, getSetTodoItems];
+    return {
+        transformedData,
+        setItemsByKey
+    };
 }
+
+export type TransformedData = ReturnType<typeof transformData>;
+export type TransformedDataAndSetter = ReturnType<typeof getTransformedDataAndSetter>;
 
 export const virtualRootId = "__virtualRoot";
 
-const buildTree = (flatItemBlob: FlatItemBlob): [ItemTreeNode, Record<string, ItemTreeNode>] => {
+export const getItemSetterByKey = (updateData: React.Dispatch<React.SetStateAction<BaseStoreDataType>>) => {
+    return (itemsToSet: Record<string, ItemTreeNode> | ((transformedData: TransformedData) => Record<string, ItemTreeNode>)) => {
+        updateData((oldData) => {
+            let todoItemsToSet: Record<string, ItemTreeNode>;
+            if (itemsToSet instanceof Function) {
+                todoItemsToSet = itemsToSet(transformData(oldData as FlatItemBlob));
+            } else {
+                todoItemsToSet = itemsToSet;
+            }
+            for (const key in todoItemsToSet) {
+                oldData[key] = {
+                    ...flattenItemNode(todoItemsToSet[key]),
+                    lastModifiedUnixMillis: Date.now()
+                };
+            }
+            return { ...oldData };
+        })
+
+
+    }
+}
+
+export const transformData = (flatItemBlob: FlatItemBlob) => {
     const treeConstructorRecord: Record<string,
         ItemTreeNode
     > = {};
     const orphanedTreeItemCandidates = new Set<string>();
+    const parentById: Record<string, string> = {};
     // First pass: instantiation.
     for (const nodeId in flatItemBlob) {
         if (isValidTreeObject(flatItemBlob[nodeId])) {
@@ -93,7 +117,10 @@ const buildTree = (flatItemBlob: FlatItemBlob): [ItemTreeNode, Record<string, It
             return childWasDeleted ? null : treeConstructorRecord[childId]
         }).filter((nodeOrNull): nodeOrNull is ItemTreeNode => nodeOrNull != null);
         treeConstructorRecord[nodeId].children = deduplicate(nodeChildInstances);
-        flatItemBlob[nodeId].children.forEach(childId => orphanedTreeItemCandidates.delete(childId))
+        flatItemBlob[nodeId].children.forEach(childId => {
+            orphanedTreeItemCandidates.delete(childId);
+            parentById[childId] = nodeId;
+        })
 
         // Symlink linking
         const symlinkMatch = /^\[LN: (.+?)\]$/g.exec(flatItemBlob[nodeId].data);
@@ -112,10 +139,12 @@ const buildTree = (flatItemBlob: FlatItemBlob): [ItemTreeNode, Record<string, It
     for (const orphanedId of orphanedTreeItemCandidates) {
         if (orphanedId != virtualRoot.id) virtualRoot.children.push(treeConstructorRecord[orphanedId]);
     }
-    if (virtualRoot.children.length == 0) {
-        virtualRoot = generateFirstTimeDoc();
-    }
-    return [virtualRoot, treeConstructorRecord];
+    if (virtualRoot.children.length == 0) throw "Virtual root must have children"; // DOMASSERTION
+    return {
+        rootNode: virtualRoot,
+        keyedNodes: treeConstructorRecord,
+        parentById
+    };
 }
 
 const isValidTreeObject = (item: BaseItemType) => {
@@ -140,18 +169,18 @@ const deduplicate = (inArray: ItemTreeNode[]): ItemTreeNode[] => {
 type Queue<T> = Array<T>;
 export const fromTree = (root: ItemTreeNode): FlatItemBlob => {
     const flatBlob: FlatItemBlob = {};
-    const lastRememberedParent: Record<string, string> = {};
     const nodeStack: Queue<ItemTreeNode> = [root];
+    const seenChildRecord: Record<string, boolean> = {};
     while (nodeStack.length) {
         const top = nodeStack.shift()
         if (top) {
             const noDuplicateChildren = top.children.filter(child => {
-                if (child.id in lastRememberedParent) {
+                if (child.id in seenChildRecord) {
                     // Log an error and ignore the duplicate
                     console.error(`Duplicate node ${top.id}! Removing from this parent and moving on.`);
                     return false;
                 } else {
-                    lastRememberedParent[child.id] = top.id;
+                    seenChildRecord[child.id] = true;
                     nodeStack.push({ ...child, markedForCleanup: top.markedForCleanup || child.markedForCleanup })
                     return true;
                 }
@@ -160,17 +189,21 @@ export const fromTree = (root: ItemTreeNode): FlatItemBlob => {
                 top.children = noDuplicateChildren;
                 top.lastModifiedUnixMillis = Date.now();
             }
-            flatBlob[top.id] = {
-                lastModifiedUnixMillis: top.lastModifiedUnixMillis,
-                data: top.data,
-                collapsed: top.collapsed,
-                children: top.children.map(child => child.id),
-                lastRememberedParent: lastRememberedParent[top.id]
-            }
-            if (top.markedForCleanup) {
-                setToDeleted(flatBlob[top.id]);
-            }
+            flatBlob[top.id] = flattenItemNode(top);
         }
+    }
+    return flatBlob;
+}
+
+const flattenItemNode = (itemNode: ItemTreeNode): FlatItemData => {
+    const flatBlob: FlatItemData = {
+        lastModifiedUnixMillis: itemNode.lastModifiedUnixMillis,
+        data: itemNode.data,
+        collapsed: itemNode.collapsed,
+        children: itemNode.children.map(child => child.id)
+    }
+    if (itemNode.markedForCleanup) {
+        setToDeleted(flatBlob);
     }
     return flatBlob;
 }

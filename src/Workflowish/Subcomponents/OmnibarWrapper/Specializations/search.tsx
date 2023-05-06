@@ -1,20 +1,50 @@
 import * as React from 'react';
-import { ItemTreeNode, virtualRootId } from '~Workflowish/mvc/model';
-import { OmniBarState, SearchPartialState } from './States';
+import { ItemTreeNode, TransformedDataAndSetter, virtualRootId } from '~Workflowish/mvc/model';
+import { OmniBarState } from '../States';
+import { SpecializedPropsFactory } from '.';
+import { FocusActions } from '~Workflowish/Item';
+import { getDefaultOmnibarState } from '..';
+import { expandParentsAndFocusItem } from './utilities';
 
-export type SearchState = SearchPartialState & {
-    searchText: string
+type SearchState = {
+    searchText: string,
+    selectionIdx: number
 }
 
-export const resetSearchState = (): SearchPartialState => ({
-    searchSelectionIdx: 0
-})
-
-const HighlightStatesArray = ["SEARCH_UNCOLLAPSE" , "SEARCH_MATCH" , "SEARCH_SELECTED"] as const;
+const HighlightStatesArray = ["SEARCH_UNCOLLAPSE", "SEARCH_MATCH", "SEARCH_SELECTED"] as const;
 export type HighlightStates = typeof HighlightStatesArray[number];
-export const NO_MATCH="";
+export const NO_MATCH = "";
 
-export const searchTransformFromOmnibarState = (
+
+export const searchPropsFactory: SpecializedPropsFactory = (
+    omniBarState: OmniBarState,
+    setOmniBarState: React.Dispatch<React.SetStateAction<OmniBarState>>,
+    transformedDataAndSetter: TransformedDataAndSetter,
+    itemsRefDictionary: Record<string, FocusActions>
+) => {
+    const { rootNode, nMatches, currentMatchId } = searchTransformFromOmnibarState(transformedDataAndSetter.transformedData.rootNode, omniBarState, setOmniBarState);
+    const matchMessage = nMatches > 0 ? `${omniBarState.selectionIdx + 1} / ${nMatches} matches` : "No matches"
+    const scrollToCurrentItem = () => itemsRefDictionary[currentMatchId]?.scrollThisIntoView();
+    const focusOriginalItem = () => itemsRefDictionary[omniBarState.preOmnibarFocusItemId || ""]?.focusThis();
+    const expandCurrentItem = () => {
+        if (currentMatchId != NO_MATCH) {
+            expandParentsAndFocusItem(transformedDataAndSetter, itemsRefDictionary, currentMatchId);
+        }
+    };
+    return {
+        omnibarKeyHandler: makeSearchKeyEventHandler(
+            setOmniBarState,
+            scrollToCurrentItem,
+            focusOriginalItem,
+            expandCurrentItem
+        ),
+        rootNode,
+        extraAnnotations: <span>{matchMessage}</span>
+    }
+}
+
+
+const searchTransformFromOmnibarState = (
     rootNode: ItemTreeNode,
     omniBarState: OmniBarState,
     setOmniBarState: React.Dispatch<React.SetStateAction<OmniBarState>>
@@ -22,6 +52,7 @@ export const searchTransformFromOmnibarState = (
     const { searchState, setSearchState } = omniBarStateProxy(omniBarState, setOmniBarState);
     return searchTransform(rootNode, searchState, setSearchState);
 }
+
 
 const omniBarStateProxy = (
     omniBarState: OmniBarState,
@@ -36,7 +67,7 @@ const omniBarStateProxy = (
             searchText = "";
         }
         return {
-            ...omniBarState.searchState,
+            selectionIdx: omniBarState.selectionIdx,
             searchText
         }
     };
@@ -55,12 +86,13 @@ const omniBarStateProxy = (
                 return {
                     ...omniBarState,
                     barContents: searchStateToSet.searchText,
-                    searchState: searchPartialState as SearchPartialState
+                    selectionIdx: searchStateToSet.selectionIdx
                 }
             })
         }
     };
 }
+
 
 const searchTransform = (rootNode: ItemTreeNode,
     searchParams: SearchState,
@@ -90,7 +122,7 @@ const searchTransform = (rootNode: ItemTreeNode,
             parentChain: [rootNode.id]
         }
     };
-    rootNode.searchHighlight = rootNode.searchHighlight.filter(state=>!HighlightStatesArray.includes(state as HighlightStates));
+    rootNode.searchHighlight = rootNode.searchHighlight.filter(state => !HighlightStatesArray.includes(state as HighlightStates));
     let nMatches = 0;
     let currentMatchId = NO_MATCH;
     let currentMatchParentChain: string[] = [];
@@ -110,7 +142,7 @@ const searchTransform = (rootNode: ItemTreeNode,
                     dfsOrder: -1,
                     parentChain: [...dfsSeenList[top.id].parentChain, child.id]
                 }
-                child.searchHighlight = child.searchHighlight.filter(state=>!HighlightStatesArray.includes(state as HighlightStates));
+                child.searchHighlight = child.searchHighlight.filter(state => !HighlightStatesArray.includes(state as HighlightStates));
             });
             const reversedChildrenForDFS = [...top.children].reverse();
             nodeStack.push(...reversedChildrenForDFS);
@@ -135,14 +167,14 @@ const searchTransform = (rootNode: ItemTreeNode,
         .sort((a: DFSMetadata, b: DFSMetadata) => a.dfsOrder - b.dfsOrder)
         .filter((i: DFSMetadata) => i.isMatch);
     if (searchMatchArray.length > 0) {
-        if (searchParams.searchSelectionIdx < 0) {
-            setSearchParams({ ...searchParams, searchSelectionIdx: 0 });
-        } else if (searchParams.searchSelectionIdx > searchMatchArray.length - 1) {
-            setSearchParams({ ...searchParams, searchSelectionIdx: searchMatchArray.length - 1 });
+        if (searchParams.selectionIdx < 0) {
+            setSearchParams({ ...searchParams, selectionIdx: 0 });
+        } else if (searchParams.selectionIdx > searchMatchArray.length - 1) {
+            setSearchParams({ ...searchParams, selectionIdx: searchMatchArray.length - 1 });
         } else {
-            searchMatchArray[searchParams.searchSelectionIdx].node.searchHighlight.push("SEARCH_SELECTED");
-            currentMatchId = searchMatchArray[searchParams.searchSelectionIdx].node.id;
-            currentMatchParentChain = searchMatchArray[searchParams.searchSelectionIdx].parentChain;
+            searchMatchArray[searchParams.selectionIdx].node.searchHighlight.push("SEARCH_SELECTED");
+            currentMatchId = searchMatchArray[searchParams.selectionIdx].node.id;
+            currentMatchParentChain = searchMatchArray[searchParams.selectionIdx].parentChain;
         }
     }
 
@@ -152,4 +184,32 @@ const searchTransform = (rootNode: ItemTreeNode,
         currentMatchId,
         currentMatchParentChain
     };
+}
+
+
+export const makeSearchKeyEventHandler = (
+    setOmniBarState: React.Dispatch<React.SetStateAction<OmniBarState>>,
+    scrollToCurrentItem: () => void,
+    focusOriginalItem: () => void,
+    expandParentsAndFocusItem: () => void
+) => {
+    return (evt: React.KeyboardEvent) => {
+        if (evt.key == "ArrowUp") {
+            setOmniBarState((oldState) => ({ ...oldState, selectionIdx: oldState.selectionIdx - 1 }))
+            window.setTimeout(scrollToCurrentItem, 1);
+        } else if (evt.key == "ArrowDown") {
+            setOmniBarState((oldState) => ({ ...oldState, selectionIdx: oldState.selectionIdx + 1 }))
+            window.setTimeout(scrollToCurrentItem, 1);
+        } else if (evt.key == "Enter") {
+            setOmniBarState(getDefaultOmnibarState());
+            expandParentsAndFocusItem()
+        } else if (evt.key == "Escape") {
+            // Todo: This seems common to the command specialization - do some code dedup
+            setOmniBarState(getDefaultOmnibarState());
+            focusOriginalItem();
+        } else {
+            // Search query was changed
+            window.setTimeout(scrollToCurrentItem, 1);
+        }
+    }
 }
