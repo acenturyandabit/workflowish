@@ -7,6 +7,7 @@
 - Add link under command
 - Fix bug where symlink children don't get expanded
 - Fix grand+children of symlinked nodes not collapsing
+- Fix backspace deletes item immediately + error thrown if try to fix with regular state getter
 
 # Version 3.5.0: More useful search 
 - Fix minor focus bug

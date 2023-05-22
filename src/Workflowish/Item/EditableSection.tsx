@@ -19,31 +19,13 @@ export const EditableSection = (props: {
     shouldUncollapse: boolean,
     actions: ControllerActions,
     styleParams: ItemStyleParams,
-    focusedActionReceiver: FocusedActionReceiver,
+    focusedActionReceiver: () => FocusedActionReceiver,
     raiseContextCopyIdEvent: (event: TriggerEvent) => void,
     onFocusClick: () => void
 }) => {
 
-    // onKeyDown is memorized by ContentEditable which results in it pointing to an outdated function in some cases
-    // We add the latest version using the getter function. 
-    // There's probably a better way to do this.
-    const [, getSetFocusedActionReceiver] = React.useState<FocusedActionReceiver>({
-        keyCommand: () => {
-            // dummy
-        },
-        refocusSelf: () => {
-            // dummy for init of focusedActionReciever
-        }
-    });
-    React.useEffect(() => {
-        getSetFocusedActionReceiver(props.focusedActionReceiver);
-    }, [props.focusedActionReceiver]);
     const onKeyDown = (evt: React.KeyboardEvent) => {
-        getSetFocusedActionReceiver((focusedActionReceiver) => {
-            // Need to delay this call otherwise it upsets an upstream setState call (setFocusedItem)
-            setTimeout(() => focusedActionReceiver.keyCommand(evt, evt), 1);
-            return focusedActionReceiver;
-        })
+        props.focusedActionReceiver().keyCommand(evt, evt);
     }
 
     const sanitizeConf = {

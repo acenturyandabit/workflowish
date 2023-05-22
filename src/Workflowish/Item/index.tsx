@@ -102,7 +102,7 @@ const Item = (props: {
     return <span className="itemWrapperClass">
         <EditableSection
             _ref={thisContentEditable}
-            focusedActionReceiver={focusedActionReceiver}
+            focusedActionReceiver={() => focusedActionReceiver}
             item={props.item}
             onFocusClick={focusThis}
             actions={props.actions}
