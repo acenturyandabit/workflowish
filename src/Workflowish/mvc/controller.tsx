@@ -38,26 +38,29 @@ export const makeListActions = (props: {
             const newSiblingArray = [...siblingArray];
             newSiblingArray.splice(props.currentSiblingIdx + 1, 0, makeNewItem());
             // New items won't be created yet, so delay the setfocus
-            setTimeout(() => props.siblingsFocusActions.current?.[props.currentSiblingIdx + 1]?.focusThis(),1);
+            setTimeout(() => props.siblingsFocusActions.current?.[props.currentSiblingIdx + 1]?.focusThis(), 1);
             return newSiblingArray;
         })
     },
     deleteThisItem: () => {
         if (!props.disableDelete || props.disableDelete() == false) {
-            props.getSetSiblingArray((siblingArray) => {
-                if (siblingArray.length > 0) {
-                    const newSiblingArray = [...siblingArray];
-                    newSiblingArray[props.currentSiblingIdx].markedForCleanup = true;
-                    if (props.currentSiblingIdx - 1 >= 0) {
-                        props.siblingsFocusActions.current?.[props.currentSiblingIdx - 1]?.focusThisEnd()
-                    } else {
-                        props.parentFocusActions.focusThisEnd();
-                    }
-                    return newSiblingArray;
+            props.getSetItems([props.thisItem.id], ([thisItem]) => {
+                const [childToDelete] = thisItem.children.splice(props.currentSiblingIdx, 1);
+                if (props.siblingsFocusActions.current?.[props.currentSiblingIdx - 1]) {
+                    setTimeout(() => props.siblingsFocusActions.current?.[props.currentSiblingIdx - 1]?.focusThis(), 1);
                 } else {
-                    return siblingArray
+                    setTimeout(() => props.parentFocusActions.focusThis(), 1);
                 }
-            })
+                const changedItems = [thisItem] as ItemTreeNode[];
+                const childrenToDeleteStack = [childToDelete];
+                while (childrenToDeleteStack.length > 0) {
+                    const top = childrenToDeleteStack.shift() as ItemTreeNode;
+                    top.children.forEach(child => childrenToDeleteStack.push(child));
+                    top.markedForCleanup = true;
+                    changedItems.push(top);
+                }
+                return changedItems;
+            });
         }
     },
     focusMyNextSibling: () => {
@@ -87,7 +90,8 @@ export const makeListActions = (props: {
                 const newSiblingArray = [...siblingArray];
                 const [thisItem] = newSiblingArray.splice(props.currentSiblingIdx, 1);
                 newSiblingArray.splice(props.currentSiblingIdx - 1, 0, thisItem);
-                props.siblingsFocusActions.current?.[props.currentSiblingIdx - 1]?.focusThis();
+                // todo: this focusThis should probably be delegated to a global function
+                setTimeout(() => props.siblingsFocusActions.current?.[props.currentSiblingIdx - 1]?.focusThis());
                 return newSiblingArray;
             })
         }
@@ -99,7 +103,7 @@ export const makeListActions = (props: {
                 const [thisItem] = newSiblingArray.splice(props.currentSiblingIdx, 1);
                 newSiblingArray.splice(props.currentSiblingIdx + 1, 0, thisItem);
                 // Changing the list does not change the item refs; so focus on the next item
-                props.siblingsFocusActions.current?.[props.currentSiblingIdx + 1]?.focusThis();
+                setTimeout(() => props.siblingsFocusActions.current?.[props.currentSiblingIdx + 1]?.focusThis());
                 return newSiblingArray;
             } else {
                 return siblingArray
@@ -127,6 +131,7 @@ export const makeListActions = (props: {
                 }
                 changedItems.push(newParentSibling);
                 newParentSibling.lastModifiedUnixMillis = Date.now();
+                newParentSibling.collapsed = false;
                 newParentSibling.children.push(child);
 
                 oldSiblingArray.splice(props.currentSiblingIdx, 1);

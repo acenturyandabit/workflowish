@@ -8,6 +8,7 @@
 - Fix bug where symlink children don't get expanded
 - Fix grand+children of symlinked nodes not collapsing
 - Fix backspace deletes item immediately + error thrown if try to fix with regular state getter
+- Minor fixes, including correct tab to indent behavior, focus behaviour, deletion behaviour
 
 # Version 3.5.0: More useful search 
 - Fix minor focus bug

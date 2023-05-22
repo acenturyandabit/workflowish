@@ -46,7 +46,7 @@ export const getTransformedDataAndSetter = (props: {
         setTimeout(() => props.updateData((data) => {
             // Must check second time otherwise this is called multiple times.
             // feels like locks all over again
-            if (!(virtualRootId in data)) return firstTimeData; 
+            if (!(virtualRootId in data)) return firstTimeData;
             else return data;
         }), 1);
         setItemsByKey = () => {

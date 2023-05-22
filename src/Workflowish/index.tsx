@@ -165,7 +165,7 @@ const ItemsList = (
                             while (nodeStack.length) {
                                 const top = nodeStack.shift()
                                 const subtreeUniquenessRecord: Record<string, boolean> = {};
-                                if (top) {
+                                if (top && top.children) {
                                     const noDuplicateChildren = top.children.filter(child => {
                                         if (child.id in subtreeUniquenessRecord) {
                                             // Log an error and ignore the duplicate
@@ -184,10 +184,6 @@ const ItemsList = (
                                     }
                                 }
                             }
-
-
-
-
                             return nodeDict;
                         }, {} as Record<string, ItemTreeNode>);
                     });
