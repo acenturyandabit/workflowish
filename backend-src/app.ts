@@ -6,6 +6,7 @@ import bodyParser from "body-parser"
 import getDiffsAndResolvedItems from '../src/CoreDataLake/getResolvedItems'
 import { BaseStoreDataType } from '../src/CoreDataLake'
 import { IncomingHttpHeaders } from 'http'
+import { testDocuments } from './testDocuments'
 
 const thisFileDirectory = path.dirname(__filename)
 const fileDBLocation = thisFileDirectory + "/filedb"
@@ -63,12 +64,20 @@ export const appFactory_build = (): ReturnType<typeof express> => {
 
     app.get("/load", (req, res) => {
         console.log("Loaded")
-        const docPath = getCleanFileName(req.query.f);
-        if (!checkAuthPasses(docPath, req.headers)) {
-            res.sendStatus(401);
+        const queryString = req.query.f;
+        if (!queryString) throw Error("No query provided");
+        if (typeof queryString != "string") throw Error("Invalid document name");
+        if (queryString in testDocuments) {
+            console.log("generating")
+            res.json(testDocuments[queryString]());
         } else {
-            const savedDoc = loadFromFile(docPath);
-            res.json(savedDoc)
+            const docPath = getCleanFileName(queryString);
+            if (!checkAuthPasses(docPath, req.headers)) {
+                res.sendStatus(401);
+            } else {
+                const savedDoc = loadFromFile(docPath);
+                res.json(savedDoc)
+            }
         }
     })
 
@@ -76,8 +85,6 @@ export const appFactory_build = (): ReturnType<typeof express> => {
 }
 
 const getCleanFileName = (queryString: Request['query'][string]): string => {
-    if (!queryString) throw Error("No query provided");
-    if (typeof queryString != "string") throw Error("Invalid document name");
     const cleanDocName = String(queryString).replace(/\W/g, "_");
     const cleanFilePath = fileDBLocation + "/" + cleanDocName + ".json"
     return cleanFilePath;

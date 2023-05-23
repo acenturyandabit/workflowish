@@ -20,7 +20,18 @@ export default (props: {
     const [lastFocusedItem, setLastFocusedItem] = React.useState<string>("");
 
     const [showIds, setShowIds] = React.useState<boolean>(false);
-    React.useEffect(AltShouldToggleShowIds(setShowIds), []);
+    React.useEffect(()=>{
+        const altModifyToggle = (evt: KeyboardEvent) => {
+            setShowIds(evt.altKey && evt.shiftKey);
+            if (evt.key == "Alt") evt.preventDefault();
+        }
+        window.addEventListener("keydown", altModifyToggle);
+        window.addEventListener("keyup", altModifyToggle);
+        return () => {
+            window.removeEventListener("keydown", altModifyToggle);
+            window.removeEventListener("keyup", altModifyToggle);
+        }
+    },[]);
 
     return <div style={{ height: "100%", display: "flex", flexDirection: "column" }}>
         <ContextMenu></ContextMenu>
@@ -46,18 +57,6 @@ export default (props: {
     </div>
 };
 
-const AltShouldToggleShowIds = (setShowIds: React.Dispatch<React.SetStateAction<boolean>>) => {
-    const altModifyToggle = (evt: KeyboardEvent) => {
-        setShowIds(evt.altKey && evt.shiftKey);
-        if (evt.key == "Alt") evt.preventDefault();
-    }
-    window.addEventListener("keydown", altModifyToggle);
-    window.addEventListener("keyup", altModifyToggle);
-    return () => {
-        window.removeEventListener("keydown", altModifyToggle);
-        window.removeEventListener("keyup", altModifyToggle);
-    }
-}
 
 const ItemsList = (
     props: {
