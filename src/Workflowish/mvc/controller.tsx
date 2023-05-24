@@ -44,7 +44,11 @@ export const makeListActions = (props: {
     },
     deleteThisItem: () => {
         if (!props.disableDelete || props.disableDelete() == false) {
-            props.getSetItems([props.thisItem.id], ([thisItem]) => {
+            let idToFetch = props.thisItem.id;
+            if (props.thisItem.symlinkedNode) {
+                idToFetch = props.thisItem.symlinkedNode.id;
+            }
+            props.getSetItems([idToFetch], ([thisItem]) => {
                 const [childToDelete] = thisItem.children.splice(props.currentSiblingIdx, 1);
                 if (props.siblingsFocusActions.current?.[props.currentSiblingIdx - 1]) {
                     setTimeout(() => props.siblingsFocusActions.current?.[props.currentSiblingIdx - 1]?.focusThis(), 1);
