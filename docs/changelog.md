@@ -1,4 +1,4 @@
-# Latest 
+# Version 3.6.0: Add omnibar 
 - Refactor to separate omnibar and search
 - Add CTRL+P for omnibar focus
 - Highlight currently selected item
