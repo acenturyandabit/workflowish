@@ -11,6 +11,7 @@
 - Minor fixes, including correct tab to indent behavior, focus behaviour, deletion behaviour
 - Fix performance issue due to compounding event handlers
 - fix: deleting direct children of symlinks causes crash
+- Better behaviour on duplicate item
 
 # Version 3.5.0: More useful search 
 - Fix minor focus bug

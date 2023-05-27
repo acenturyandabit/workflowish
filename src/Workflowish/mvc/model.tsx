@@ -174,18 +174,21 @@ export const fromTree = (root: ItemTreeNode): FlatItemBlob => {
     while (nodeStack.length) {
         const top = nodeStack.shift()
         if (top) {
-            const noDuplicateChildren = top.children.filter(child => {
+            let foundDuplicate = false;
+            const noDuplicateChildren = top.children.map((child): ItemTreeNode => {
                 if (child.id in seenChildRecord) {
-                    // Log an error and ignore the duplicate
-                    console.error(`Duplicate node ${top.id}! Removing from this parent and moving on.`);
-                    return false;
+                    console.error(`Duplicate node ${top.id}! Making into a symlink and moving on.`);
+                    const newItem = makeNewItem();
+                    newItem.data = `[LN: ${child.id}]`;
+                    foundDuplicate = true;
+                    return newItem;
                 } else {
                     seenChildRecord[child.id] = true;
                     nodeStack.push({ ...child, markedForCleanup: top.markedForCleanup || child.markedForCleanup })
-                    return true;
+                    return child;
                 }
             });
-            if (noDuplicateChildren.length != top.children.length) {
+            if (foundDuplicate) {
                 top.children = noDuplicateChildren;
                 top.lastModifiedUnixMillis = Date.now();
             }

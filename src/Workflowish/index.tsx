@@ -3,7 +3,7 @@ import { BaseStoreDataType } from "~CoreDataLake";
 import { makeListActions, TreeNodeArrayGetSetter, TreeNodesGetSetter } from "./mvc/controller";
 import { FocusedActionReceiver, dummyFocusedActionReciever } from "./mvc/focusedActionReceiver"
 import Item, { FocusActions } from "./Item"
-import { ItemTreeNode, getTransformedDataAndSetter, TransformedDataAndSetter, virtualRootId, TransformedData } from "./mvc/model"
+import { ItemTreeNode, getTransformedDataAndSetter, TransformedDataAndSetter, virtualRootId, TransformedData, makeNewItem } from "./mvc/model"
 import { isMobile } from '~util/isMobile';
 import { FloatyButtons } from "./Subcomponents/FloatyButtons";
 import OmnibarWrapper from "./Subcomponents/OmnibarWrapper";
@@ -20,7 +20,7 @@ export default (props: {
     const [lastFocusedItem, setLastFocusedItem] = React.useState<string>("");
 
     const [showIds, setShowIds] = React.useState<boolean>(false);
-    React.useEffect(()=>{
+    React.useEffect(() => {
         const altModifyToggle = (evt: KeyboardEvent) => {
             setShowIds(evt.altKey && evt.shiftKey);
             if (evt.key == "Alt") evt.preventDefault();
@@ -31,7 +31,7 @@ export default (props: {
             window.removeEventListener("keydown", altModifyToggle);
             window.removeEventListener("keyup", altModifyToggle);
         }
-    },[]);
+    }, []);
 
     return <div style={{ height: "100%", display: "flex", flexDirection: "column" }}>
         <ContextMenu></ContextMenu>
@@ -110,20 +110,27 @@ const ItemsList = (
                         while (nodeStack.length) {
                             const top = nodeStack.shift()
                             if (top) {
-                                const noDuplicateChildren = top.children.filter(child => {
+                                let foundDuplicate = false;
+                                const noDuplicateChildren = top.children.map((child): ItemTreeNode => {
                                     if (child.id in flatTree) {
-                                        // Log an error and ignore the duplicate
-                                        console.error(`Duplicate node ${top.id}! Removing from this parent and moving on.`);
-                                        return false;
+                                        console.error(`Duplicate node ${top.id}! Making into a symlink and moving on.`);
+                                        const newItem = makeNewItem();
+                                        newItem.data = `[LN: ${child.id}]`;
+                                        foundDuplicate = true;
+                                        flatTree[newItem.id] = newItem;
+                                        return newItem;
                                     } else {
                                         flatTree[child.id] = child;
                                         nodeStack.push({ ...child, markedForCleanup: top.markedForCleanup || child.markedForCleanup })
-                                        return true;
+                                        return child;
                                     }
                                 });
-                                if (noDuplicateChildren.length != top.children.length) {
-                                    top.children = noDuplicateChildren;
-                                    top.lastModifiedUnixMillis = Date.now();
+                                if (foundDuplicate) {
+                                    flatTree[top.id] = {
+                                        ...flatTree[top.id],
+                                        children: noDuplicateChildren,
+                                        lastModifiedUnixMillis: Date.now()
+                                    }
                                 }
                             }
                         }
@@ -163,21 +170,25 @@ const ItemsList = (
                             const nodeStack = [node];
                             while (nodeStack.length) {
                                 const top = nodeStack.shift()
-                                const subtreeUniquenessRecord: Record<string, boolean> = {};
                                 if (top && top.children) {
-                                    const noDuplicateChildren = top.children.filter(child => {
+                                    const subtreeUniquenessRecord: Record<string, boolean> = {};
+                                    let foundDuplicate = false;
+                                    const noDuplicateChildren = top.children.map((child): ItemTreeNode => {
                                         if (child.id in subtreeUniquenessRecord) {
-                                            // Log an error and ignore the duplicate
-                                            console.error(`Duplicate node ${top.id}! Removing from this parent and moving on.`);
-                                            return false;
+                                            console.error(`Duplicate node ${top.id}! Making into a symlink and moving on.`);
+                                            const newItem = makeNewItem();
+                                            newItem.data = `[LN: ${child.id}]`;
+                                            nodeDict[newItem.id] = newItem;
+                                            foundDuplicate = true;
+                                            return newItem;
                                         } else {
                                             nodeDict[child.id] = child;
                                             subtreeUniquenessRecord[child.id] = true;
                                             nodeStack.push({ ...child, markedForCleanup: top.markedForCleanup || child.markedForCleanup })
-                                            return true;
+                                            return child;
                                         }
                                     });
-                                    if (noDuplicateChildren.length != top.children.length) {
+                                    if (foundDuplicate) {
                                         top.children = noDuplicateChildren;
                                         top.lastModifiedUnixMillis = Date.now();
                                     }
