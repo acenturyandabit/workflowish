@@ -47,6 +47,23 @@ export const makeFocusedActionReceiver = (props: {
                         children: [makeNewItem(), ...oldSelf.children]
                     }));
                     setTimeout(() => props.itemsRefArray.current?.[0]?.focusThis());
+                } else if (evt.altKey) {
+                    const currentSelection = window.getSelection();
+                    if (currentSelection
+                        && currentSelection.anchorOffset == currentSelection.focusOffset
+                        && currentSelection.anchorNode == currentSelection.focusNode
+                    ) {
+                        props.actions.getSetSelf(oldSelf => {
+                            const newItem = makeNewItem();
+                            newItem.data = oldSelf.data.slice(currentSelection.anchorOffset);
+                            return {
+                                ...oldSelf,
+                                data: oldSelf.data.slice(0, currentSelection.anchorOffset),
+                                children: [newItem, ...oldSelf.children]
+                            }
+                        });
+                        setTimeout(() => props.itemsRefArray.current?.[0]?.focusThis());
+                    }
                 } else {
                     props.actions.createNewItem();
                 }
