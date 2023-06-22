@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { ItemTreeNode, TransformedDataAndSetter } from "~Workflowish/mvc/model";
 import { OmniBarState } from "../States";
-import { FocusActions } from "~Workflowish/Item";
+import { ItemRef } from "~Workflowish/Item";
 import { searchPropsFactory } from './search';
 import { commandPropsFactory } from './commands';
 
@@ -10,7 +10,7 @@ export type SpecializedPropsFactory = (
     omniBarState: OmniBarState,
     setOmniBarState: React.Dispatch<React.SetStateAction<OmniBarState>>,
     transformedDataAndSetter: TransformedDataAndSetter,
-    itemsRefDictionary: Record<string, FocusActions>
+    itemsRefDictionary: Record<string, ItemRef>
 ) => {
     omnibarKeyHandler: (evt: React.KeyboardEvent) => void,
     rootNode: ItemTreeNode,
@@ -21,7 +21,7 @@ export const getSpecializedProps: SpecializedPropsFactory = (
     omniBarState: OmniBarState,
     setOmniBarState: React.Dispatch<React.SetStateAction<OmniBarState>>,
     transformedDataAndSetter: TransformedDataAndSetter,
-    itemsRefDictionary: Record<string, FocusActions>
+    itemsRefDictionary: Record<string, ItemRef>
 ) => {
     let omniBarSubtype: OmniBarSubtype = "None";
     if (omniBarState.barContents.startsWith(">")) omniBarSubtype = "Command";

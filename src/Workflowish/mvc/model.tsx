@@ -1,7 +1,7 @@
 import * as React from "react";
 import { BaseItemType, BaseStoreDataType, makeNewUniqueKey, setToDeleted } from "~CoreDataLake";
 import { HighlightStates as SearchHighlightStates } from "../Subcomponents/OmnibarWrapper/Specializations/search";
-import { generateFirstTimeDoc } from "./firstTimeDoc";
+import { generateFirstTimeWorkflowishDoc } from "./firstTimeDoc";
 
 type HighlightStates = SearchHighlightStates;
 
@@ -34,15 +34,29 @@ export const makeNewItem = (): ItemTreeNode => ({
     collapsed: false
 });
 
+export type TransformedData = {
+    rootNode: ItemTreeNode,
+    keyedNodes: Record<string, ItemTreeNode>,
+    parentById: Record<string, string>
+};
+
+export type ItemSetterByKey = (itemsToSet: Record<string, ItemTreeNode> | ((transformedData: TransformedData) => Record<string, ItemTreeNode>)) => void
+
+export type TransformedDataAndSetter = {
+    transformedData: TransformedData,
+    setItemsByKey: ItemSetterByKey
+};
+
+
 export const getTransformedDataAndSetter = (props: {
     data: BaseStoreDataType,
     updateData: React.Dispatch<React.SetStateAction<BaseStoreDataType>>,
-}) => {
+}): TransformedDataAndSetter => {
 
     let transformedData: ReturnType<typeof transformData>;
     let setItemsByKey: ReturnType<typeof getItemSetterByKey>
     if (!(virtualRootId in props.data)) {
-        const firstTimeData = fromTree(generateFirstTimeDoc());
+        const firstTimeData = fromTree(generateFirstTimeWorkflowishDoc());
         setTimeout(() => props.updateData((data) => {
             // Must check second time otherwise this is called multiple times.
             // feels like locks all over again
@@ -63,12 +77,9 @@ export const getTransformedDataAndSetter = (props: {
     };
 }
 
-export type TransformedData = ReturnType<typeof transformData>;
-export type TransformedDataAndSetter = ReturnType<typeof getTransformedDataAndSetter>;
-
 export const virtualRootId = "__virtualRoot";
 
-export const getItemSetterByKey = (updateData: React.Dispatch<React.SetStateAction<BaseStoreDataType>>) => {
+export const getItemSetterByKey = (updateData: React.Dispatch<React.SetStateAction<BaseStoreDataType>>): ItemSetterByKey => {
     return (itemsToSet: Record<string, ItemTreeNode> | ((transformedData: TransformedData) => Record<string, ItemTreeNode>)) => {
         updateData((oldData) => {
             let todoItemsToSet: Record<string, ItemTreeNode>;
@@ -85,12 +96,10 @@ export const getItemSetterByKey = (updateData: React.Dispatch<React.SetStateActi
             }
             return { ...oldData };
         })
-
-
     }
 }
 
-export const transformData = (flatItemBlob: FlatItemBlob) => {
+export const transformData = (flatItemBlob: FlatItemBlob): TransformedData => {
     const treeConstructorRecord: Record<string,
         ItemTreeNode
     > = {};

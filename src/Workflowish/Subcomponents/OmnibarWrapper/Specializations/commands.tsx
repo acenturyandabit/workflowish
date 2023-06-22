@@ -2,7 +2,7 @@ import * as React from 'react'
 import { ItemTreeNode, TransformedDataAndSetter } from "../../../mvc/model"
 import { OmniBarState } from '../States'
 import { SpecializedPropsFactory } from '.'
-import { FocusActions } from '~Workflowish/Item'
+import { ItemRef } from '~Workflowish/Item'
 import { getDefaultOmnibarState } from '..'
 import { expandParentsAndFocusItem } from './utilities'
 import { makeNewUniqueKey } from '~CoreDataLake'
@@ -112,7 +112,7 @@ export const commandPropsFactory: SpecializedPropsFactory = (
     omniBarState: OmniBarState,
     setOmniBarState: React.Dispatch<React.SetStateAction<OmniBarState>>,
     transformedDataAndSetter: TransformedDataAndSetter,
-    itemsRefDictionary: Record<string, FocusActions>
+    itemsRefDictionary: Record<string, ItemRef>
 ) => {
     const focusOriginalItem = () => itemsRefDictionary[omniBarState.preOmnibarFocusItemId || ""]?.focusThis();
     const { matchedCommand, matchingNodes } = getMatchedCommandAndMatchingNodes(omniBarState, transformedDataAndSetter);

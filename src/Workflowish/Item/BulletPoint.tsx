@@ -23,10 +23,7 @@ export const BulletPoint = (props: {
         cursor: "pointer",
         color
     }}
-    ><span onClick={() => props.actions.getSetSelf((self: ItemTreeNode) => ({
-        ...self,
-        collapsed: !self.collapsed
-    }))}
+    ><span onClick={() => props.actions.setSelfCollapsed(!props.item.collapsed)}
     >{(() => {
         let bullet = "\u25CF";
         if (props.styleParams.emptyList) bullet = ">";

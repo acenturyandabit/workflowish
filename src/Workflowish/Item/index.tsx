@@ -1,10 +1,10 @@
 import * as React from "react";
 import { ControllerActions } from "../mvc/controller";
 import { FocusedActionReceiver, makeFocusedActionReceiver } from "../mvc/focusedActionReceiver";
-import { ItemTreeNode } from "../mvc/model";
+import { ItemTreeNode, TransformedDataAndSetter } from "../mvc/model";
 import { EditableSection } from "./EditableSection";
 import "./index.css"
-import { ChildItems, makeParentFocusActions } from "./ChildItems";
+import { ChildItems } from "./ChildItems";
 import { SIDECLIP_CONTEXT_MENU_ID } from '~Workflowish/Subcomponents/ContextMenu';
 import { TriggerEvent, useContextMenu } from 'react-contexify';
 
@@ -16,7 +16,6 @@ export type FocusActions = {
     scrollThisIntoView: () => void;
     focusThisEnd: () => void;
     focusRecentlyIndentedItem: () => void;
-    focusMyNextSibling: () => void;
 }
 
 export type ItemStyleParams = {
@@ -30,15 +29,11 @@ const shouldBeUncollapsed = (item: ItemTreeNode): boolean => !item.collapsed || 
 const Item = (props: {
     styleParams: ItemStyleParams,
     item: ItemTreeNode,
-    pushRef: (ref: FocusActions) => void,
-    pushRefGlobal: (ref: FocusActions, id: string) => void,
     actions: ControllerActions,
+    model: TransformedDataAndSetter,
+    pushRef: (id: string, ref: ItemRef) => void
     setThisAsFocused: (focusedActionReceiver: FocusedActionReceiver, focusItemKey: string) => void
 }) => {
-    const item = React.useRef(props.item);
-    React.useEffect(() => {
-        item.current = props.item
-    }, [props.item]);
     const itemsRefArray = React.useRef<Array<FocusActions | null>>([])
     const thisContentEditable = React.useRef<HTMLElement | null>(null);
     while (itemsRefArray.current.length < props.item.children.length) {
@@ -53,16 +48,13 @@ const Item = (props: {
 
     const focusThis = () => {
         thisContentEditable.current?.focus();
-        props.setThisAsFocused(focusedActionReceiver, item.current.id);
-    }
-
-    const scrollThisIntoView = () => {
-        thisContentEditable.current?.scrollIntoView();
+        props.setThisAsFocused(focusedActionReceiver, props.item.id);
     }
 
     const { show: showSideclipContextMenu, hideAll } = useContextMenu({
         id: SIDECLIP_CONTEXT_MENU_ID,
     });
+
     const raiseContextCopyIdEvent = (event: TriggerEvent) => {
         showSideclipContextMenu({ event });
         setTimeout(hideAll, 400);
@@ -81,29 +73,26 @@ const Item = (props: {
     const focusedActionReceiver = makeFocusedActionReceiver({
         actions: props.actions,
         itemsRefArray,
-        item,
+        item: props.item,
         raiseContextCopyIdEvent,
         jumpToSymlink,
         focusThis
     })
 
-    const parentFocusActions = makeParentFocusActions(
+    props.pushRef(props.item.id, {
         focusThis,
-        scrollThisIntoView,
-        shouldUncollapse,
-        itemsRefArray,
-        thisContentEditable,
-        props.actions
-    );
-    props.pushRef(parentFocusActions);
-    props.pushRefGlobal(parentFocusActions, props.item.id);
+        scrollThisIntoView: ()=>{
+            thisContentEditable.current?.scrollIntoView()
+        }
+    })
 
 
     return <span className="itemWrapperClass">
         <EditableSection
             _ref={thisContentEditable}
-            focusedActionReceiver={() => focusedActionReceiver}
+            focusedActionReceiver={focusedActionReceiver}
             item={props.item}
+            model={props.model}
             onFocusClick={focusThis}
             actions={props.actions}
             shouldUncollapse={shouldUncollapse}
@@ -113,16 +102,20 @@ const Item = (props: {
         <ChildItems
             item={props.item}
             itemsRefArray={itemsRefArray}
-            parentFocusActions={parentFocusActions}
             setThisAsFocused={props.setThisAsFocused}
             actions={props.actions}
             shouldUncollapse={shouldUncollapse}
             styleParams={props.styleParams}
-            pushRefGlobal={props.pushRefGlobal}
+            model={props.model}
+            pushRef={props.pushRef}
         ></ChildItems>
 
     </span >
 }
 
+export type ItemRef = {
+    focusThis: () => void,
+    scrollThisIntoView: () => void
+}
 
 export default Item;

@@ -1,6 +1,8 @@
 import * as React from 'react';
 import { KVStoresAndLoadedState } from '~Stores/KVStoreInstances';
 import getDiffsAndResolvedItems from './getResolvedItems';
+import { generateFirstTimeWorkflowishDoc } from '~Workflowish/mvc/firstTimeDoc';
+import { fromTree } from '~Workflowish/mvc/model';
 export type BaseItemType = {
     lastModifiedUnixMillis: number,
     [key: string]: unknown
@@ -13,6 +15,10 @@ export type DataAndLoadState = {
     data: BaseStoreDataType,
     loaded: boolean,
     changed: boolean
+}
+
+export const generateFirstTimeDoc = (): BaseStoreDataType => {
+    return fromTree(generateFirstTimeWorkflowishDoc());
 }
 
 let uniqueCounter = 0;
@@ -62,7 +68,7 @@ export const useCoreDataLake = (kvStores: KVStoresAndLoadedState): [
                     }
                 });
                 return { ...dataAndLoadState, changed: false }
-            }else{
+            } else {
                 // No need to update entire component tree
                 return dataAndLoadState;
             }
@@ -72,18 +78,22 @@ export const useCoreDataLake = (kvStores: KVStoresAndLoadedState): [
     React.useEffect(() => {
         (async () => {
             if (kvStores.loaded && !dataAndLoadState.loaded) {
-                const allDocuments = await Promise.all(kvStores.stores.map(async i => {
+
+                const documentsToBeMerged = await Promise.all(kvStores.stores.map(async i => {
                     try {
                         return await i.load();
                     } catch (e) {
                         return {}
                     }
                 }));
+                if (documentsToBeMerged.length == 0) {
+                    documentsToBeMerged.push(generateFirstTimeDoc());
+                }
 
                 setDataAndLoadState({
                     loaded: true,
                     changed: false,
-                    data: resolveAllDocuments(allDocuments)
+                    data: resolveAllDocuments(documentsToBeMerged)
                 });
             }
         })()

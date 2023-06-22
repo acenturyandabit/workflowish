@@ -47,6 +47,11 @@ export const useKVStoresList = (): [
     
     React.useEffect(() => {
         if (kvStores.loaded) {
+            if (kvStores.stores.length == 0) {
+                if (confirm("This document doesn't seem to save anywhere... do you want to save your results to the browser? Otherwise you will lose all your changes!")) {
+                    kvStores.stores.push(makeDefaultKVStore());
+                }
+            }
             localforage.setItem<LocallyStoredStoresInformation>("stores", passivate(kvStores));
         }
     }, [kvStores])

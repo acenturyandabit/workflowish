@@ -1,9 +1,9 @@
-import { FocusActions } from "~Workflowish/Item";
+import { ItemRef } from "~Workflowish/Item";
 import { ItemTreeNode, TransformedDataAndSetter, virtualRootId } from "~Workflowish/mvc/model";
 
 export const expandParentsAndFocusItem = (
     transformedDataAndSetter: TransformedDataAndSetter,
-    itemsRefDictionary: Record<string, FocusActions>,
+    itemsRefDictionary: Record<string, ItemRef>,
     itemToReveal: string
 ) => {
     transformedDataAndSetter.setItemsByKey((transformedData) => {

@@ -1,5 +1,5 @@
 import { DefaultKVConstructionArgs, KVStore, KVStoreConstructor, KVStoreSettingsStruct } from "./types";
-
+import { v4 as uuid } from "uuid";
 import BrowserKVStore from "./BrowserKVStore"
 import HTTPStore from "./HTTPKVStore";
 import TextImportKVStore from "./TextImportKVStore";
@@ -25,6 +25,6 @@ const innerMakeKVStore = (ctor: KVStoreConstructor<KVStoreSettingsStruct>, args:
 export const makeDefaultKVStore = () => {
     return new KVStores[BrowserKVStore.type]({
         type: BrowserKVStore.type,
-        documentName: "default"
+        documentName: uuid()
     })
 }

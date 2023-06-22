@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Menu, Item } from 'react-contexify';
 import 'react-contexify/ReactContexify.css';
 import './ContextMenu.css'
-import { ItemTreeNode } from '../mvc/model';
+import { ItemTreeNode, TransformedDataAndSetter } from '../mvc/model';
 
 export const ITEM_CONTEXT_MENU_ID = "workflowish_ctx_menu"
 export const SIDECLIP_CONTEXT_MENU_ID = "sideclip_ctx_menu"
@@ -20,13 +20,21 @@ export default () => {
 
 interface ItemParams {
     id?: string,
-    props?: ItemTreeNode[],
+    props?: {
+        thisItem: ItemTreeNode,
+        model: TransformedDataAndSetter
+    },
     event: React.MouseEvent<HTMLElement> | React.TouchEvent<HTMLElement> | React.KeyboardEvent<HTMLElement> | KeyboardEvent;
 }
 
 const exportToList = (args: ItemParams) => {
-    const itemAndSiblingAsMarkdown = (args.props?.map((i: ItemTreeNode) => toBullets(i)) || []).join("\n");
-    navigator.clipboard.writeText(itemAndSiblingAsMarkdown).then(() => console.log("yay"), console.log);
+    const argProps = args.props;
+    if (argProps){
+        const parentId = argProps.model.transformedData.parentById[argProps.thisItem.id];
+        const siblings = argProps.model.transformedData.keyedNodes[parentId].children;
+        const itemAndSiblingAsMarkdown = (siblings.map((i: ItemTreeNode) => toBullets(i)) || []).join("\n");
+        navigator.clipboard.writeText(itemAndSiblingAsMarkdown).then(() => console.log("yay"), console.log);
+    }
 }
 
 const toBullets = (rootNode: ItemTreeNode): string => {

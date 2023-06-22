@@ -1,191 +1,216 @@
-import * as React from "react";
-import { FocusActions } from "../Item";
-import { ItemTreeNode, makeNewItem } from "./model";
-
-export type TreeNodeGetSetter = (oldValue: ItemTreeNode) => ItemTreeNode;
-export type TreeNodesGetSetter = (oldValue: ItemTreeNode[]) => ItemTreeNode[];
-export type TreeNodeArrayGetSetter = (oldValue: ItemTreeNode[]) => ItemTreeNode[];
+import { makeNewUniqueKey } from "~CoreDataLake";
+import { ItemTreeNode, TransformedDataAndSetter } from "./model";
 
 export type ControllerActions = {
-    getSetSelf: (getSetter: TreeNodeGetSetter) => void,
-    createNewItem: () => void,
-    deleteThisItem: () => void
-    focusMyPrevSibling: () => void
-    focusMyNextSibling: () => void
-    focusItem: (id: string) => void,
-    putBeforePrev: () => void
-    putAfterNext: () => void
+    editSelfContents: (newContents: string) => void,
+    createNewChild: (newContents?: string) => Promise<string>,
+    createNewSibling: (newContents?: string) => Promise<string>,
+    focusItem: (newChildId: string) => void,
+    deleteSelf: () => void
+    focusPreviousListItem: () => void
+    focusNextListItem: () => void
+    arrangeBeforePrev: () => void
+    arrangeAfterNext: () => void
     indentSelf: () => void,
-    unindentSelf: () => void,
-    unindentGrandchild: (grandChildIdx: number) => void,
-    getSetSiblingArray: (t: TreeNodeArrayGetSetter) => void,
-    getSetItems: (keys: string[], getSetter: TreeNodesGetSetter) => void
+    unindentSelf: () => void
+    setSelfCollapsed: (collapsed: boolean) => void;
 }
 
-export const makeListActions = (props: {
-    currentSiblingIdx: number,
-    getSetSiblingArray: (t: TreeNodeArrayGetSetter) => void,
-    siblingsFocusActions: React.RefObject<(FocusActions | null)[]>,
-    unindentCaller: () => void,
-    parentFocusActions: FocusActions
-    disableDelete?: () => boolean,
-    getSetItems: (keys: string[], getSetter: TreeNodesGetSetter) => void,
-    thisItem: ItemTreeNode,
+export const linkSymbol = "🔗:";
+
+export const makeItemActions = (props: {
     focusItem: (id: string) => void
+    disableDelete?: () => boolean,
+    thisItem: ItemTreeNode,
+    model: TransformedDataAndSetter,
 }): ControllerActions => ({
-    createNewItem: () => {
-        props.getSetSiblingArray((siblingArray) => {
-            const newSiblingArray = [...siblingArray];
-            newSiblingArray.splice(props.currentSiblingIdx + 1, 0, makeNewItem());
-            // New items won't be created yet, so delay the setfocus
-            setTimeout(() => props.siblingsFocusActions.current?.[props.currentSiblingIdx + 1]?.focusThis(), 1);
-            return newSiblingArray;
+    // Note: All these methods are symlink aware.
+    editSelfContents: (newContents: string) => {
+        props.model.setItemsByKey((transformedData) => {
+            if (props.thisItem.symlinkedNode) {
+                const isStillALink = newContents.startsWith(linkSymbol);
+                if (isStillALink) {
+                    transformedData.keyedNodes[props.thisItem.symlinkedNode.id].data = newContents;
+                    return {
+                        [props.thisItem.symlinkedNode.id]: transformedData.keyedNodes[props.thisItem.symlinkedNode.id]
+                    }
+                } else {
+                    const brokenLink = `[LN: ${props.thisItem.symlinkedNode.id}`;
+                    transformedData.keyedNodes[props.thisItem.id].data = brokenLink;
+                    return {
+                        [props.thisItem.id]: transformedData.keyedNodes[props.thisItem.id]
+                    }
+                }
+            } else {
+                transformedData.keyedNodes[props.thisItem.id].data = newContents;
+                return {
+                    [props.thisItem.id]: transformedData.keyedNodes[props.thisItem.id]
+                }
+            }
         })
     },
-    deleteThisItem: () => {
-        if (!props.disableDelete || props.disableDelete() == false) {
-            let idToFetch = props.thisItem.id;
-            if (props.thisItem.symlinkedNode) {
-                idToFetch = props.thisItem.symlinkedNode.id;
-            }
-            props.getSetItems([idToFetch], ([thisItem]) => {
-                const [childToDelete] = thisItem.children.splice(props.currentSiblingIdx, 1);
-                if (props.siblingsFocusActions.current?.[props.currentSiblingIdx - 1]) {
-                    setTimeout(() => props.siblingsFocusActions.current?.[props.currentSiblingIdx - 1]?.focusThis(), 1);
-                } else {
-                    setTimeout(() => props.parentFocusActions.focusThis(), 1);
+    createNewChild: async (newContents?: string) => {
+        return new Promise<string>((resolve) => {
+            const newId = makeNewUniqueKey();
+            props.model.setItemsByKey((transformedData) => {
+                const newTreeNode: ItemTreeNode = {
+                    id: newId,
+                    lastModifiedUnixMillis: Date.now(),
+                    data: newContents || "",
+                    children: [],
+                    collapsed: false,
+                    searchHighlight: []
+                };
+                transformedData.keyedNodes[props.thisItem.id].children.unshift(newTreeNode);
+                setTimeout(() => resolve(newId));
+                return {
+                    [newId]: newTreeNode,
+                    [props.thisItem.id]: transformedData.keyedNodes[props.thisItem.id]
                 }
-                const changedItems = [thisItem] as ItemTreeNode[];
-                const childrenToDeleteStack = [childToDelete];
-                while (childrenToDeleteStack.length > 0) {
-                    const top = childrenToDeleteStack.shift() as ItemTreeNode;
-                    top.children.forEach(child => childrenToDeleteStack.push(child));
-                    top.markedForCleanup = true;
-                    changedItems.push(top);
+            })
+        })
+    },
+    createNewSibling: async (newContents?: string) => {
+        return new Promise<string>((resolve) => {
+            const newId = makeNewUniqueKey();
+            props.model.setItemsByKey((transformedData) => {
+                const thisParentId = props.model.transformedData.parentById[props.thisItem.id];
+                const siblings = props.model.transformedData.keyedNodes[thisParentId].children;
+                const currentSiblingIdx = siblings.map(i => i.id).indexOf(props.thisItem.id);
+                const newTreeNode: ItemTreeNode = {
+                    id: newId,
+                    lastModifiedUnixMillis: Date.now(),
+                    data: newContents || "",
+                    children: [],
+                    collapsed: false,
+                    searchHighlight: []
+                };
+                siblings.splice(currentSiblingIdx + 1, 0, newTreeNode);
+                setTimeout(() => resolve(newId));
+                return {
+                    [newId]: newTreeNode,
+                    [props.thisItem.id]: transformedData.keyedNodes[props.thisItem.id]
                 }
-                return changedItems;
-            });
-        }
-    },
-    focusMyNextSibling: () => {
-        const siblingItemsRef = props.siblingsFocusActions.current;
-        if (siblingItemsRef) {
-            if (props.currentSiblingIdx >= siblingItemsRef.length - 1) {
-                props.parentFocusActions.focusMyNextSibling()
-            } else {
-                siblingItemsRef[props.currentSiblingIdx + 1]?.triggerFocusFromAbove()
-            }
-        }
-    },
-    focusMyPrevSibling: () => {
-        const siblingItemsRef = props.siblingsFocusActions.current;
-        if (siblingItemsRef) {
-            if (props.currentSiblingIdx <= 0) {
-                props.parentFocusActions.focusThis()
-            } else {
-                siblingItemsRef[props.currentSiblingIdx - 1]?.triggerFocusFromBelow()
-            }
-        }
+            })
+        })
     },
     focusItem: props.focusItem,
-    putBeforePrev: () => {
-        if (props.currentSiblingIdx > 0) {
-            props.getSetSiblingArray((siblingArray) => {
-                const newSiblingArray = [...siblingArray];
-                const [thisItem] = newSiblingArray.splice(props.currentSiblingIdx, 1);
-                newSiblingArray.splice(props.currentSiblingIdx - 1, 0, thisItem);
-                // todo: this focusThis should probably be delegated to a global function
-                setTimeout(() => props.siblingsFocusActions.current?.[props.currentSiblingIdx - 1]?.focusThis());
-                return newSiblingArray;
+    deleteSelf: () => {
+        if (!props.disableDelete || props.disableDelete() == false) {
+            props.model.setItemsByKey((transformedData) => {
+                transformedData.keyedNodes[props.thisItem.id].markedForCleanup = true;
+                return {
+                    [props.thisItem.id]: transformedData.keyedNodes[props.thisItem.id]
+                }
             })
         }
     },
-    putAfterNext: () => {
-        props.getSetSiblingArray((siblingArray) => {
-            if (props.currentSiblingIdx < siblingArray.length - 1) {
-                const newSiblingArray = [...siblingArray];
-                const [thisItem] = newSiblingArray.splice(props.currentSiblingIdx, 1);
-                newSiblingArray.splice(props.currentSiblingIdx + 1, 0, thisItem);
-                // Changing the list does not change the item refs; so focus on the next item
-                setTimeout(() => props.siblingsFocusActions.current?.[props.currentSiblingIdx + 1]?.focusThis());
-                return newSiblingArray;
-            } else {
-                return siblingArray
+    setSelfCollapsed: (collapsed: boolean) => {
+        props.model.setItemsByKey((transformedData) => {
+            transformedData.keyedNodes[props.thisItem.id].collapsed = collapsed;
+            return {
+                [props.thisItem.id]: transformedData.keyedNodes[props.thisItem.id]
+            }
+        })
+    },
+    focusPreviousListItem: () => {
+        const thisParentId = props.model.transformedData.parentById[props.thisItem.id];
+        const siblings = props.model.transformedData.keyedNodes[thisParentId].children;
+        const currentSiblingIdx = siblings.map(i => i.id).indexOf(props.thisItem.id);
+        if (currentSiblingIdx > 0) {
+            let focusTarget = siblings[currentSiblingIdx - 1];
+            while (!focusTarget.collapsed && focusTarget.children.length) {
+                focusTarget = focusTarget.children[focusTarget.children.length - 1];
+            }
+            props.focusItem(focusTarget.id);
+        } else {
+            props.focusItem(thisParentId);
+        }
+    },
+    focusNextListItem: () => {
+        if (props.thisItem.children.length && !props.thisItem.collapsed) {
+            props.focusItem(props.thisItem.children[0].id);
+        } else {
+            let hasNextSiblingCandidate = props.thisItem;
+            let foundFocus = false;
+            do {
+                const parentId = props.model.transformedData.parentById[hasNextSiblingCandidate.id];
+                const parent = props.model.transformedData.keyedNodes[parentId];
+                const siblings = parent.children;
+                const currentSiblingIdx = siblings.map(i => i.id).indexOf(hasNextSiblingCandidate.id);
+                if (currentSiblingIdx < siblings.length - 1) {
+                    props.focusItem(siblings[currentSiblingIdx + 1].id);
+                    foundFocus = true;
+                } else {
+                    hasNextSiblingCandidate = parent;
+                }
+            } while (!foundFocus);
+        }
+    },
+    arrangeBeforePrev: () => {
+        props.model.setItemsByKey((transformedData) => {
+            const thisParentId = transformedData.parentById[props.thisItem.id];
+            const parentItem = transformedData.keyedNodes[thisParentId];
+            const currentSiblingIdx = parentItem.children.map(i => i.id).indexOf(props.thisItem.id);
+            if (currentSiblingIdx > 0) {
+                parentItem.children.splice(currentSiblingIdx, 1);
+                parentItem.children.splice(currentSiblingIdx - 1, 0, props.thisItem);
+            }
+            return {
+                [parentItem.id]: parentItem
+            }
+        })
+    },
+    arrangeAfterNext: () => {
+        props.model.setItemsByKey((transformedData) => {
+            const thisParentId = transformedData.parentById[props.thisItem.id];
+            const parentItem = transformedData.keyedNodes[thisParentId];
+            const currentSiblingIdx = parentItem.children.map(i => i.id).indexOf(props.thisItem.id);
+            if (currentSiblingIdx < parentItem.children.length - 1) {
+                parentItem.children.splice(currentSiblingIdx, 1);
+                parentItem.children.splice(currentSiblingIdx + 1, 0, props.thisItem);
+            }
+            return {
+                [parentItem.id]: parentItem
             }
         })
     },
     indentSelf: () => {
-        if (props.currentSiblingIdx > 0) {
-            props.getSetItems([props.thisItem.id], ([thisItem]) => {
-                const changedItems = [thisItem];
-                let oldSiblingArray: ItemTreeNode[];
-                if (thisItem.symlinkedNode) {
-                    oldSiblingArray = thisItem.symlinkedNode.children;
-                    thisItem.symlinkedNode.lastModifiedUnixMillis = Date.now();
-                    changedItems.push(thisItem.symlinkedNode);
-                } else {
-                    oldSiblingArray = thisItem.children;
-                    thisItem.lastModifiedUnixMillis = Date.now();
+        props.model.setItemsByKey((transformedData) => {
+            const thisParentId = transformedData.parentById[props.thisItem.id];
+            const parentItem = transformedData.keyedNodes[thisParentId];
+            const currentSiblingIdx = parentItem.children.map(i => i.id).indexOf(props.thisItem.id);
+            if (currentSiblingIdx > 0) {
+                parentItem.children.splice(currentSiblingIdx, 1);
+                const previousSibling = parentItem.children[currentSiblingIdx - 1];
+                previousSibling.children.push(props.thisItem);
+                return {
+                    [parentItem.id]: parentItem,
+                    [previousSibling.id]: previousSibling
                 }
-                const newSiblingArray = [...oldSiblingArray];
-                const child = newSiblingArray[props.currentSiblingIdx];
-                let newParentSibling = newSiblingArray[props.currentSiblingIdx - 1];
-                if (newParentSibling.symlinkedNode) {
-                    newParentSibling = newParentSibling.symlinkedNode;
-                }
-                changedItems.push(newParentSibling);
-                newParentSibling.lastModifiedUnixMillis = Date.now();
-                newParentSibling.collapsed = false;
-                newParentSibling.children.push(child);
-
-                oldSiblingArray.splice(props.currentSiblingIdx, 1);
-
-                props.siblingsFocusActions.current?.[props.currentSiblingIdx - 1]?.focusRecentlyIndentedItem();
-                return changedItems;
-            })
-        }
-    },
-    unindentSelf: props.unindentCaller,
-    unindentGrandchild: (grandChildIdx: number) => {
-        props.getSetItems([props.thisItem.id], ([thisItem]) => {
-            const changedItems = [thisItem];
-            let oldSiblingArray: ItemTreeNode[];
-            if (thisItem.symlinkedNode) {
-                oldSiblingArray = thisItem.symlinkedNode.children;
-                thisItem.symlinkedNode.lastModifiedUnixMillis = Date.now();
-                changedItems.push(thisItem.symlinkedNode);
             } else {
-                oldSiblingArray = thisItem.children;
-                thisItem.lastModifiedUnixMillis = Date.now();
+                return {}
             }
-            const newSiblingArray = [...oldSiblingArray];
-            let child = newSiblingArray[props.currentSiblingIdx];
-            if (child.symlinkedNode) {
-                child = child.symlinkedNode;
-            }
-            changedItems.push(child);
-            const [grandChild] = child.children.splice(grandChildIdx, 1);
-            child.lastModifiedUnixMillis = Date.now();
-
-            oldSiblingArray.splice(props.currentSiblingIdx + 1, 0, grandChild);
-            setTimeout(() => {
-                props.siblingsFocusActions.current?.[props.currentSiblingIdx + 1]?.focusThis();
-            })
-            return changedItems;
         })
     },
-    getSetSelf: (getSetter: TreeNodeGetSetter) => {
-        props.getSetSiblingArray((siblingArray) => {
-            const newSiblingArray = [...siblingArray];
-            const newItemWithoutTimeUpdate = getSetter(newSiblingArray[props.currentSiblingIdx]);
-            newSiblingArray[props.currentSiblingIdx] = {
-                ...newItemWithoutTimeUpdate,
-                lastModifiedUnixMillis: Date.now()
+    unindentSelf: () => {
+        props.model.setItemsByKey((transformedData) => {
+            const returnItem: Record<string, ItemTreeNode> = {};
+            const thisParentId = transformedData.parentById[props.thisItem.id];
+            const parentItem = transformedData.keyedNodes[thisParentId];
+            if (parentItem) {
+                const thisGrandParentId = transformedData.parentById[parentItem.id];
+                const grandParentItem = transformedData.keyedNodes[thisGrandParentId];
+                if (grandParentItem) {
+                    const currentSiblingIdx = parentItem.children.map(i => i.id).indexOf(props.thisItem.id);
+                    parentItem.children.splice(currentSiblingIdx, 1);
+                    const parentSiblingIdx = grandParentItem.children.map(i => i.id).indexOf(parentItem.id);
+                    grandParentItem.children.splice(parentSiblingIdx + 1, 0, props.thisItem);
+                    returnItem[grandParentItem.id] = grandParentItem;
+                    returnItem[parentItem.id] = parentItem;
+                }
             }
-            return newSiblingArray;
+            return returnItem;
         })
-    },
-    getSetItems: props.getSetItems,
-    getSetSiblingArray: props.getSetSiblingArray
-    // Todo: Do not expose the getSetSiblingArray - this encourages breaking separation of concerns
+    }
 });

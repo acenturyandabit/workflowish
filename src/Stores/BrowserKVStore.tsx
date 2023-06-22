@@ -2,7 +2,7 @@ import { DefaultKVConstructionArgs, KVStore, KVStoreSettingsStruct } from "./typ
 import * as localforage from "localforage";
 import * as React from "react";
 import { TextField } from "@mui/material"
-import { BaseStoreDataType } from "~CoreDataLake";
+import { BaseStoreDataType, generateFirstTimeDoc } from "~CoreDataLake";
 
 const BrowserKVStoreType = "Browser" as const;
 export interface BrowserKVStoreSettings extends KVStoreSettingsStruct {
@@ -57,7 +57,7 @@ class BrowserKVStore implements
     }
 
     async load(): Promise<BaseStoreDataType> {
-        const data = await localforage.getItem<BaseStoreDataType>(this.settings.documentName) ?? {}
+        const data = await localforage.getItem<BaseStoreDataType>(this.settings.documentName) ?? generateFirstTimeDoc();
         return data
     }
 

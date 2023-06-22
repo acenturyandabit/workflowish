@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { TransformedDataAndSetter } from '../../mvc/model';
 import { ModelContext } from '~Workflowish/mvc/context';
-import { FocusActions } from '~Workflowish/Item';
+import { ItemRef } from '~Workflowish/Item';
 import "./index.css"
 import { OmniBarState } from './States';
 import { getSpecializedProps } from './Specializations';
@@ -9,7 +9,7 @@ import { getSpecializedProps } from './Specializations';
 
 const OmniBarWrapper = (props: {
     children: React.ReactElement,
-    itemRefsDictionary: Record<string, FocusActions>,
+    itemRefsDictionary: Record<string, ItemRef>,
     transformedDataAndSetter: TransformedDataAndSetter,
     lastFocusedItem: string,
 }) => {

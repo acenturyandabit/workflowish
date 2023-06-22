@@ -1,5 +1,5 @@
 import { FocusActions } from "~Workflowish/Item";
-import { ItemTreeNode, makeNewItem } from "./model";
+import { ItemTreeNode } from "./model";
 import { ControllerActions } from "./controller";
 import { TriggerEvent } from "react-contexify";
 import { MOBILE_ACTION_1 } from "~Workflowish/Subcomponents/FloatyButtons";
@@ -18,7 +18,7 @@ export type FocusedActionReceiver =
             },
             rawEvent: TriggerEvent
         ) => void,
-        refocusSelf: () => void
+        refocusSelf: () => void,
     };
 
 export const dummyFocusedActionReciever = {
@@ -33,39 +33,46 @@ export const dummyFocusedActionReciever = {
 export const makeFocusedActionReceiver = (props: {
     actions: ControllerActions,
     itemsRefArray: React.MutableRefObject<(FocusActions | null)[]>
-    item: React.MutableRefObject<ItemTreeNode>,
+    item: ItemTreeNode,
     raiseContextCopyIdEvent: (event: TriggerEvent) => void,
     jumpToSymlink: () => boolean,
     focusThis: () => void,
-}): FocusedActionReceiver => (
-    {
+}): FocusedActionReceiver => {
+    return {
         keyCommand: (evt, rawEvent) => {
             if (evt.key == "Enter") {
                 if (evt.shiftKey) {
-                    props.actions.getSetSelf(oldSelf => ({
-                        ...oldSelf,
-                        children: [makeNewItem(), ...oldSelf.children]
-                    }));
-                    setTimeout(() => props.itemsRefArray.current?.[0]?.focusThis());
+                    (async () => {
+                        const childId = await props.actions.createNewChild();
+                        props.actions.focusItem(childId);
+                    })();
                 } else if (evt.altKey) {
                     const currentSelection = window.getSelection();
                     if (currentSelection
                         && currentSelection.anchorOffset == currentSelection.focusOffset
                         && currentSelection.anchorNode == currentSelection.focusNode
                     ) {
-                        props.actions.getSetSelf(oldSelf => {
-                            const newItem = makeNewItem();
-                            newItem.data = oldSelf.data.slice(currentSelection.anchorOffset);
-                            return {
-                                ...oldSelf,
-                                data: oldSelf.data.slice(0, currentSelection.anchorOffset),
-                                children: [newItem, ...oldSelf.children]
-                            }
-                        });
-                        setTimeout(() => props.itemsRefArray.current?.[0]?.focusThis());
+                        const halfToKeep = props.item.data.slice(currentSelection.anchorOffset);
+                        const halfToGiveToChild = props.item.data.slice(0, currentSelection.anchorOffset);
+                        if (evt.shiftKey) {
+                            (async () => {
+                                const childId = await props.actions.createNewChild(halfToGiveToChild);
+                                props.actions.editSelfContents(halfToKeep);
+                                props.actions.focusItem(childId);
+                            })();
+                        } else {
+                            (async () => {
+                                const childId = await props.actions.createNewSibling(halfToGiveToChild);
+                                props.actions.editSelfContents(halfToKeep);
+                                props.actions.focusItem(childId);
+                            })();
+                        }
                     }
                 } else {
-                    props.actions.createNewItem();
+                    (async () => {
+                        const childId = await props.actions.createNewSibling();
+                        props.actions.focusItem(childId);
+                    })();
                 }
                 evt.preventDefault()
             }
@@ -79,36 +86,25 @@ export const makeFocusedActionReceiver = (props: {
             }
             if (evt.key == "ArrowUp") {
                 if (evt.altKey) {
-                    props.actions.putBeforePrev();
+                    props.actions.arrangeBeforePrev();
                 } else if (evt.ctrlKey || evt.metaKey) {
-                    props.actions.getSetSelf(oldSelf => ({
-                        ...oldSelf,
-                        collapsed: true
-                    }))
+                    props.actions.setSelfCollapsed(true);
                 } else {
-                    props.actions.focusMyPrevSibling();
+                    props.actions.focusPreviousListItem();
                 }
             }
             if (evt.key == "ArrowDown") {
                 if (evt.altKey) {
-                    props.actions.putAfterNext();
+                    props.actions.arrangeAfterNext();
                 } else if (evt.ctrlKey || evt.metaKey) {
-                    props.actions.getSetSelf(oldSelf => ({
-                        ...oldSelf,
-                        collapsed: false
-                    }))
+                    props.actions.setSelfCollapsed(false);
                 } else {
-                    const childrenArray = props.itemsRefArray.current;
-                    if (!props.item.current.collapsed && childrenArray && childrenArray.length) {
-                        childrenArray[0]?.triggerFocusFromAbove();
-                    } else {
-                        props.actions.focusMyNextSibling();
-                    }
+                    props.actions.focusNextListItem();
                 }
             }
             if (evt.key == "Backspace") {
-                if (props.item.current.data.length == 0) {
-                    props.actions.deleteThisItem();
+                if (props.item.data.length == 0) {
+                    props.actions.deleteSelf();
                     evt.preventDefault();
                 }
             }
@@ -121,4 +117,4 @@ export const makeFocusedActionReceiver = (props: {
         },
         refocusSelf: props.focusThis,
     }
-)
+}

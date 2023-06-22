@@ -2,7 +2,7 @@ import * as React from 'react';
 import { ItemTreeNode, TransformedDataAndSetter, virtualRootId } from '~Workflowish/mvc/model';
 import { OmniBarState } from '../States';
 import { SpecializedPropsFactory } from '.';
-import { FocusActions } from '~Workflowish/Item';
+import { ItemRef } from '~Workflowish/Item';
 import { getDefaultOmnibarState } from '..';
 import { expandParentsAndFocusItem } from './utilities';
 
@@ -20,7 +20,7 @@ export const searchPropsFactory: SpecializedPropsFactory = (
     omniBarState: OmniBarState,
     setOmniBarState: React.Dispatch<React.SetStateAction<OmniBarState>>,
     transformedDataAndSetter: TransformedDataAndSetter,
-    itemsRefDictionary: Record<string, FocusActions>
+    itemsRefDictionary: Record<string, ItemRef>
 ) => {
     const { rootNode, nMatches, currentMatchId } = searchTransformFromOmnibarState(transformedDataAndSetter.transformedData.rootNode, omniBarState, setOmniBarState);
     const matchMessage = nMatches > 0 ? `${omniBarState.selectionIdx + 1} / ${nMatches} matches` : "No matches"

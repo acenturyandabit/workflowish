@@ -1,5 +1,6 @@
 # Latest 
 - Add CLI cleanup tools
+- first round of top-down-update code removal
 
 # Version 3.6.0: Add omnibar 
 - Refactor to separate omnibar and search

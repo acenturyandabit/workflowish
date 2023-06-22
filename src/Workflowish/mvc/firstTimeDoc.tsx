@@ -8,7 +8,7 @@ type DeflatedItemTreeNode = {
     collapsed?: boolean
 }
 
-export const generateFirstTimeDoc = (): ItemTreeNode => {
+export const generateFirstTimeWorkflowishDoc = (): ItemTreeNode => {
     const node: DeflatedItemTreeNode = {
         data: virtualRootId,
         children: [
