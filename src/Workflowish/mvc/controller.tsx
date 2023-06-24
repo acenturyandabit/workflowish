@@ -53,9 +53,10 @@ export const makeItemActions = (props: {
             }
         })
     },
-    createNewChild: async (newContents?: string) => {
+    createNewChild: async (newContents?: string, dontFocus?: boolean) => {
         return new Promise<string>((resolve) => {
             const newId = makeNewUniqueKey();
+            if (!dontFocus) props.setToFocusAfterUpdate(newId);
             props.model.setItemsByKey((transformedData) => {
                 const newTreeNode: ItemTreeNode = {
                     id: newId,
@@ -74,9 +75,10 @@ export const makeItemActions = (props: {
             })
         })
     },
-    createNewSibling: async (newContents?: string) => {
+    createNewSibling: async (newContents?: string, dontFocus?: boolean) => {
         return new Promise<string>((resolve) => {
             const newId = makeNewUniqueKey();
+            if (!dontFocus) props.setToFocusAfterUpdate(newId);
             props.model.setItemsByKey((transformedData) => {
                 const thisParentId = transformedData.parentById[props.thisItem.id];
                 const siblings = transformedData.keyedNodes[thisParentId].children;

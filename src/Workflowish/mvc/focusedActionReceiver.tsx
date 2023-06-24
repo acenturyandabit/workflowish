@@ -42,10 +42,7 @@ export const makeFocusedActionReceiver = (props: {
         keyCommand: (evt, rawEvent) => {
             if (evt.key == "Enter") {
                 if (evt.shiftKey) {
-                    (async () => {
-                        await props.actions.createNewChild();
-                        props.actions.focusNextListItem();
-                    })();
+                    props.actions.createNewChild();
                 } else if (evt.altKey) {
                     const currentSelection = window.getSelection();
                     if (currentSelection
@@ -55,24 +52,15 @@ export const makeFocusedActionReceiver = (props: {
                         const halfToKeep = props.item.data.slice(currentSelection.anchorOffset);
                         const halfToGiveToChild = props.item.data.slice(0, currentSelection.anchorOffset);
                         if (evt.shiftKey) {
-                            (async () => {
-                                await props.actions.createNewChild(halfToGiveToChild);
-                                props.actions.editSelfContents(halfToKeep);
-                                props.actions.focusNextListItem();
-                            })();
+                            props.actions.createNewChild(halfToGiveToChild);
+                            props.actions.editSelfContents(halfToKeep);
                         } else {
-                            (async () => {
-                                await props.actions.createNewSibling(halfToGiveToChild);
-                                props.actions.editSelfContents(halfToKeep);
-                                props.actions.focusNextListItem();
-                            })();
+                            props.actions.createNewSibling(halfToGiveToChild);
+                            props.actions.editSelfContents(halfToKeep);
                         }
                     }
                 } else {
-                    (async () => {
-                        await props.actions.createNewSibling();
-                        props.actions.focusNextListItem();
-                    })();
+                    props.actions.createNewSibling();
                 }
                 evt.preventDefault()
             }
