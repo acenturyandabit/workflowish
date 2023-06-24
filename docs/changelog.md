@@ -5,6 +5,7 @@
 - fix focus after arrangement
 - fix keyboard focus issues
 - Fix new item focusing
+- Fix off by one focus error
 
 # Version 3.6.0: Add omnibar 
 - Refactor to separate omnibar and search

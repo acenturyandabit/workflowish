@@ -73,7 +73,7 @@ export class DFSFocusManager {
             // don't have to worry about iscollapsed here since we re-index the tree after each render
             // Try to get last deepest child ancestor of sibling
             let lastChildOfDescendant = (this.getNodeOrNullAt(lastDeepestSiblingDescendantCandidate)?.children.length || 0) - 1;
-            while (lastChildOfDescendant > 0) {
+            while (lastChildOfDescendant >= 0) {
                 lastDeepestSiblingDescendantCandidate.push(lastChildOfDescendant);
                 lastChildOfDescendant = (this.getNodeOrNullAt(lastDeepestSiblingDescendantCandidate)?.children.length || 0) - 1;
             }
