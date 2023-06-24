@@ -31,6 +31,14 @@ export const ChildItems = (props: {
         }]
     }
 
+    const itemToFocus = React.useRef<string | undefined>();
+    React.useEffect(()=>{
+        if (itemToFocus.current) {
+            props.focusManager.focusItem(itemToFocus.current);
+            itemToFocus.current = undefined;
+        }
+    })
+
     return <>
         {props.shouldUncollapse ?
             <div style={{
@@ -38,25 +46,29 @@ export const ChildItems = (props: {
                 borderLeft: "1px solid white",
                 marginLeft: "0.5em"
             }}>
-                {childrenToRender.map((item, childIdx) => (<Item
-                    key={childIdx}
-                    item={item}
-                    styleParams={{
-                        showId: props.styleParams.showId,
-                        symlinkedParent: props.item.symlinkedNode ? props.item.id : props.styleParams.symlinkedParent
-                    }}
-                    setThisAsFocused={props.setThisAsFocused}
-                    actions={makeItemActions({
-                        thisItem: item,
-                        treePath: props.focusManager.childPath(props.treePath, childIdx),
-                        focusManager: props.focusManager,
-                        model: props.model
-                    })}
-                    treePath={props.focusManager.childPath(props.treePath, childIdx)}
-                    focusManager={props.focusManager}
-                    model={props.model}
-                    pushRef={props.pushRef}
-                ></Item>))}
+                {childrenToRender.map((item, childIdx) => {
+                    const treePath = props.focusManager.childPath(props.treePath, childIdx);
+                    return <Item
+                        key={childIdx}
+                        item={item}
+                        styleParams={{
+                            showId: props.styleParams.showId,
+                            symlinkedParent: props.item.symlinkedNode ? props.item.id : props.styleParams.symlinkedParent
+                        }}
+                        setThisAsFocused={props.setThisAsFocused}
+                        actions={makeItemActions({
+                            thisItem: item,
+                            treePath,
+                            focusManager: props.focusManager,
+                            setToFocusAfterUpdate: (id: string) => { itemToFocus.current = id },
+                            model: props.model
+                        })}
+                        treePath={treePath}
+                        focusManager={props.focusManager}
+                        model={props.model}
+                        pushRef={props.pushRef}
+                    ></Item>
+                })}
             </div > : null
         }
     </>

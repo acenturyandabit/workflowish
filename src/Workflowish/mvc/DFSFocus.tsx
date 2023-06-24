@@ -14,6 +14,7 @@ export class DFSFocusManager {
     focusTakerById!: Record<string, FocusTaker>;
     constructor() {
         this.emptyThis();
+        this.focusItem = this.focusItem.bind(this);
     }
 
     emptyThis() {

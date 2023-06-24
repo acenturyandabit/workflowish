@@ -8,6 +8,7 @@ export type ControllerActions = {
     createNewSibling: (newContents?: string) => Promise<string>,
     deleteSelf: () => void
     focusItem: (id: string) => void
+    focusItemAfterUpdate: (id: string) => void
     focusPreviousListItem: () => void
     focusNextListItem: () => void
     arrangeBeforePrev: () => void
@@ -24,6 +25,7 @@ export const makeItemActions = (props: {
     thisItem: ItemTreeNode,
     treePath: TreePath,
     focusManager: DFSFocusManager,
+    setToFocusAfterUpdate: (id: string) => void,
     model: TransformedDataAndSetter,
 }): ControllerActions => ({
     // Note: All these methods are symlink aware.
@@ -103,8 +105,8 @@ export const makeItemActions = (props: {
                 const cleanupQueue = [props.thisItem];
                 while (cleanupQueue.length) {
                     const front = cleanupQueue.shift();
-                    if (front){
-                        front.markedForCleanup=true;
+                    if (front) {
+                        front.markedForCleanup = true;
                         itemsToDelete[front.id] = front;
                         front.children.forEach(child => cleanupQueue.push(child));
                     }
@@ -122,6 +124,7 @@ export const makeItemActions = (props: {
         })
     },
     focusItem: props.focusManager.focusItem,
+    focusItemAfterUpdate: props.setToFocusAfterUpdate,
     focusPreviousListItem: () => {
         props.focusManager.focusPrev(props.treePath);
     },

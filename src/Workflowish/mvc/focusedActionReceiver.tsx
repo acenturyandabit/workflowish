@@ -16,12 +16,12 @@ export type FocusedActionReceiver =
                 metaKey: boolean,
                 preventDefault: () => void
             },
-            rawEvent: TriggerEvent
+            rawEvent?: TriggerEvent
         ) => void,
         refocusSelf: () => void,
     };
 
-export const dummyFocusedActionReciever = {
+export const dummyFocusedActionReceiver = {
     keyCommand: () => {
         // Set by children
     },
@@ -87,7 +87,7 @@ export const makeFocusedActionReceiver = (props: {
             if (evt.key == "ArrowUp") {
                 if (evt.altKey) {
                     props.actions.arrangeBeforePrev();
-                    props.actions.focusItem(props.item.id);
+                    props.actions.focusItemAfterUpdate(props.item.id);
                 } else if (evt.ctrlKey || evt.metaKey) {
                     props.actions.setSelfCollapsed(true);
                 } else {
@@ -97,7 +97,7 @@ export const makeFocusedActionReceiver = (props: {
             if (evt.key == "ArrowDown") {
                 if (evt.altKey) {
                     props.actions.arrangeAfterNext();
-                    props.actions.focusItem(props.item.id);
+                    props.actions.focusItemAfterUpdate(props.item.id);
                 } else if (evt.ctrlKey || evt.metaKey) {
                     props.actions.setSelfCollapsed(false);
                 } else {
@@ -107,13 +107,14 @@ export const makeFocusedActionReceiver = (props: {
             if (evt.key == "Backspace") {
                 if (props.item.data.length == 0) {
                     props.actions.deleteSelf();
+                    props.actions.focusPreviousListItem();
                     evt.preventDefault();
                 }
             }
-            if ((evt.key.toLowerCase() == "c" || evt.key == MOBILE_ACTION_1) && evt.altKey && evt.shiftKey) {
+            if ((evt.key.toLowerCase() == "c" || evt.key == MOBILE_ACTION_1) && evt.altKey && evt.shiftKey && rawEvent) {
                 props.raiseContextCopyIdEvent(rawEvent);
             }
-            if ((evt.key.toLowerCase() == "j" || evt.key == MOBILE_ACTION_1) && (evt.ctrlKey || evt.metaKey)) {
+            if ((evt.key.toLowerCase() == "j" || evt.key == MOBILE_ACTION_1) && (evt.ctrlKey || evt.metaKey) && rawEvent) {
                 if (props.jumpToSymlink()) rawEvent.preventDefault();
             }
         },

@@ -97,6 +97,7 @@ const Item = (props: {
     return <span className="itemWrapperClass">
         <EditableSection
             _ref={thisContentEditable}
+            data-testId={props.item.id}
             focusedActionReceiver={focusedActionReceiver}
             item={props.item}
             model={props.model}

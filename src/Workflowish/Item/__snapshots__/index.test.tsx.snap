@@ -1,53 +1,878 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Renders an item 1`] = `
-<span
-  className="itemWrapperClass"
+<div
+  style={
+    {
+      "display": "flex",
+      "flexDirection": "column",
+      "height": "100%",
+    }
+  }
 >
-  <span
-    onContextMenu={[Function]}
+  <div
     style={
       {
-        "background": "",
+        "flex": "1 0 auto",
+        "margin": "0 5px 10px 5px",
       }
     }
   >
-    <span
-      style={
-        {
-          "color": "white",
-          "cursor": "pointer",
-          "paddingLeft": "0.2em",
-          "userSelect": "none",
+    <div
+      className="search-bar"
+    >
+      <input
+        onChange={[Function]}
+        onKeyDown={[Function]}
+        placeholder="🔍 Search"
+        style={
+          {
+            "flex": "1 0 auto",
+            "padding": "2px",
+          }
         }
-      }
+        value=""
+      />
+    </div>
+    <span
+      className="itemWrapperClass"
     >
       <span
-        onClick={[Function]}
+        onContextMenu={[Function]}
+        style={
+          {
+            "background": "",
+          }
+        }
       >
-        ●
+        <span
+          style={
+            {
+              "color": "white",
+              "cursor": "pointer",
+              "paddingLeft": "0.2em",
+              "userSelect": "none",
+            }
+          }
+        >
+          <span
+            onClick={[Function]}
+          >
+            ●
+          </span>
+        </span>
+        <div
+          contentEditable={true}
+          dangerouslySetInnerHTML={
+            {
+              "__html": "Welcome to Workflowish!",
+            }
+          }
+          onBlur={[Function]}
+          onChange={[Function]}
+          onClick={[Function]}
+          onInput={[Function]}
+          onKeyDown={[Function]}
+          onKeyUp={[Function]}
+          style={
+            {
+              "flex": "1 1 auto",
+              "scrollMarginTop": "100px",
+            }
+          }
+        />
+      </span>
+      <div
+        style={
+          {
+            "borderLeft": "1px solid white",
+            "marginLeft": "0.5em",
+            "paddingLeft": "5px",
+          }
+        }
+      />
+    </span>
+    <span
+      className="itemWrapperClass"
+    >
+      <span
+        onContextMenu={[Function]}
+        style={
+          {
+            "background": "",
+          }
+        }
+      >
+        <span
+          style={
+            {
+              "color": "white",
+              "cursor": "pointer",
+              "paddingLeft": "0px",
+              "userSelect": "none",
+            }
+          }
+        >
+          <span
+            onClick={[Function]}
+          >
+            ▶
+          </span>
+        </span>
+        <div
+          contentEditable={true}
+          dangerouslySetInnerHTML={
+            {
+              "__html": "Workflowish is a keyboard-focused nested listing app.",
+            }
+          }
+          onBlur={[Function]}
+          onChange={[Function]}
+          onClick={[Function]}
+          onInput={[Function]}
+          onKeyDown={[Function]}
+          onKeyUp={[Function]}
+          style={
+            {
+              "flex": "1 1 auto",
+              "scrollMarginTop": "100px",
+            }
+          }
+        />
       </span>
     </span>
-    <div
-      contentEditable={true}
-      dangerouslySetInnerHTML={
-        {
-          "__html": "Hello world!",
+    <span
+      className="itemWrapperClass"
+    >
+      <span
+        onContextMenu={[Function]}
+        style={
+          {
+            "background": "",
+          }
         }
-      }
-      onBlur={[Function]}
-      onChange={[Function]}
-      onClick={[Function]}
-      onInput={[Function]}
-      onKeyDown={[Function]}
-      onKeyUp={[Function]}
-      style={
-        {
-          "flex": "1 1 auto",
-          "scrollMarginTop": "100px",
+      >
+        <span
+          style={
+            {
+              "color": "white",
+              "cursor": "pointer",
+              "paddingLeft": "0px",
+              "userSelect": "none",
+            }
+          }
+        >
+          <span
+            onClick={[Function]}
+          >
+            ▼
+          </span>
+        </span>
+        <div
+          contentEditable={true}
+          dangerouslySetInnerHTML={
+            {
+              "__html": "This means you can nest bullet points...",
+            }
+          }
+          onBlur={[Function]}
+          onChange={[Function]}
+          onClick={[Function]}
+          onInput={[Function]}
+          onKeyDown={[Function]}
+          onKeyUp={[Function]}
+          style={
+            {
+              "flex": "1 1 auto",
+              "scrollMarginTop": "100px",
+            }
+          }
+        />
+      </span>
+      <div
+        style={
+          {
+            "borderLeft": "1px solid white",
+            "marginLeft": "0.5em",
+            "paddingLeft": "5px",
+          }
         }
-      }
-    />
-  </span>
-</span>
+      >
+        <span
+          className="itemWrapperClass"
+        >
+          <span
+            onContextMenu={[Function]}
+            style={
+              {
+                "background": "",
+              }
+            }
+          >
+            <span
+              style={
+                {
+                  "color": "white",
+                  "cursor": "pointer",
+                  "paddingLeft": "0px",
+                  "userSelect": "none",
+                }
+              }
+            >
+              <span
+                onClick={[Function]}
+              >
+                ▼
+              </span>
+            </span>
+            <div
+              contentEditable={true}
+              dangerouslySetInnerHTML={
+                {
+                  "__html": "Like this,",
+                }
+              }
+              onBlur={[Function]}
+              onChange={[Function]}
+              onClick={[Function]}
+              onInput={[Function]}
+              onKeyDown={[Function]}
+              onKeyUp={[Function]}
+              style={
+                {
+                  "flex": "1 1 auto",
+                  "scrollMarginTop": "100px",
+                }
+              }
+            />
+          </span>
+          <div
+            style={
+              {
+                "borderLeft": "1px solid white",
+                "marginLeft": "0.5em",
+                "paddingLeft": "5px",
+              }
+            }
+          >
+            <span
+              className="itemWrapperClass"
+            >
+              <span
+                onContextMenu={[Function]}
+                style={
+                  {
+                    "background": "",
+                  }
+                }
+              >
+                <span
+                  style={
+                    {
+                      "color": "white",
+                      "cursor": "pointer",
+                      "paddingLeft": "0px",
+                      "userSelect": "none",
+                    }
+                  }
+                >
+                  <span
+                    onClick={[Function]}
+                  >
+                    ▼
+                  </span>
+                </span>
+                <div
+                  contentEditable={true}
+                  dangerouslySetInnerHTML={
+                    {
+                      "__html": "And this,",
+                    }
+                  }
+                  onBlur={[Function]}
+                  onChange={[Function]}
+                  onClick={[Function]}
+                  onInput={[Function]}
+                  onKeyDown={[Function]}
+                  onKeyUp={[Function]}
+                  style={
+                    {
+                      "flex": "1 1 auto",
+                      "scrollMarginTop": "100px",
+                    }
+                  }
+                />
+              </span>
+              <div
+                style={
+                  {
+                    "borderLeft": "1px solid white",
+                    "marginLeft": "0.5em",
+                    "paddingLeft": "5px",
+                  }
+                }
+              >
+                <span
+                  className="itemWrapperClass"
+                >
+                  <span
+                    onContextMenu={[Function]}
+                    style={
+                      {
+                        "background": "",
+                      }
+                    }
+                  >
+                    <span
+                      style={
+                        {
+                          "color": "white",
+                          "cursor": "pointer",
+                          "paddingLeft": "0.2em",
+                          "userSelect": "none",
+                        }
+                      }
+                    >
+                      <span
+                        onClick={[Function]}
+                      >
+                        ●
+                      </span>
+                    </span>
+                    <div
+                      contentEditable={true}
+                      dangerouslySetInnerHTML={
+                        {
+                          "__html": "And so on.",
+                        }
+                      }
+                      onBlur={[Function]}
+                      onChange={[Function]}
+                      onClick={[Function]}
+                      onInput={[Function]}
+                      onKeyDown={[Function]}
+                      onKeyUp={[Function]}
+                      style={
+                        {
+                          "flex": "1 1 auto",
+                          "scrollMarginTop": "100px",
+                        }
+                      }
+                    />
+                  </span>
+                  <div
+                    style={
+                      {
+                        "borderLeft": "1px solid white",
+                        "marginLeft": "0.5em",
+                        "paddingLeft": "5px",
+                      }
+                    }
+                  />
+                </span>
+              </div>
+            </span>
+          </div>
+        </span>
+      </div>
+    </span>
+    <span
+      className="itemWrapperClass"
+    >
+      <span
+        onContextMenu={[Function]}
+        style={
+          {
+            "background": "",
+          }
+        }
+      >
+        <span
+          style={
+            {
+              "color": "white",
+              "cursor": "pointer",
+              "paddingLeft": "0px",
+              "userSelect": "none",
+            }
+          }
+        >
+          <span
+            onClick={[Function]}
+          >
+            ▼
+          </span>
+        </span>
+        <div
+          contentEditable={true}
+          dangerouslySetInnerHTML={
+            {
+              "__html": "You can edit any item in the list by clicking it and typing :)",
+            }
+          }
+          onBlur={[Function]}
+          onChange={[Function]}
+          onClick={[Function]}
+          onInput={[Function]}
+          onKeyDown={[Function]}
+          onKeyUp={[Function]}
+          style={
+            {
+              "flex": "1 1 auto",
+              "scrollMarginTop": "100px",
+            }
+          }
+        />
+      </span>
+      <div
+        style={
+          {
+            "borderLeft": "1px solid white",
+            "marginLeft": "0.5em",
+            "paddingLeft": "5px",
+          }
+        }
+      >
+        <span
+          className="itemWrapperClass"
+        >
+          <span
+            onContextMenu={[Function]}
+            style={
+              {
+                "background": "",
+              }
+            }
+          >
+            <span
+              style={
+                {
+                  "color": "white",
+                  "cursor": "pointer",
+                  "paddingLeft": "0.2em",
+                  "userSelect": "none",
+                }
+              }
+            >
+              <span
+                onClick={[Function]}
+              >
+                ●
+              </span>
+            </span>
+            <div
+              contentEditable={true}
+              dangerouslySetInnerHTML={
+                {
+                  "__html": "You can also add new items by pressing Enter on an existing item; or,",
+                }
+              }
+              onBlur={[Function]}
+              onChange={[Function]}
+              onClick={[Function]}
+              onInput={[Function]}
+              onKeyDown={[Function]}
+              onKeyUp={[Function]}
+              style={
+                {
+                  "flex": "1 1 auto",
+                  "scrollMarginTop": "100px",
+                }
+              }
+            />
+          </span>
+          <div
+            style={
+              {
+                "borderLeft": "1px solid white",
+                "marginLeft": "0.5em",
+                "paddingLeft": "5px",
+              }
+            }
+          />
+        </span>
+        <span
+          className="itemWrapperClass"
+        >
+          <span
+            onContextMenu={[Function]}
+            style={
+              {
+                "background": "",
+              }
+            }
+          >
+            <span
+              style={
+                {
+                  "color": "white",
+                  "cursor": "pointer",
+                  "paddingLeft": "0.2em",
+                  "userSelect": "none",
+                }
+              }
+            >
+              <span
+                onClick={[Function]}
+              >
+                ●
+              </span>
+            </span>
+            <div
+              contentEditable={true}
+              dangerouslySetInnerHTML={
+                {
+                  "__html": "Backspace all the way to the end, and then once more, to delete an item.",
+                }
+              }
+              onBlur={[Function]}
+              onChange={[Function]}
+              onClick={[Function]}
+              onInput={[Function]}
+              onKeyDown={[Function]}
+              onKeyUp={[Function]}
+              style={
+                {
+                  "flex": "1 1 auto",
+                  "scrollMarginTop": "100px",
+                }
+              }
+            />
+          </span>
+          <div
+            style={
+              {
+                "borderLeft": "1px solid white",
+                "marginLeft": "0.5em",
+                "paddingLeft": "5px",
+              }
+            }
+          />
+        </span>
+        <span
+          className="itemWrapperClass"
+        >
+          <span
+            onContextMenu={[Function]}
+            style={
+              {
+                "background": "",
+              }
+            }
+          >
+            <span
+              style={
+                {
+                  "color": "white",
+                  "cursor": "pointer",
+                  "paddingLeft": "0.2em",
+                  "userSelect": "none",
+                }
+              }
+            >
+              <span
+                onClick={[Function]}
+              >
+                ●
+              </span>
+            </span>
+            <div
+              contentEditable={true}
+              dangerouslySetInnerHTML={
+                {
+                  "__html": "Press CTRL+S to save your changes to your browser. (Other save options are available, read on!)",
+                }
+              }
+              onBlur={[Function]}
+              onChange={[Function]}
+              onClick={[Function]}
+              onInput={[Function]}
+              onKeyDown={[Function]}
+              onKeyUp={[Function]}
+              style={
+                {
+                  "flex": "1 1 auto",
+                  "scrollMarginTop": "100px",
+                }
+              }
+            />
+          </span>
+          <div
+            style={
+              {
+                "borderLeft": "1px solid white",
+                "marginLeft": "0.5em",
+                "paddingLeft": "5px",
+              }
+            }
+          />
+        </span>
+      </div>
+    </span>
+    <span
+      className="itemWrapperClass"
+    >
+      <span
+        onContextMenu={[Function]}
+        style={
+          {
+            "background": "",
+          }
+        }
+      >
+        <span
+          style={
+            {
+              "color": "white",
+              "cursor": "pointer",
+              "paddingLeft": "0px",
+              "userSelect": "none",
+            }
+          }
+        >
+          <span
+            onClick={[Function]}
+          >
+            ▶
+          </span>
+        </span>
+        <div
+          contentEditable={true}
+          dangerouslySetInnerHTML={
+            {
+              "__html": "Since lists get complicated, you can also collapse/show lists by focusing on an item and pressing CTRL+UP/DOWN.",
+            }
+          }
+          onBlur={[Function]}
+          onChange={[Function]}
+          onClick={[Function]}
+          onInput={[Function]}
+          onKeyDown={[Function]}
+          onKeyUp={[Function]}
+          style={
+            {
+              "flex": "1 1 auto",
+              "scrollMarginTop": "100px",
+            }
+          }
+        />
+      </span>
+    </span>
+    <span
+      className="itemWrapperClass"
+    >
+      <span
+        onContextMenu={[Function]}
+        style={
+          {
+            "background": "",
+          }
+        }
+      >
+        <span
+          style={
+            {
+              "color": "white",
+              "cursor": "pointer",
+              "paddingLeft": "0px",
+              "userSelect": "none",
+            }
+          }
+        >
+          <span
+            onClick={[Function]}
+          >
+            ▼
+          </span>
+        </span>
+        <div
+          contentEditable={true}
+          dangerouslySetInnerHTML={
+            {
+              "__html": "Workflowish is inspired by Workflowy (https://workflowy.com/), but is free and open source, with in-browser storage or self-hosting.",
+            }
+          }
+          onBlur={[Function]}
+          onChange={[Function]}
+          onClick={[Function]}
+          onInput={[Function]}
+          onKeyDown={[Function]}
+          onKeyUp={[Function]}
+          style={
+            {
+              "flex": "1 1 auto",
+              "scrollMarginTop": "100px",
+            }
+          }
+        />
+      </span>
+      <div
+        style={
+          {
+            "borderLeft": "1px solid white",
+            "marginLeft": "0.5em",
+            "paddingLeft": "5px",
+          }
+        }
+      >
+        <span
+          className="itemWrapperClass"
+        >
+          <span
+            onContextMenu={[Function]}
+            style={
+              {
+                "background": "",
+              }
+            }
+          >
+            <span
+              style={
+                {
+                  "color": "white",
+                  "cursor": "pointer",
+                  "paddingLeft": "0px",
+                  "userSelect": "none",
+                }
+              }
+            >
+              <span
+                onClick={[Function]}
+              >
+                ▶
+              </span>
+            </span>
+            <div
+              contentEditable={true}
+              dangerouslySetInnerHTML={
+                {
+                  "__html": "Workflowish also works on a mobile phone, again with a keyboard-first experience.",
+                }
+              }
+              onBlur={[Function]}
+              onChange={[Function]}
+              onClick={[Function]}
+              onInput={[Function]}
+              onKeyDown={[Function]}
+              onKeyUp={[Function]}
+              style={
+                {
+                  "flex": "1 1 auto",
+                  "scrollMarginTop": "100px",
+                }
+              }
+            />
+          </span>
+        </span>
+        <span
+          className="itemWrapperClass"
+        >
+          <span
+            onContextMenu={[Function]}
+            style={
+              {
+                "background": "",
+              }
+            }
+          >
+            <span
+              style={
+                {
+                  "color": "white",
+                  "cursor": "pointer",
+                  "paddingLeft": "0.2em",
+                  "userSelect": "none",
+                }
+              }
+            >
+              <span
+                onClick={[Function]}
+              >
+                ●
+              </span>
+            </span>
+            <div
+              contentEditable={true}
+              dangerouslySetInnerHTML={
+                {
+                  "__html": "For self-hosted storage, clone the github repository (https://github.com/acenturyandabit/workflowish) and follow the README.",
+                }
+              }
+              onBlur={[Function]}
+              onChange={[Function]}
+              onClick={[Function]}
+              onInput={[Function]}
+              onKeyDown={[Function]}
+              onKeyUp={[Function]}
+              style={
+                {
+                  "flex": "1 1 auto",
+                  "scrollMarginTop": "100px",
+                }
+              }
+            />
+          </span>
+          <div
+            style={
+              {
+                "borderLeft": "1px solid white",
+                "marginLeft": "0.5em",
+                "paddingLeft": "5px",
+              }
+            }
+          />
+        </span>
+      </div>
+    </span>
+    <span
+      className="itemWrapperClass"
+    >
+      <span
+        onContextMenu={[Function]}
+        style={
+          {
+            "background": "",
+          }
+        }
+      >
+        <span
+          style={
+            {
+              "color": "white",
+              "cursor": "pointer",
+              "paddingLeft": "0px",
+              "userSelect": "none",
+            }
+          }
+        >
+          <span
+            onClick={[Function]}
+          >
+            ▶
+          </span>
+        </span>
+        <div
+          contentEditable={true}
+          dangerouslySetInnerHTML={
+            {
+              "__html": "As an extra treat for superusers out there, Workflowish also comes with:",
+            }
+          }
+          onBlur={[Function]}
+          onChange={[Function]}
+          onClick={[Function]}
+          onInput={[Function]}
+          onKeyDown={[Function]}
+          onKeyUp={[Function]}
+          style={
+            {
+              "flex": "1 1 auto",
+              "scrollMarginTop": "100px",
+            }
+          }
+        />
+      </span>
+    </span>
+  </div>
+</div>
 `;

@@ -1,4 +1,3 @@
-import { makeNewUniqueKey } from "~CoreDataLake";
 import { ItemTreeNode, virtualRootId } from "./model";
 
 type DeflatedItemTreeNode = {
@@ -11,6 +10,7 @@ type DeflatedItemTreeNode = {
 export const generateFirstTimeWorkflowishDoc = (): ItemTreeNode => {
     const node: DeflatedItemTreeNode = {
         data: virtualRootId,
+        id: virtualRootId,
         children: [
             "Welcome to Workflowish!",
             {
@@ -117,14 +117,15 @@ export const generateFirstTimeWorkflowishDoc = (): ItemTreeNode => {
         ]
 
     }
-    return fromNestedRecord(node, virtualRootId);
+    let helpNodeIdx = 0;
+    return fromNestedRecord(node, () => { helpNodeIdx++; return `__help_${helpNodeIdx.toString()}` });
 }
 
-const fromNestedRecord = (root: DeflatedItemTreeNode | string, id?: string): ItemTreeNode => {
+const fromNestedRecord = (root: DeflatedItemTreeNode | string, idGenerator: () => string): ItemTreeNode => {
     if (typeof root == "string") {
         return {
             lastModifiedUnixMillis: Date.now(),
-            id: makeNewUniqueKey(),
+            id: idGenerator(),
             data: root,
             children: [],
             collapsed: false,
@@ -132,9 +133,9 @@ const fromNestedRecord = (root: DeflatedItemTreeNode | string, id?: string): Ite
         }
     } else return {
         lastModifiedUnixMillis: Date.now(),
-        id: id || root.id || makeNewUniqueKey(),
+        id: root.id || idGenerator(),
         data: root.data,
-        children: root.children?.map(i => fromNestedRecord(i)) || [],
+        children: root.children?.map(i => fromNestedRecord(i, idGenerator)) || [],
         collapsed: root.collapsed || false,
         searchHighlight: []
     }

@@ -1,7 +1,7 @@
 import * as React from "react";
 import { BaseStoreDataType } from "~CoreDataLake";
 import { makeItemActions } from "./mvc/controller";
-import { FocusedActionReceiver, dummyFocusedActionReciever } from "./mvc/focusedActionReceiver"
+import { FocusedActionReceiver, dummyFocusedActionReceiver } from "./mvc/focusedActionReceiver"
 import Item, { ItemRef } from "./Item"
 import { ItemTreeNode, getTransformedDataAndSetter, TransformedDataAndSetter } from "./mvc/model"
 import { isMobile } from '~util/isMobile';
@@ -16,7 +16,7 @@ export default (props: {
     updateData: React.Dispatch<React.SetStateAction<BaseStoreDataType>>
 }) => {
     const transformedDataAndSetter = getTransformedDataAndSetter({ data: props.data, updateData: props.updateData });
-    const [focusedActionReceiver, setFocusedActionReceiver] = React.useState<FocusedActionReceiver>(dummyFocusedActionReciever);
+    const [focusedActionReceiver, setFocusedActionReceiver] = React.useState<FocusedActionReceiver>(dummyFocusedActionReceiver);
     const itemsRefDictionary = React.useRef<Record<string, ItemRef>>({});
     const [lastFocusedItem, setLastFocusedItem] = React.useState<string>("");
 
@@ -75,10 +75,21 @@ const ItemsList = (
         props.setFocusedActionReceiver(focusedActionReceiver);
         props.setLastFocusedItem(focusItemKey);
     }
+
+    
+    const itemToFocus = React.useRef<string | undefined>();
+    React.useEffect(()=>{
+        if (itemToFocus.current) {
+            focusManager.focusItem(itemToFocus.current);
+            itemToFocus.current = undefined;
+        }
+    })
+
     const rootPath = [0];
     return <RenderTimeContext.Provider value={{
         currentFocusedItem: props.lastFocusedItem
     }}>{itemTree.children.map((item, ii) => {
+        const treePath = focusManager.childPath(rootPath, ii);
         return (<Item
             key={ii}
             styleParams={{
@@ -90,13 +101,14 @@ const ItemsList = (
             setThisAsFocused={setFocusedItem}
             actions={makeItemActions({
                 focusManager: focusManager,
-                treePath: focusManager.childPath(rootPath, ii),
+                treePath,
                 disableDelete: () => (itemTree.children.length == 1),
                 thisItem: item,
+                setToFocusAfterUpdate: (id: string) => { itemToFocus.current = id },
                 model: props.transformedDataAndSetter,
             })}
             focusManager={focusManager}
-            treePath={focusManager.childPath(rootPath, ii)}
+            treePath={treePath}
             model={props.transformedDataAndSetter}
         ></Item >)
     })}</RenderTimeContext.Provider>
