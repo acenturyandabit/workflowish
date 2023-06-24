@@ -10,13 +10,15 @@ export type FocusTakerNode = {
 }
 
 export class DFSFocusManager {
-    focusTakerDirectory!: FocusTakerNode;
+    focusTakerTree!: FocusTakerNode;
+    focusTakerById!: Record<string, FocusTaker>;
     constructor() {
         this.emptyThis();
     }
 
     emptyThis() {
-        this.focusTakerDirectory = emptyDirectory();
+        this.focusTakerTree = emptyDirectory();
+        this.focusTakerById = {}
     }
 
     childPath(currentPath: TreePath, idx: number): TreePath {
@@ -24,7 +26,7 @@ export class DFSFocusManager {
     }
 
     getOrInsertNodeAt(currentPath: TreePath, nodeToInsert?: FocusTaker): FocusTakerNode {
-        let currentItem = this.focusTakerDirectory;
+        let currentItem = this.focusTakerTree;
         for (let pathIdx = 0; pathIdx < currentPath.length; pathIdx++) {
             while (currentItem.children.length < currentPath[pathIdx] + 1) {
                 // need to insert a bunch of stuff
@@ -49,7 +51,7 @@ export class DFSFocusManager {
     }
 
     getNodeOrNullAt(currentPath: TreePath): FocusTakerNode | undefined {
-        let currentItem = this.focusTakerDirectory;
+        let currentItem = this.focusTakerTree;
         for (let pathIdx = 0; pathIdx < currentPath.length; pathIdx++) {
             currentItem = currentItem.children[currentPath[pathIdx]];
             if (!currentItem) break;
@@ -57,8 +59,9 @@ export class DFSFocusManager {
         return currentItem;
     }
 
-    registerChild(currentPath: TreePath, focusTaker: FocusTaker) {
+    registerChild(currentPath: TreePath, id: string, focusTaker: FocusTaker) {
         this.getOrInsertNodeAt(currentPath, focusTaker)
+        this.focusTakerById[id] = focusTaker;
     }
 
     focusPrev(currentPath: TreePath) {
@@ -99,8 +102,8 @@ export class DFSFocusManager {
         }
     }
 
-    focusItem() {
-        // TODO
+    focusItem(id: string) {
+        this.focusTakerById[id].focus();
     }
 }
 

@@ -87,6 +87,7 @@ export const makeFocusedActionReceiver = (props: {
             if (evt.key == "ArrowUp") {
                 if (evt.altKey) {
                     props.actions.arrangeBeforePrev();
+                    props.actions.focusItem(props.item.id);
                 } else if (evt.ctrlKey || evt.metaKey) {
                     props.actions.setSelfCollapsed(true);
                 } else {
@@ -96,6 +97,7 @@ export const makeFocusedActionReceiver = (props: {
             if (evt.key == "ArrowDown") {
                 if (evt.altKey) {
                     props.actions.arrangeAfterNext();
+                    props.actions.focusItem(props.item.id);
                 } else if (evt.ctrlKey || evt.metaKey) {
                     props.actions.setSelfCollapsed(false);
                 } else {

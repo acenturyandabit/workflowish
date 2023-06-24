@@ -2,6 +2,7 @@
 - Add CLI cleanup tools
 - first round of top-down-update code removal
 - fix focus traversal and child creation
+- fix focus after arrangement
 
 # Version 3.6.0: Add omnibar 
 - Refactor to separate omnibar and search

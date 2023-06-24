@@ -89,8 +89,8 @@ const Item = (props: {
         }
     })
 
-    props.focusManager.registerChild(props.treePath, {
-        focus: () => thisContentEditable.current?.focus()
+    props.focusManager.registerChild(props.treePath, props.item.id, {
+        focus: focusThis
     })
 
 
