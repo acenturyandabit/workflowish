@@ -1,12 +1,13 @@
 import { makeNewUniqueKey } from "~CoreDataLake";
 import { ItemTreeNode, TransformedDataAndSetter } from "./model";
+import { TreePath, DFSFocusManager } from "~Workflowish/mvc/DFSFocus";
 
 export type ControllerActions = {
     editSelfContents: (newContents: string) => void,
     createNewChild: (newContents?: string) => Promise<string>,
     createNewSibling: (newContents?: string) => Promise<string>,
-    focusItem: (newChildId: string) => void,
     deleteSelf: () => void
+    focusItem: (id: string) => void
     focusPreviousListItem: () => void
     focusNextListItem: () => void
     arrangeBeforePrev: () => void
@@ -19,9 +20,10 @@ export type ControllerActions = {
 export const linkSymbol = "🔗:";
 
 export const makeItemActions = (props: {
-    focusItem: (id: string) => void
     disableDelete?: () => boolean,
     thisItem: ItemTreeNode,
+    treePath: TreePath,
+    focusManager: DFSFocusManager,
     model: TransformedDataAndSetter,
 }): ControllerActions => ({
     // Note: All these methods are symlink aware.
@@ -30,7 +32,7 @@ export const makeItemActions = (props: {
             if (props.thisItem.symlinkedNode) {
                 const isStillALink = newContents.startsWith(linkSymbol);
                 if (isStillALink) {
-                    transformedData.keyedNodes[props.thisItem.symlinkedNode.id].data = newContents;
+                    transformedData.keyedNodes[props.thisItem.symlinkedNode.id].data = newContents.slice(linkSymbol.length);
                     return {
                         [props.thisItem.symlinkedNode.id]: transformedData.keyedNodes[props.thisItem.symlinkedNode.id]
                     }
@@ -74,8 +76,8 @@ export const makeItemActions = (props: {
         return new Promise<string>((resolve) => {
             const newId = makeNewUniqueKey();
             props.model.setItemsByKey((transformedData) => {
-                const thisParentId = props.model.transformedData.parentById[props.thisItem.id];
-                const siblings = props.model.transformedData.keyedNodes[thisParentId].children;
+                const thisParentId = transformedData.parentById[props.thisItem.id];
+                const siblings = transformedData.keyedNodes[thisParentId].children;
                 const currentSiblingIdx = siblings.map(i => i.id).indexOf(props.thisItem.id);
                 const newTreeNode: ItemTreeNode = {
                     id: newId,
@@ -89,19 +91,25 @@ export const makeItemActions = (props: {
                 setTimeout(() => resolve(newId));
                 return {
                     [newId]: newTreeNode,
-                    [props.thisItem.id]: transformedData.keyedNodes[props.thisItem.id]
+                    [thisParentId]: transformedData.keyedNodes[thisParentId]
                 }
             })
         })
     },
-    focusItem: props.focusItem,
     deleteSelf: () => {
         if (!props.disableDelete || props.disableDelete() == false) {
-            props.model.setItemsByKey((transformedData) => {
-                transformedData.keyedNodes[props.thisItem.id].markedForCleanup = true;
-                return {
-                    [props.thisItem.id]: transformedData.keyedNodes[props.thisItem.id]
+            props.model.setItemsByKey(() => {
+                const itemsToDelete: Record<string, ItemTreeNode> = {};
+                const cleanupQueue = [props.thisItem];
+                while (cleanupQueue.length) {
+                    const front = cleanupQueue.shift();
+                    if (front){
+                        front.markedForCleanup=true;
+                        itemsToDelete[front.id] = front;
+                        front.children.forEach(child => cleanupQueue.push(child));
+                    }
                 }
+                return itemsToDelete
             })
         }
     },
@@ -113,39 +121,12 @@ export const makeItemActions = (props: {
             }
         })
     },
+    focusItem: props.focusManager.focusItem,
     focusPreviousListItem: () => {
-        const thisParentId = props.model.transformedData.parentById[props.thisItem.id];
-        const siblings = props.model.transformedData.keyedNodes[thisParentId].children;
-        const currentSiblingIdx = siblings.map(i => i.id).indexOf(props.thisItem.id);
-        if (currentSiblingIdx > 0) {
-            let focusTarget = siblings[currentSiblingIdx - 1];
-            while (!focusTarget.collapsed && focusTarget.children.length) {
-                focusTarget = focusTarget.children[focusTarget.children.length - 1];
-            }
-            props.focusItem(focusTarget.id);
-        } else {
-            props.focusItem(thisParentId);
-        }
+        props.focusManager.focusPrev(props.treePath);
     },
     focusNextListItem: () => {
-        if (props.thisItem.children.length && !props.thisItem.collapsed) {
-            props.focusItem(props.thisItem.children[0].id);
-        } else {
-            let hasNextSiblingCandidate = props.thisItem;
-            let foundFocus = false;
-            do {
-                const parentId = props.model.transformedData.parentById[hasNextSiblingCandidate.id];
-                const parent = props.model.transformedData.keyedNodes[parentId];
-                const siblings = parent.children;
-                const currentSiblingIdx = siblings.map(i => i.id).indexOf(hasNextSiblingCandidate.id);
-                if (currentSiblingIdx < siblings.length - 1) {
-                    props.focusItem(siblings[currentSiblingIdx + 1].id);
-                    foundFocus = true;
-                } else {
-                    hasNextSiblingCandidate = parent;
-                }
-            } while (!foundFocus);
-        }
+        props.focusManager.focusNext(props.treePath);
     },
     arrangeBeforePrev: () => {
         props.model.setItemsByKey((transformedData) => {

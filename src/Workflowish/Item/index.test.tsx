@@ -4,6 +4,7 @@ import { it, expect } from '@jest/globals';
 import Item from "."
 import { makeItemActions } from '~Workflowish/mvc/controller';
 import { ItemTreeNode } from '~Workflowish/mvc/model';
+import { DFSFocusManager } from '~Workflowish/mvc/DFSFocus';
 
 const mockEmptyFunction = () => {
     // Mock empty
@@ -27,8 +28,10 @@ it('Renders an item', () => {
         },
         setItemsByKey: mockEmptyFunction
     };
+    const focusManager = new DFSFocusManager();
     const dummyAction = makeItemActions({
-        focusItem: mockEmptyFunction,
+        treePath: [0],
+        focusManager: focusManager,
         disableDelete: () => false,
         thisItem: dummyItem,
         model
@@ -43,6 +46,8 @@ it('Renders an item', () => {
                 collapsed: true,
                 searchHighlight: []
             }}
+            treePath={[0]}
+            focusManager={focusManager}
             pushRef={mockEmptyFunction}
             actions={dummyAction}
             setThisAsFocused={mockEmptyFunction}

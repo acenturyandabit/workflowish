@@ -123,6 +123,8 @@ export const useCoreDataLake = (kvStores: KVStoresAndLoadedState): [
             }
         })
     }
+    const _window = window as unknown as Record<string, DataAndLoadState>;
+    _window["dataAndLoadState"] = dataAndLoadState;
     return [dataAndLoadState, updateData, doSave]
 }
 

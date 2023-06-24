@@ -7,6 +7,7 @@ import "./index.css"
 import { ChildItems } from "./ChildItems";
 import { SIDECLIP_CONTEXT_MENU_ID } from '~Workflowish/Subcomponents/ContextMenu';
 import { TriggerEvent, useContextMenu } from 'react-contexify';
+import { DFSFocusManager, TreePath } from "~Workflowish/mvc/DFSFocus";
 
 
 export type FocusActions = {
@@ -29,6 +30,8 @@ const shouldBeUncollapsed = (item: ItemTreeNode): boolean => !item.collapsed || 
 const Item = (props: {
     styleParams: ItemStyleParams,
     item: ItemTreeNode,
+    treePath: TreePath,
+    focusManager: DFSFocusManager,
     actions: ControllerActions,
     model: TransformedDataAndSetter,
     pushRef: (id: string, ref: ItemRef) => void
@@ -81,9 +84,13 @@ const Item = (props: {
 
     props.pushRef(props.item.id, {
         focusThis,
-        scrollThisIntoView: ()=>{
+        scrollThisIntoView: () => {
             thisContentEditable.current?.scrollIntoView()
         }
+    })
+
+    props.focusManager.registerChild(props.treePath, {
+        focus: () => thisContentEditable.current?.focus()
     })
 
 
@@ -102,6 +109,8 @@ const Item = (props: {
         <ChildItems
             item={props.item}
             itemsRefArray={itemsRefArray}
+            treePath={props.treePath}
+            focusManager={props.focusManager}
             setThisAsFocused={props.setThisAsFocused}
             actions={props.actions}
             shouldUncollapse={shouldUncollapse}

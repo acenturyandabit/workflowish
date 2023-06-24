@@ -149,6 +149,9 @@ export const transformData = (flatItemBlob: FlatItemBlob): TransformedData => {
         if (orphanedId != virtualRoot.id) virtualRoot.children.push(treeConstructorRecord[orphanedId]);
     }
     if (virtualRoot.children.length == 0) throw "Virtual root must have children"; // DOMASSERTION
+    else {
+        virtualRoot.children.forEach(child => parentById[child.id] = virtualRootId);
+    }
     return {
         rootNode: virtualRoot,
         keyedNodes: treeConstructorRecord,

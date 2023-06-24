@@ -43,8 +43,8 @@ export const makeFocusedActionReceiver = (props: {
             if (evt.key == "Enter") {
                 if (evt.shiftKey) {
                     (async () => {
-                        const childId = await props.actions.createNewChild();
-                        props.actions.focusItem(childId);
+                        await props.actions.createNewChild();
+                        props.actions.focusNextListItem();
                     })();
                 } else if (evt.altKey) {
                     const currentSelection = window.getSelection();
@@ -56,22 +56,22 @@ export const makeFocusedActionReceiver = (props: {
                         const halfToGiveToChild = props.item.data.slice(0, currentSelection.anchorOffset);
                         if (evt.shiftKey) {
                             (async () => {
-                                const childId = await props.actions.createNewChild(halfToGiveToChild);
+                                await props.actions.createNewChild(halfToGiveToChild);
                                 props.actions.editSelfContents(halfToKeep);
-                                props.actions.focusItem(childId);
+                                props.actions.focusNextListItem();
                             })();
                         } else {
                             (async () => {
-                                const childId = await props.actions.createNewSibling(halfToGiveToChild);
+                                await props.actions.createNewSibling(halfToGiveToChild);
                                 props.actions.editSelfContents(halfToKeep);
-                                props.actions.focusItem(childId);
+                                props.actions.focusNextListItem();
                             })();
                         }
                     }
                 } else {
                     (async () => {
-                        const childId = await props.actions.createNewSibling();
-                        props.actions.focusItem(childId);
+                        await props.actions.createNewSibling();
+                        props.actions.focusNextListItem();
                     })();
                 }
                 evt.preventDefault()
