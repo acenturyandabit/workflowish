@@ -6,6 +6,7 @@
 - fix keyboard focus issues
 - Fix new item focusing
 - Fix off by one focus error
+- Unbreak caret jump
 
 # Version 3.6.0: Add omnibar 
 - Refactor to separate omnibar and search

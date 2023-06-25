@@ -36,12 +36,14 @@ export const EditableSection = (props: {
         props.actions.editSelfContents(sanitizeHtml(evt.currentTarget.innerHTML, sanitizeConf));
     }
 
-    const setInnerRef = (contenteditableElement: HTMLElement) => {
+    // Must use a callback otherwise setInnerRef invalidates and will cause a re-render, causing caret to jump
+    // https://github.com/lovasoa/react-contenteditable/blob/ec221521e0da0d6d96ea32e6b8ed54666957824a/src/react-contenteditable.tsx#L58
+    const setInnerRef = React.useCallback((contenteditableElement: HTMLElement) => {
         props._ref.current = contenteditableElement;
         if (contenteditableElement) {
             contenteditableElement.onkeydown = (evt: KeyboardEvent) => props.focusedActionReceiver.keyCommand(evt, evt);
         }
-    }
+    }, [props.item.id]);
 
     let htmlToShow = props.item.data;
     if (props.item.symlinkedNode) {
