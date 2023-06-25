@@ -52,8 +52,8 @@ export const getTransformedDataAndSetter = (props: {
     data: BaseStoreDataType,
     updateData: React.Dispatch<React.SetStateAction<BaseStoreDataType>>,
 }): TransformedDataAndSetter => {
-
-    let transformedData: ReturnType<typeof transformData>;
+    const transformedData = React.useRef<TransformedData>();
+    let newTransformedData: TransformedData
     let setItemsByKey: ReturnType<typeof getItemSetterByKey>
     if (!(virtualRootId in props.data)) {
         const firstTimeData = fromTree(generateFirstTimeWorkflowishDoc());
@@ -66,25 +66,31 @@ export const getTransformedDataAndSetter = (props: {
         setItemsByKey = () => {
             // Don't allow user modifications before first load
         };
-        transformedData = transformData(firstTimeData);
+        newTransformedData = transformData(firstTimeData);
     } else {
-        transformedData = transformData(props.data as FlatItemBlob);
+        newTransformedData = transformData(props.data as FlatItemBlob);
         setItemsByKey = getItemSetterByKey(props.updateData, transformedData);
     }
+    transformedData.current = newTransformedData;
     return {
-        transformedData,
+        transformedData: newTransformedData,
         setItemsByKey
     };
 }
 
 export const virtualRootId = "__virtualRoot";
 
-export const getItemSetterByKey = (updateData: React.Dispatch<React.SetStateAction<BaseStoreDataType>>, oldTransformedData: TransformedData): ItemSetterByKey => {
+export const getItemSetterByKey = (updateData: React.Dispatch<React.SetStateAction<BaseStoreDataType>>, oldTransformedData: React.RefObject<TransformedData | undefined>): ItemSetterByKey => {
     return (itemsToSet: Record<string, ItemTreeNode> | ((transformedData: TransformedData) => Record<string, ItemTreeNode>)) => {
         updateData((oldData) => {
             let todoItemsToSet: Record<string, ItemTreeNode>;
             if (itemsToSet instanceof Function) {
-                todoItemsToSet = itemsToSet(oldTransformedData);
+                const currentData = oldTransformedData.current;
+                if (currentData){
+                    todoItemsToSet = itemsToSet(currentData);
+                }else{
+                    throw "Data ref was undefined!"
+                }
             } else {
                 todoItemsToSet = itemsToSet;
             }
