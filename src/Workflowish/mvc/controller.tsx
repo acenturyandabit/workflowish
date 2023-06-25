@@ -24,7 +24,7 @@ export const makeItemActions = (props: {
     disableDelete?: () => boolean,
     thisItem: ItemTreeNode,
     treePath: TreePath,
-    focusManager: DFSFocusManager,
+    focusManager: React.RefObject<DFSFocusManager>,
     setToFocusAfterUpdate: (id: string) => void,
     model: TransformedDataAndSetter,
 }): ControllerActions => ({
@@ -125,13 +125,13 @@ export const makeItemActions = (props: {
             }
         })
     },
-    focusItem: props.focusManager.focusItem,
+    focusItem: (id: string) => props.focusManager.current?.focusItem(id),
     focusItemAfterUpdate: props.setToFocusAfterUpdate,
     focusPreviousListItem: () => {
-        props.focusManager.focusPrev(props.treePath);
+        props.focusManager.current?.focusPrev(props.treePath);
     },
     focusNextListItem: () => {
-        props.focusManager.focusNext(props.treePath);
+        props.focusManager.current?.focusNext(props.treePath);
     },
     arrangeBeforePrev: () => {
         props.model.setItemsByKey((transformedData) => {

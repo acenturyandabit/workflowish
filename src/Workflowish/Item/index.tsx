@@ -31,7 +31,7 @@ const Item = (props: {
     styleParams: ItemStyleParams,
     item: ItemTreeNode,
     treePath: TreePath,
-    focusManager: DFSFocusManager,
+    focusManager: React.RefObject<DFSFocusManager>,
     actions: ControllerActions,
     model: TransformedDataAndSetter,
     pushRef: (id: string, ref: ItemRef) => void
@@ -47,7 +47,11 @@ const Item = (props: {
     }
 
     const shouldUncollapse = shouldBeUncollapsed(props.item);
-
+    const itemRef = React.useRef(props.item);
+    React.useEffect(() => {
+        // Force the focusedActionReceiver to look at the current item  otherwise it will fail to update
+        itemRef.current = props.item
+    });
 
     const focusThis = () => {
         thisContentEditable.current?.focus();
@@ -76,7 +80,7 @@ const Item = (props: {
     const focusedActionReceiver = makeFocusedActionReceiver({
         actions: props.actions,
         itemsRefArray,
-        item: props.item,
+        item: itemRef,
         raiseContextCopyIdEvent,
         jumpToSymlink,
         focusThis
@@ -89,7 +93,7 @@ const Item = (props: {
         }
     })
 
-    props.focusManager.registerChild(props.treePath, props.item.id, {
+    props.focusManager.current?.registerChild(props.treePath, props.item.id, {
         focus: focusThis
     })
 

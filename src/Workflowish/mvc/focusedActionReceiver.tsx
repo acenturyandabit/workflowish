@@ -33,77 +33,80 @@ export const dummyFocusedActionReceiver = {
 export const makeFocusedActionReceiver = (props: {
     actions: ControllerActions,
     itemsRefArray: React.MutableRefObject<(FocusActions | null)[]>
-    item: ItemTreeNode,
+    item: React.RefObject<ItemTreeNode>,
     raiseContextCopyIdEvent: (event: TriggerEvent) => void,
     jumpToSymlink: () => boolean,
     focusThis: () => void,
 }): FocusedActionReceiver => {
     return {
         keyCommand: (evt, rawEvent) => {
-            if (evt.key == "Enter") {
-                if (evt.shiftKey) {
-                    props.actions.createNewChild();
-                } else if (evt.altKey) {
-                    const currentSelection = window.getSelection();
-                    if (currentSelection
-                        && currentSelection.anchorOffset == currentSelection.focusOffset
-                        && currentSelection.anchorNode == currentSelection.focusNode
-                    ) {
-                        const halfToKeep = props.item.data.slice(currentSelection.anchorOffset);
-                        const halfToGiveToChild = props.item.data.slice(0, currentSelection.anchorOffset);
-                        if (evt.shiftKey) {
-                            props.actions.createNewChild(halfToGiveToChild);
-                            props.actions.editSelfContents(halfToKeep);
-                        } else {
-                            props.actions.createNewSibling(halfToGiveToChild);
-                            props.actions.editSelfContents(halfToKeep);
+            const currentItem = props.item.current;
+            if (currentItem) {
+                if (evt.key == "Enter") {
+                    if (evt.shiftKey) {
+                        props.actions.createNewChild();
+                    } else if (evt.altKey) {
+                        const currentSelection = window.getSelection();
+                        if (currentSelection
+                            && currentSelection.anchorOffset == currentSelection.focusOffset
+                            && currentSelection.anchorNode == currentSelection.focusNode
+                        ) {
+                            const halfToKeep = currentItem.data.slice(currentSelection.anchorOffset);
+                            const halfToGiveToChild = currentItem.data.slice(0, currentSelection.anchorOffset);
+                            if (evt.shiftKey) {
+                                props.actions.createNewChild(halfToGiveToChild);
+                                props.actions.editSelfContents(halfToKeep);
+                            } else {
+                                props.actions.createNewSibling(halfToGiveToChild);
+                                props.actions.editSelfContents(halfToKeep);
+                            }
                         }
+                    } else {
+                        props.actions.createNewSibling();
                     }
-                } else {
-                    props.actions.createNewSibling();
+                    evt.preventDefault()
                 }
-                evt.preventDefault()
-            }
-            if (evt.key == "Tab") {
-                if (evt.shiftKey) {
-                    props.actions.unindentSelf();
-                } else {
-                    props.actions.indentSelf();
+                if (evt.key == "Tab") {
+                    if (evt.shiftKey) {
+                        props.actions.unindentSelf();
+                    } else {
+                        props.actions.indentSelf();
+                    }
+                    evt.preventDefault()
                 }
-                evt.preventDefault()
-            }
-            if (evt.key == "ArrowUp") {
-                if (evt.altKey) {
-                    props.actions.arrangeBeforePrev();
-                    props.actions.focusItemAfterUpdate(props.item.id);
-                } else if (evt.ctrlKey || evt.metaKey) {
-                    props.actions.setSelfCollapsed(true);
-                } else {
-                    props.actions.focusPreviousListItem();
+                if (evt.key == "ArrowUp") {
+                    if (evt.altKey) {
+                        props.actions.arrangeBeforePrev();
+                        props.actions.focusItemAfterUpdate(currentItem.id);
+                    } else if (evt.ctrlKey || evt.metaKey) {
+                        props.actions.setSelfCollapsed(true);
+                    } else {
+                        props.actions.focusPreviousListItem();
+                    }
                 }
-            }
-            if (evt.key == "ArrowDown") {
-                if (evt.altKey) {
-                    props.actions.arrangeAfterNext();
-                    props.actions.focusItemAfterUpdate(props.item.id);
-                } else if (evt.ctrlKey || evt.metaKey) {
-                    props.actions.setSelfCollapsed(false);
-                } else {
-                    props.actions.focusNextListItem();
+                if (evt.key == "ArrowDown") {
+                    if (evt.altKey) {
+                        props.actions.arrangeAfterNext();
+                        props.actions.focusItemAfterUpdate(currentItem.id);
+                    } else if (evt.ctrlKey || evt.metaKey) {
+                        props.actions.setSelfCollapsed(false);
+                    } else {
+                        props.actions.focusNextListItem();
+                    }
                 }
-            }
-            if (evt.key == "Backspace") {
-                if (props.item.data.length == 0) {
-                    props.actions.deleteSelf();
-                    props.actions.focusPreviousListItem();
-                    evt.preventDefault();
+                if (evt.key == "Backspace") {
+                    if (currentItem.data.length == 0) {
+                        props.actions.deleteSelf();
+                        props.actions.focusPreviousListItem();
+                        evt.preventDefault();
+                    }
                 }
-            }
-            if ((evt.key.toLowerCase() == "c" || evt.key == MOBILE_ACTION_1) && evt.altKey && evt.shiftKey && rawEvent) {
-                props.raiseContextCopyIdEvent(rawEvent);
-            }
-            if ((evt.key.toLowerCase() == "j" || evt.key == MOBILE_ACTION_1) && (evt.ctrlKey || evt.metaKey) && rawEvent) {
-                if (props.jumpToSymlink()) rawEvent.preventDefault();
+                if ((evt.key.toLowerCase() == "c" || evt.key == MOBILE_ACTION_1) && evt.altKey && evt.shiftKey && rawEvent) {
+                    props.raiseContextCopyIdEvent(rawEvent);
+                }
+                if ((evt.key.toLowerCase() == "j" || evt.key == MOBILE_ACTION_1) && (evt.ctrlKey || evt.metaKey) && rawEvent) {
+                    if (props.jumpToSymlink()) rawEvent.preventDefault();
+                }
             }
         },
         refocusSelf: props.focusThis,

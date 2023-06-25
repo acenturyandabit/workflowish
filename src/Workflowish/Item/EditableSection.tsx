@@ -29,10 +29,6 @@ export const EditableSection = (props: {
         allowedAttributes: { a: ["href"] }
     };
     const onContentChange = (evt: ContentEditableEvent) => {
-        const itemsToFetch = [props.item.id];
-        if (props.item.symlinkedNode) {
-            itemsToFetch.push(props.item.symlinkedNode.id);
-        }
         props.actions.editSelfContents(sanitizeHtml(evt.currentTarget.innerHTML, sanitizeConf));
     }
 
@@ -44,7 +40,7 @@ export const EditableSection = (props: {
             contenteditableElement.onkeydown = (evt: KeyboardEvent) => props.focusedActionReceiver.keyCommand(evt, evt);
         }
     }, [props.item.id]);
-
+    const classNameToForceReRenderOnItemDeletion = props.item.id;
     let htmlToShow = props.item.data;
     if (props.item.symlinkedNode) {
         htmlToShow = linkSymbol + props.item.symlinkedNode.data;
@@ -61,7 +57,6 @@ export const EditableSection = (props: {
     }
 
 
-
     return <span style={{ background: searchHighlightBackground }}
         onContextMenu={() => contextEventHandler(props.item, props.model)}>
         <BulletPoint
@@ -74,6 +69,7 @@ export const EditableSection = (props: {
         {/* The contentEditable needs to persist regardless of whether it is a symlink in order for focus to work correctly */}
         <ContentEditable
             innerRef={setInnerRef}
+            className={"__editable_"+classNameToForceReRenderOnItemDeletion}
             html={htmlToShow}
             onChange={onContentChange}
             onClick={props.onFocusClick}

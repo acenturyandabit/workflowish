@@ -70,7 +70,10 @@ const ItemsList = (
     }
 ) => {
     const itemTree = React.useContext<ItemTreeNode>(ModelContext);
-    const focusManager = new DFSFocusManager();
+
+    // ref needed so that callbacks will not access old copies of dfsFocusManager, leading to new items being unselectable
+    const focusManager = React.useRef(new DFSFocusManager());
+    focusManager.current?.emptyThis();
     const setFocusedItem = (focusedActionReceiver: FocusedActionReceiver, focusItemKey: string) => {
         props.setFocusedActionReceiver(focusedActionReceiver);
         props.setLastFocusedItem(focusItemKey);
@@ -80,7 +83,7 @@ const ItemsList = (
     const itemToFocus = React.useRef<string | undefined>();
     React.useEffect(()=>{
         if (itemToFocus.current) {
-            focusManager.focusItem(itemToFocus.current);
+            focusManager.current?.focusItem(itemToFocus.current);
             itemToFocus.current = undefined;
         }
     })
@@ -89,7 +92,7 @@ const ItemsList = (
     return <RenderTimeContext.Provider value={{
         currentFocusedItem: props.lastFocusedItem
     }}>{itemTree.children.map((item, ii) => {
-        const treePath = focusManager.childPath(rootPath, ii);
+        const treePath = focusManager.current?.childPath(rootPath, ii);
         return (<Item
             key={ii}
             styleParams={{

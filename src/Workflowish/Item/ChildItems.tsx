@@ -9,7 +9,7 @@ export const ChildItems = (props: {
     shouldUncollapse: boolean,
     item: ItemTreeNode,
     treePath: TreePath,
-    focusManager: DFSFocusManager,
+    focusManager: React.RefObject<DFSFocusManager>,
     styleParams: ItemStyleParams,
     itemsRefArray: React.MutableRefObject<(FocusActions | null)[]>,
     setThisAsFocused: (focusedActionReceiver: FocusedActionReceiver, focusItemKey: string) => void,
@@ -34,7 +34,7 @@ export const ChildItems = (props: {
     const itemToFocus = React.useRef<string | undefined>();
     React.useEffect(()=>{
         if (itemToFocus.current) {
-            props.focusManager.focusItem(itemToFocus.current);
+            props.focusManager.current?.focusItem(itemToFocus.current);
             itemToFocus.current = undefined;
         }
     })
@@ -47,7 +47,7 @@ export const ChildItems = (props: {
                 marginLeft: "0.5em"
             }}>
                 {childrenToRender.map((item, childIdx) => {
-                    const treePath = props.focusManager.childPath(props.treePath, childIdx);
+                    const treePath = props.focusManager.current?.childPath(props.treePath, childIdx) || [];
                     return <Item
                         key={childIdx}
                         item={item}

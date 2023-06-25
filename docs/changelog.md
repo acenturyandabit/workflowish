@@ -7,6 +7,7 @@
 - Fix new item focusing
 - Fix off by one focus error
 - Unbreak caret jump
+- Fix item focus and deletion bug
 
 # Version 3.6.0: Add omnibar 
 - Refactor to separate omnibar and search
