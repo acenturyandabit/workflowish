@@ -68,8 +68,8 @@ export const getTransformedDataAndSetter = (props: {
         };
         transformedData = transformData(firstTimeData);
     } else {
-        setItemsByKey = getItemSetterByKey(props.updateData);
         transformedData = transformData(props.data as FlatItemBlob);
+        setItemsByKey = getItemSetterByKey(props.updateData, transformedData);
     }
     return {
         transformedData,
@@ -79,12 +79,12 @@ export const getTransformedDataAndSetter = (props: {
 
 export const virtualRootId = "__virtualRoot";
 
-export const getItemSetterByKey = (updateData: React.Dispatch<React.SetStateAction<BaseStoreDataType>>): ItemSetterByKey => {
+export const getItemSetterByKey = (updateData: React.Dispatch<React.SetStateAction<BaseStoreDataType>>, oldTransformedData: TransformedData): ItemSetterByKey => {
     return (itemsToSet: Record<string, ItemTreeNode> | ((transformedData: TransformedData) => Record<string, ItemTreeNode>)) => {
         updateData((oldData) => {
             let todoItemsToSet: Record<string, ItemTreeNode>;
             if (itemsToSet instanceof Function) {
-                todoItemsToSet = itemsToSet(transformData(oldData as FlatItemBlob));
+                todoItemsToSet = itemsToSet(oldTransformedData);
             } else {
                 todoItemsToSet = itemsToSet;
             }
@@ -121,11 +121,12 @@ export const transformData = (flatItemBlob: FlatItemBlob): TransformedData => {
     }
     // Second pass: Child linking
     for (const nodeId in treeConstructorRecord) {
-        const nodeChildInstances = flatItemBlob[nodeId].children.map(childId => {
+        const dedupChildren = [...new Set(flatItemBlob[nodeId].children)];
+        const nodeChildInstances = dedupChildren.map(childId => {
             const childWasDeleted = !(childId in treeConstructorRecord)
             return childWasDeleted ? null : treeConstructorRecord[childId]
         }).filter((nodeOrNull): nodeOrNull is ItemTreeNode => nodeOrNull != null);
-        treeConstructorRecord[nodeId].children = deduplicate(nodeChildInstances);
+        treeConstructorRecord[nodeId].children = nodeChildInstances;
         flatItemBlob[nodeId].children.forEach(childId => {
             orphanedTreeItemCandidates.delete(childId);
             parentById[childId] = nodeId;
@@ -167,16 +168,6 @@ const isValidTreeObject = (item: BaseItemType) => {
     )
 }
 
-const deduplicate = (inArray: ItemTreeNode[]): ItemTreeNode[] => {
-    const seenStrs: Record<string, boolean> = {}
-    return inArray.filter(i => {
-        if (seenStrs[i.id]) return false;
-        else {
-            seenStrs[i.id] = true;
-            return true;
-        }
-    })
-}
 
 type Queue<T> = Array<T>;
 export const fromTree = (root: ItemTreeNode): FlatItemBlob => {

@@ -103,7 +103,6 @@ const searchTransform = (rootNode: ItemTreeNode,
     currentMatchId: string,
     currentMatchParentChain: string[]
 } => {
-    // TODO: room for optimization here to omit the DFS if there is no search text, but be careful!
     const nodeStack: Array<ItemTreeNode> = [rootNode];
     type DFSMetadata = {
         passCount: number
@@ -126,6 +125,7 @@ const searchTransform = (rootNode: ItemTreeNode,
     let nMatches = 0;
     let currentMatchId = NO_MATCH;
     let currentMatchParentChain: string[] = [];
+    const searchMatchArray = [];
     while (nodeStack.length) {
         const top: ItemTreeNode = nodeStack.pop() as ItemTreeNode;
         if (dfsSeenList[top.id].passCount == 1) {
@@ -150,7 +150,7 @@ const searchTransform = (rootNode: ItemTreeNode,
             if (searchParams.searchText.length > 0 && top.data.toLowerCase().includes(searchParams.searchText.toLowerCase())) {
                 top.searchHighlight.push("SEARCH_MATCH");
                 if (top.id != virtualRootId) {
-                    dfsSeenList[top.id].isMatch = true;
+                    searchMatchArray.push(dfsSeenList[top.id]);
                 }
                 nMatches++;
             }
@@ -163,9 +163,8 @@ const searchTransform = (rootNode: ItemTreeNode,
             }
         }
     }
-    const searchMatchArray = Object.values(dfsSeenList)
-        .sort((a: DFSMetadata, b: DFSMetadata) => a.dfsOrder - b.dfsOrder)
-        .filter((i: DFSMetadata) => i.isMatch);
+    searchMatchArray
+        .sort((a: DFSMetadata, b: DFSMetadata) => a.dfsOrder - b.dfsOrder);
     if (searchMatchArray.length > 0) {
         if (searchParams.selectionIdx < 0) {
             setSearchParams({ ...searchParams, selectionIdx: 0 });

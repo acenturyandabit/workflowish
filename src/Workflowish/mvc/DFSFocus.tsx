@@ -104,7 +104,9 @@ export class DFSFocusManager {
     }
 
     focusItem(id: string) {
-        this.focusTakerById[id].focus();
+        if (this.focusTakerById[id]){
+            this.focusTakerById[id].focus();
+        }
     }
 }
 

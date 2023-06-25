@@ -69,8 +69,10 @@ export const makeFocusedActionReceiver = (props: {
                 if (evt.key == "Tab") {
                     if (evt.shiftKey) {
                         props.actions.unindentSelf();
+                        props.actions.focusItemAfterUpdate(currentItem.id);
                     } else {
                         props.actions.indentSelf();
+                        props.actions.focusItemAfterUpdate(currentItem.id);
                     }
                     evt.preventDefault()
                 }

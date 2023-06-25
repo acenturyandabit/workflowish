@@ -168,6 +168,7 @@ export const makeItemActions = (props: {
             const currentSiblingIdx = parentItem.children.map(i => i.id).indexOf(props.thisItem.id);
             if (currentSiblingIdx > 0) {
                 parentItem.children.splice(currentSiblingIdx, 1);
+                parentItem.collapsed = false;
                 const previousSibling = parentItem.children[currentSiblingIdx - 1];
                 previousSibling.children.push(props.thisItem);
                 return {
