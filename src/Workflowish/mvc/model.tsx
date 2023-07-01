@@ -65,6 +65,7 @@ export const getTransformedDataAndSetter = (props: {
         }), 1);
         setItemsByKey = () => {
             // Don't allow user modifications before first load
+            console.log("Attempted to edit before load complete");
         };
         newTransformedData = transformData(firstTimeData);
     } else {

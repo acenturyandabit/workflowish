@@ -39,7 +39,10 @@ export const EditableSection = (props: {
         if (contenteditableElement) {
             contenteditableElement.onkeydown = (evt: KeyboardEvent) => props.focusedActionReceiver.keyCommand(evt, evt);
         }
-    }, [props.item.id]);
+
+    }, [props.item.id,
+    props.focusedActionReceiver // FocusedActionReceiver will change after first load; without this we can't collapse items on a fresh doc
+    ]);
     const classNameToForceReRenderOnItemDeletion = props.item.id;
     let htmlToShow = props.item.data;
     if (props.item.symlinkedNode) {
@@ -69,7 +72,7 @@ export const EditableSection = (props: {
         {/* The contentEditable needs to persist regardless of whether it is a symlink in order for focus to work correctly */}
         <ContentEditable
             innerRef={setInnerRef}
-            className={"__editable_"+classNameToForceReRenderOnItemDeletion}
+            className={"__editable_" + classNameToForceReRenderOnItemDeletion}
             html={htmlToShow}
             onChange={onContentChange}
             onClick={props.onFocusClick}
