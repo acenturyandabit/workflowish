@@ -3,7 +3,7 @@ import * as React from 'react';
 import { BaseItemType } from "~CoreDataLake";
 import getDiffsAndResolvedItems from "~CoreDataLake/getResolvedItems";
 import stringify from 'json-stable-stringify';
-import { FlatItemBlob, FlatItemData } from "~Workflowish/mvc/model";
+import { FlatItemBlob, FlatItemData, ItemTreeNode, TransformedData, flattenItemNode} from "~Workflowish/mvc/model";
 import { transformData as workflowishTransformData } from "~Workflowish/mvc/model";
 export const ScriptEngineInstance = (props: {
     script: string,
@@ -12,10 +12,12 @@ export const ScriptEngineInstance = (props: {
     setData: React.Dispatch<React.SetStateAction<BaseStoreDataType>>
 }) => {
     const [, setStoredRecords] = React.useState(props.data);
+
     const handlers: UserScriptHandles | undefined = React.useMemo(() => {
         const userHasPressedRunButton = (props.lastActivateTime != undefined);
         if (userHasPressedRunButton) {
             return getHandlersFromUserScript({
+                data: props.data,
                 script: props.script,
                 getSetData: setStoredRecords
             })
@@ -65,6 +67,7 @@ type DataUpdateOrFunction = BaseItemType | ((oldData: BaseItemType) => BaseItemT
 type UpdateItemHandler = (id: string, data: BaseItemType) => void;
 
 const getHandlersFromUserScript = (props: {
+    data: BaseStoreDataType,
     script: string,
     getSetData: React.Dispatch<React.SetStateAction<BaseStoreDataType>>
 }): UserScriptHandles => {
@@ -88,6 +91,9 @@ const getHandlersFromUserScript = (props: {
             return _updatesStash;
         }
     }
+
+
+
     const scriptGlobals = {
         instance: {
             on: (eventUserListensTo: string, handler: UpdateItemHandler) => {
@@ -97,7 +103,8 @@ const getHandlersFromUserScript = (props: {
             },
             updateItem: (id: string, dataOrFunction: DataUpdateOrFunction) => {
                 updatesStash[id] = dataOrFunction
-            }
+            },
+            makeNewUniqueKey: makeNewUniqueKey
         },
         workflowish: {
             reparentItem: (id: string, newParent: string) => {
@@ -143,6 +150,33 @@ const getHandlersFromUserScript = (props: {
                     updatesStash[id] = newItem;
                     return data;
                 });
+            },
+            setItemsByKey: (itemsToSet: Record<string, ItemTreeNode> | ((transformedData: TransformedData) => Record<string, ItemTreeNode>)) => {
+                props.getSetData((data) => {
+                    const transformedData = workflowishTransformData(data as FlatItemBlob);
+                    let newItemsToSet: Record<string, ItemTreeNode>;
+                    if (itemsToSet instanceof Function) {
+                        newItemsToSet = itemsToSet(transformedData);
+                    } else {
+                        newItemsToSet = itemsToSet;
+                    }
+                    for (const key in newItemsToSet) {
+                        updatesStash[key] = flattenItemNode(newItemsToSet[key]);
+                    }
+                    return data;
+                })
+            },
+            makeRawItem: () => {
+                const id = makeNewUniqueKey();
+                const newItem: ItemTreeNode = {
+                    id,
+                    lastModifiedUnixMillis: Date.now(),
+                    data: "",
+                    children: [],
+                    collapsed: false,
+                    searchHighlight: []
+                }
+                return newItem;
             }
         }
     }

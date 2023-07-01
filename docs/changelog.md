@@ -10,6 +10,7 @@
 - Fix item focus and deletion bug
 - fixes for commands + optimizing on change
 - fix issue where multiple edits of item don't commit
+- Improved scripting engine under new paradigm
 
 # Version 3.6.0: Add omnibar 
 - Refactor to separate omnibar and search

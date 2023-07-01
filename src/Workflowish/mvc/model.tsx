@@ -207,7 +207,7 @@ export const fromTree = (root: ItemTreeNode): FlatItemBlob => {
     return flatBlob;
 }
 
-const flattenItemNode = (itemNode: ItemTreeNode): FlatItemData => {
+export const flattenItemNode = (itemNode: ItemTreeNode): FlatItemData => {
     const flatBlob: FlatItemData = {
         lastModifiedUnixMillis: itemNode.lastModifiedUnixMillis,
         data: itemNode.data,
