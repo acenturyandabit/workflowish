@@ -8,6 +8,7 @@ import { BaseStoreDataType } from '../src/CoreDataLake'
 import { IncomingHttpHeaders } from 'http'
 import { testDocuments } from './testDocuments'
 import { loadFromFile } from './docFileOps'
+import { Config } from './backend_config'
 
 const thisFileDirectory = path.dirname(__filename)
 const fileDBLocation = thisFileDirectory + "/filedb"
@@ -17,7 +18,7 @@ if (!fs.existsSync(fileDBLocation)) {
     fs.mkdirSync(fileDBLocation)
 }
 
-export const appFactory_build = (): ReturnType<typeof express> => {
+export const appFactory_build = (config: Config): ReturnType<typeof express> => {
     const app = express()
     app.use(express.static(thisFileDirectory + "/static"))
     app.use(bodyParser.json({ limit: '50mb' }));
@@ -28,14 +29,20 @@ export const appFactory_build = (): ReturnType<typeof express> => {
     })
 
     app.post('/save', (req, res) => {
-        console.log("Saving")
+        console.log(`Saving file ${req.query.f}`)
         const docPath = getCleanFileName(req.query.f);
-        if (!checkAuthPasses(docPath, req.headers)) {
-            res.sendStatus(401);
+        if (config.canCreateDocuments || fs.existsSync(docPath)) {
+            if (!checkAuthPasses(docPath, req.headers)) {
+                console.log("Authentication failed");
+                res.sendStatus(401);
+            } else {
+                innerSaveOrSync(docPath, req.body);
+                console.log(`Saved ${req.query.f} as ${docPath}`);
+            }
         } else {
-            innerSaveOrSync(docPath, req.body);
+            console.log("Cannot create documents via HTTP in this server.");
+            res.sendStatus(400);
         }
-        console.log("Saved")
     })
 
 
@@ -81,7 +88,6 @@ export const appFactory_build = (): ReturnType<typeof express> => {
             }
         }
     })
-
     return app;
 }
 

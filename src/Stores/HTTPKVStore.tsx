@@ -38,7 +38,7 @@ class HTTPKVStore implements
                 promptPassword: true
             };
         }
-        this.password=""
+        this.password = ""
         this.sync = this.sync.bind(this)
     }
 
@@ -110,14 +110,14 @@ class HTTPKVStore implements
                 {this.settings.usePassword && this.settings.passwordPrefix.length > 0 ? <>
                     <br></br>
                     <FormControlLabel
-                    control={<Checkbox
-                        checked={this.settings.promptPassword}
-                        onChange={(evt) => {
-                            this.settings.promptPassword = evt.target.checked;
-                            bumpKVStores();
-                        }}
-                    />}
-                    label={"Prompt for Password (Otherwise just use password prefix)"}
+                        control={<Checkbox
+                            checked={this.settings.promptPassword}
+                            onChange={(evt) => {
+                                this.settings.promptPassword = evt.target.checked;
+                                bumpKVStores();
+                            }}
+                        />}
+                        label={"Prompt for Password (Otherwise just use password prefix)"}
                     />
                     <br></br>
                 </> : null}
@@ -125,14 +125,17 @@ class HTTPKVStore implements
         )
     }
 
-    save(data: BaseStoreDataType) {
-        this.authedFetch(this.settings.saveURL, {
+    async save(data: BaseStoreDataType) {
+        const response = await this.authedFetch(this.settings.saveURL, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
             },
             body: JSON.stringify(data)
         })
+        if (response.status != 200) {
+            alert("Save failed!");
+        }
     }
 
     async sync(data: BaseStoreDataType): Promise<BaseStoreDataType> {
