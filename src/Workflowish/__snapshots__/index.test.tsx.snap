@@ -1,6 +1,12 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Renders the new document if no document is provided 1`] = `
+exports[`Creates the new document if no document is provided 1`] = `
+<div>
+  Loading...
+</div>
+`;
+
+exports[`Creates the new document if no document is provided 2`] = `
 <div
   style={
     {

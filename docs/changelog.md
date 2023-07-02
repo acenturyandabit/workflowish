@@ -13,6 +13,7 @@
 - Improved scripting engine under new paradigm
 - Fix focusedActionReceiver not working on initial load
 - Prevent new document creation as server setting
+- Add readyForEdits flag to fix cursor jumps
 
 # Version 3.6.0: Add omnibar 
 - Refactor to separate omnibar and search

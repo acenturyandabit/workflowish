@@ -40,9 +40,7 @@ export const EditableSection = (props: {
             contenteditableElement.onkeydown = (evt: KeyboardEvent) => props.focusedActionReceiver.keyCommand(evt, evt);
         }
 
-    }, [props.item.id,
-    props.focusedActionReceiver // FocusedActionReceiver will change after first load; without this we can't collapse items on a fresh doc
-    ]);
+    }, [props.item.id]);
     const classNameToForceReRenderOnItemDeletion = props.item.id;
     let htmlToShow = props.item.data;
     if (props.item.symlinkedNode) {

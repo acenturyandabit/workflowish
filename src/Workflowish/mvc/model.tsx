@@ -45,6 +45,7 @@ export type ItemSetterByKey = (itemsToSet: Record<string, ItemTreeNode> | ((tran
 export type TransformedDataAndSetter = {
     transformedData: TransformedData,
     setItemsByKey: ItemSetterByKey
+    readyForEdits: boolean
 };
 
 
@@ -55,6 +56,7 @@ export const getTransformedDataAndSetter = (props: {
     const transformedData = React.useRef<TransformedData>();
     let newTransformedData: TransformedData
     let setItemsByKey: ReturnType<typeof getItemSetterByKey>
+    let readyForEdits: boolean;
     if (!(virtualRootId in props.data)) {
         const firstTimeData = fromTree(generateFirstTimeWorkflowishDoc());
         setTimeout(() => props.updateData((data) => {
@@ -67,15 +69,18 @@ export const getTransformedDataAndSetter = (props: {
             // Don't allow user modifications before first load
             console.log("Attempted to edit before load complete");
         };
+        readyForEdits = false;
         newTransformedData = transformData(firstTimeData);
     } else {
         newTransformedData = transformData(props.data as FlatItemBlob);
         setItemsByKey = getItemSetterByKey(props.updateData, transformedData);
+        readyForEdits = true;
     }
     transformedData.current = newTransformedData;
     return {
         transformedData: newTransformedData,
-        setItemsByKey
+        setItemsByKey,
+        readyForEdits
     };
 }
 

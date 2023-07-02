@@ -33,29 +33,32 @@ export default (props: {
             window.removeEventListener("keyup", altModifyToggle);
         }
     }, []);
-
-    return <div style={{ height: "100%", display: "flex", flexDirection: "column" }}>
-        <ContextMenu></ContextMenu>
-        <ModelContext.Provider value={transformedDataAndSetter.transformedData.rootNode}>
-            <div style={{ margin: "0 5px 10px 5px", flex: "1 0 auto" }}>
-                <OmnibarWrapper
-                    itemRefsDictionary={itemsRefDictionary.current}
-                    transformedDataAndSetter={transformedDataAndSetter}
-                    lastFocusedItem={lastFocusedItem}
-                >
-                    <ItemsList
-                        showIds={showIds}
+    if (transformedDataAndSetter.readyForEdits) {
+        return <div style={{ height: "100%", display: "flex", flexDirection: "column" }}>
+            <ContextMenu></ContextMenu>
+            <ModelContext.Provider value={transformedDataAndSetter.transformedData.rootNode}>
+                <div style={{ margin: "0 5px 10px 5px", flex: "1 0 auto" }}>
+                    <OmnibarWrapper
                         itemRefsDictionary={itemsRefDictionary.current}
-                        setFocusedActionReceiver={setFocusedActionReceiver}
-                        lastFocusedItem={lastFocusedItem}
-                        setLastFocusedItem={setLastFocusedItem}
                         transformedDataAndSetter={transformedDataAndSetter}
-                    ></ItemsList>
-                </OmnibarWrapper>
-            </div>
-        </ModelContext.Provider>
-        {isMobile() ? <FloatyButtons focusedActionReceiver={focusedActionReceiver}></FloatyButtons> : null}
-    </div>
+                        lastFocusedItem={lastFocusedItem}
+                    >
+                        <ItemsList
+                            showIds={showIds}
+                            itemRefsDictionary={itemsRefDictionary.current}
+                            setFocusedActionReceiver={setFocusedActionReceiver}
+                            lastFocusedItem={lastFocusedItem}
+                            setLastFocusedItem={setLastFocusedItem}
+                            transformedDataAndSetter={transformedDataAndSetter}
+                        ></ItemsList>
+                    </OmnibarWrapper>
+                </div>
+            </ModelContext.Provider>
+            {isMobile() ? <FloatyButtons focusedActionReceiver={focusedActionReceiver}></FloatyButtons> : null}
+        </div>
+    } else {
+        return <div>Loading...</div>
+    }
 };
 
 
@@ -79,9 +82,9 @@ const ItemsList = (
         props.setLastFocusedItem(focusItemKey);
     }
 
-    
+
     const itemToFocus = React.useRef<string | undefined>();
-    React.useEffect(()=>{
+    React.useEffect(() => {
         if (itemToFocus.current) {
             focusManager.current?.focusItem(itemToFocus.current);
             itemToFocus.current = undefined;

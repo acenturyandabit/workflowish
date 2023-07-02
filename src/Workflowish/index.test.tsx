@@ -5,21 +5,19 @@
 // https://github.com/nareshbhatia/react-testing-techniques/blob/main/docs/fireEvent-vs-userEvent.md
 import * as renderer from 'react-test-renderer';
 import * as React from "react";
-import { it, expect } from '@jest/globals';
+import { it, expect, jest } from '@jest/globals';
 import Workflowish from "./index";
 import { BaseStoreDataType } from '~CoreDataLake';
 import { resolveAllDocuments } from '~CoreDataLake';
 
-const makeMockData = ():[
-    BaseStoreDataType,
+const makeMockData = (mockData: BaseStoreDataType): [
     (newData:
         BaseStoreDataType |
         ((oldData: BaseStoreDataType) => BaseStoreDataType)
-    ) => void, 
-    ()=>BaseStoreDataType
+    ) => void,
+    () => BaseStoreDataType
 ] => {
-    const mockData: BaseStoreDataType = {};
-    let _lastMockData = mockData;
+    let dataSetByConsumer = mockData;
     const mockUpdateData = (newData:
         BaseStoreDataType |
         ((oldData: BaseStoreDataType) => BaseStoreDataType)
@@ -30,21 +28,37 @@ const makeMockData = ():[
         } else {
             newDataToSet = newData;
         }
-        _lastMockData = resolveAllDocuments([newDataToSet, mockData]);
+        dataSetByConsumer = resolveAllDocuments([newDataToSet, mockData]);
     }
-    const lastMockData = () => _lastMockData;
-    return [mockData, mockUpdateData, lastMockData]
+    const getDataSetByConsumer = () => dataSetByConsumer;
+    return [mockUpdateData, getDataSetByConsumer]
 }
 
-it('Renders the new document if no document is provided', () => {
-    // Honestly this isn't a great separation of concerns, could do with a refactor
-    const [mockData, mockUpdateData] = makeMockData();
+it('Creates the new document if no document is provided', () => {
+    jest.useFakeTimers();
+    jest.spyOn(global, 'setTimeout');
+    Date.now = jest.fn(() => 1337);
+
+    const initialEmptyData = {};
+    const [mockUpdateData, getDataSetByConsumer] = makeMockData(initialEmptyData);
     const component = renderer.create(
         <Workflowish
-            data={mockData}
+            data={initialEmptyData}
             updateData={mockUpdateData}
         ></Workflowish>
     )
-    const item = component.toJSON();
-    expect(item).toMatchSnapshot();
+    const firstRender = component.toJSON();
+    expect(firstRender).toMatchSnapshot();
+
+    expect(setTimeout).toHaveBeenCalledTimes(1);
+    jest.runAllTimers();
+
+    const secondRender = renderer.create(
+        <Workflowish
+            data={getDataSetByConsumer()}
+            updateData={mockUpdateData}
+        ></Workflowish>
+    )
+    const secondRenderJ = secondRender.toJSON();
+    expect(secondRenderJ).toMatchSnapshot();
 })
