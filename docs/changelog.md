@@ -14,6 +14,7 @@
 - Fix focusedActionReceiver not working on initial load
 - Prevent new document creation as server setting
 - Add readyForEdits flag to fix cursor jumps
+- Fix infinite loop in link-under focus shortcut
 
 # Version 3.6.0: Add omnibar 
 - Refactor to separate omnibar and search
