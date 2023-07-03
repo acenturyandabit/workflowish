@@ -70,6 +70,7 @@ export const EditableSection = (props: {
         {/* The contentEditable needs to persist regardless of whether it is a symlink in order for focus to work correctly */}
         <ContentEditable
             innerRef={setInnerRef}
+            data-testid={[...props.styleParams.symlinkedParents, props.item.id].join("@")}
             className={"__editable_" + classNameToForceReRenderOnItemDeletion}
             html={htmlToShow}
             onChange={onContentChange}

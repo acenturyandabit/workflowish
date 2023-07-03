@@ -75,6 +75,7 @@ exports[`Creates the new document if no document is provided 2`] = `
               "__html": "Welcome to Workflowish!",
             }
           }
+          data-testid="__help_1"
           onBlur={[Function]}
           onChange={[Function]}
           onClick={[Function]}
@@ -134,6 +135,7 @@ exports[`Creates the new document if no document is provided 2`] = `
               "__html": "Workflowish is a keyboard-focused nested listing app.",
             }
           }
+          data-testid="__help_2"
           onBlur={[Function]}
           onChange={[Function]}
           onClick={[Function]}
@@ -184,6 +186,7 @@ exports[`Creates the new document if no document is provided 2`] = `
               "__html": "This means you can nest bullet points...",
             }
           }
+          data-testid="__help_6"
           onBlur={[Function]}
           onChange={[Function]}
           onClick={[Function]}
@@ -242,6 +245,7 @@ exports[`Creates the new document if no document is provided 2`] = `
                   "__html": "Like this,",
                 }
               }
+              data-testid="__help_7"
               onBlur={[Function]}
               onChange={[Function]}
               onClick={[Function]}
@@ -300,6 +304,7 @@ exports[`Creates the new document if no document is provided 2`] = `
                       "__html": "And this,",
                     }
                   }
+                  data-testid="__help_8"
                   onBlur={[Function]}
                   onChange={[Function]}
                   onClick={[Function]}
@@ -358,6 +363,7 @@ exports[`Creates the new document if no document is provided 2`] = `
                           "__html": "And so on.",
                         }
                       }
+                      data-testid="__help_9"
                       onBlur={[Function]}
                       onChange={[Function]}
                       onClick={[Function]}
@@ -423,6 +429,7 @@ exports[`Creates the new document if no document is provided 2`] = `
               "__html": "You can edit any item in the list by clicking it and typing :)",
             }
           }
+          data-testid="__help_10"
           onBlur={[Function]}
           onChange={[Function]}
           onClick={[Function]}
@@ -481,6 +488,7 @@ exports[`Creates the new document if no document is provided 2`] = `
                   "__html": "You can also add new items by pressing Enter on an existing item; or,",
                 }
               }
+              data-testid="__help_11"
               onBlur={[Function]}
               onChange={[Function]}
               onClick={[Function]}
@@ -540,6 +548,7 @@ exports[`Creates the new document if no document is provided 2`] = `
                   "__html": "Backspace all the way to the end, and then once more, to delete an item.",
                 }
               }
+              data-testid="__help_12"
               onBlur={[Function]}
               onChange={[Function]}
               onClick={[Function]}
@@ -599,6 +608,7 @@ exports[`Creates the new document if no document is provided 2`] = `
                   "__html": "Press CTRL+S to save your changes to your browser. (Other save options are available, read on!)",
                 }
               }
+              data-testid="__help_13"
               onBlur={[Function]}
               onChange={[Function]}
               onClick={[Function]}
@@ -660,6 +670,7 @@ exports[`Creates the new document if no document is provided 2`] = `
               "__html": "Since lists get complicated, you can also collapse/show lists by focusing on an item and pressing CTRL+UP/DOWN.",
             }
           }
+          data-testid="__help_14"
           onBlur={[Function]}
           onChange={[Function]}
           onClick={[Function]}
@@ -710,6 +721,7 @@ exports[`Creates the new document if no document is provided 2`] = `
               "__html": "Workflowish is inspired by Workflowy (https://workflowy.com/), but is free and open source, with in-browser storage or self-hosting.",
             }
           }
+          data-testid="__help_21"
           onBlur={[Function]}
           onChange={[Function]}
           onClick={[Function]}
@@ -768,6 +780,7 @@ exports[`Creates the new document if no document is provided 2`] = `
                   "__html": "Workflowish also works on a mobile phone, again with a keyboard-first experience.",
                 }
               }
+              data-testid="__help_22"
               onBlur={[Function]}
               onChange={[Function]}
               onClick={[Function]}
@@ -818,6 +831,7 @@ exports[`Creates the new document if no document is provided 2`] = `
                   "__html": "For self-hosted storage, clone the github repository (https://github.com/acenturyandabit/workflowish) and follow the README.",
                 }
               }
+              data-testid="__help_26"
               onBlur={[Function]}
               onChange={[Function]}
               onClick={[Function]}
@@ -879,6 +893,7 @@ exports[`Creates the new document if no document is provided 2`] = `
               "__html": "As an extra treat for superusers out there, Workflowish also comes with:",
             }
           }
+          data-testid="__help_27"
           onBlur={[Function]}
           onChange={[Function]}
           onClick={[Function]}

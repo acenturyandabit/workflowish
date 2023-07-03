@@ -22,7 +22,7 @@ export type FocusActions = {
 export type ItemStyleParams = {
     emptyList?: boolean,
     showId: boolean,
-    symlinkedParent?: string
+    symlinkedParents: string[]
 }
 
 const shouldBeUncollapsed = (item: ItemTreeNode): boolean => !item.collapsed || item.searchHighlight.includes("SEARCH_UNCOLLAPSE");
@@ -101,7 +101,6 @@ const Item = (props: {
     return <span className="itemWrapperClass">
         <EditableSection
             _ref={thisContentEditable}
-            data-testId={props.item.id}
             focusedActionReceiver={focusedActionReceiver}
             item={props.item}
             model={props.model}

@@ -1,6 +1,6 @@
 import { ItemTreeNode, virtualRootId } from "./model";
 
-type DeflatedItemTreeNode = {
+export type DeflatedItemTreeNode = {
     data: string,
     id?: string
     children?: Array<DeflatedItemTreeNode | string>,
@@ -121,7 +121,14 @@ export const generateFirstTimeWorkflowishDoc = (): ItemTreeNode => {
     return fromNestedRecord(node, () => { helpNodeIdx++; return `__help_${helpNodeIdx.toString()}` });
 }
 
-const fromNestedRecord = (root: DeflatedItemTreeNode | string, idGenerator: () => string): ItemTreeNode => {
+export const fromNestedRecord = (root: DeflatedItemTreeNode | string, idGenerator?: () => string): ItemTreeNode => {
+    if (!idGenerator) {
+        let counter = 0;
+        idGenerator = () => {
+            counter++;
+            return "_fromNested_" + counter;
+        }
+    }
     if (typeof root == "string") {
         return {
             lastModifiedUnixMillis: Date.now(),

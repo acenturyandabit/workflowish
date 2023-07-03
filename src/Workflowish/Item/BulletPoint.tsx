@@ -13,7 +13,7 @@ export const BulletPoint = (props: {
 }) => {
     let color = "white";
     if (props.item.collapsed == false && props.item.searchHighlight.includes("SEARCH_UNCOLLAPSE")) color = "orange";
-    if (props.item.symlinkedNode || props.styleParams.symlinkedParent) color = "cyan";
+    if (props.item.symlinkedNode || props.styleParams.symlinkedParents.length) color = "cyan";
 
     const hasOrSymlinkedToChildren = (props.item.children.length > 0) ||
         (props.item.symlinkedNode && props.item.symlinkedNode.children.length > 0);

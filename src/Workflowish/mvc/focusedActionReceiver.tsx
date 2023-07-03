@@ -10,11 +10,11 @@ export type FocusedActionReceiver =
         keyCommand: (
             evt: {
                 key: string,
-                shiftKey: boolean,
-                altKey: boolean,
-                ctrlKey: boolean,
-                metaKey: boolean,
-                preventDefault: () => void
+                shiftKey?: boolean,
+                altKey?: boolean,
+                ctrlKey?: boolean,
+                metaKey?: boolean,
+                preventDefault?: () => void
             },
             rawEvent?: TriggerEvent
         ) => void,
@@ -64,7 +64,7 @@ export const makeFocusedActionReceiver = (props: {
                     } else {
                         props.actions.createNewSibling();
                     }
-                    evt.preventDefault()
+                    if (evt.preventDefault) evt.preventDefault()
                 }
                 if (evt.key == "Tab") {
                     if (evt.shiftKey) {
@@ -74,7 +74,7 @@ export const makeFocusedActionReceiver = (props: {
                         props.actions.indentSelf();
                         props.actions.focusItemAfterUpdate(currentItem.id);
                     }
-                    evt.preventDefault()
+                    if (evt.preventDefault) evt.preventDefault()
                 }
                 if (evt.key == "ArrowUp") {
                     if (evt.altKey) {
@@ -100,7 +100,7 @@ export const makeFocusedActionReceiver = (props: {
                     if (currentItem.data.length == 0) {
                         props.actions.deleteSelf();
                         props.actions.focusPreviousListItem();
-                        evt.preventDefault();
+                        if (evt.preventDefault) evt.preventDefault();
                     }
                 }
                 if ((evt.key.toLowerCase() == "c" || evt.key == MOBILE_ACTION_1) && evt.altKey && evt.shiftKey && rawEvent) {

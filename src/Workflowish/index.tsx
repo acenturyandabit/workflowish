@@ -100,7 +100,8 @@ const ItemsList = (
             key={ii}
             styleParams={{
                 showId: props.showIds,
-                emptyList: itemTree.children.length == 1 && item.data == ""
+                emptyList: itemTree.children.length == 1 && item.data == "",
+                symlinkedParents: []
             }}
             item={item}
             pushRef={(id: string, ref: ItemRef) => props.itemRefsDictionary[id] = ref}
@@ -110,6 +111,7 @@ const ItemsList = (
                 treePath,
                 disableDelete: () => (itemTree.children.length == 1),
                 thisItem: item,
+                thisPossiblySymlinkedParent: itemTree,
                 setToFocusAfterUpdate: (id: string) => { itemToFocus.current = id },
                 model: props.transformedDataAndSetter,
             })}

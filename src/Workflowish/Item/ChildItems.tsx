@@ -20,7 +20,7 @@ export const ChildItems = (props: {
     let childrenToRender: ItemTreeNode[] = props.item.symlinkedNode ?
         props.item.symlinkedNode.children :
         props.item.children;
-    if (props.item.id == props.styleParams.symlinkedParent) {
+    if (props.styleParams.symlinkedParents.indexOf(props.item.id) != -1) {
         childrenToRender = [{
             data: "Infinite loop...",
             lastModifiedUnixMillis: 0,
@@ -32,12 +32,13 @@ export const ChildItems = (props: {
     }
 
     const itemToFocus = React.useRef<string | undefined>();
-    React.useEffect(()=>{
+    React.useEffect(() => {
         if (itemToFocus.current) {
             props.focusManager.current?.focusItem(itemToFocus.current);
             itemToFocus.current = undefined;
         }
     })
+
 
     return <>
         {props.shouldUncollapse ?
@@ -53,11 +54,12 @@ export const ChildItems = (props: {
                         item={item}
                         styleParams={{
                             showId: props.styleParams.showId,
-                            symlinkedParent: props.item.symlinkedNode ? props.item.id : props.styleParams.symlinkedParent
+                            symlinkedParents: props.item.symlinkedNode ? [...props.styleParams.symlinkedParents, props.item.id] : props.styleParams.symlinkedParents
                         }}
                         setThisAsFocused={props.setThisAsFocused}
                         actions={makeItemActions({
                             thisItem: item,
+                            thisPossiblySymlinkedParent: props.item,
                             treePath,
                             focusManager: props.focusManager,
                             setToFocusAfterUpdate: (id: string) => { itemToFocus.current = id },

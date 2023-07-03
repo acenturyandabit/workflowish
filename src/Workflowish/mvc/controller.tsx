@@ -23,6 +23,7 @@ export const linkSymbol = "🔗:";
 export const makeItemActions = (props: {
     disableDelete?: () => boolean,
     thisItem: ItemTreeNode,
+    thisPossiblySymlinkedParent: ItemTreeNode,
     treePath: TreePath,
     focusManager: React.RefObject<DFSFocusManager>,
     setToFocusAfterUpdate: (id: string) => void,
@@ -170,10 +171,14 @@ export const makeItemActions = (props: {
                 parentItem.children.splice(currentSiblingIdx, 1);
                 parentItem.collapsed = false;
                 const previousSibling = parentItem.children[currentSiblingIdx - 1];
-                previousSibling.children.push(props.thisItem);
+                let trueFutureParent: ItemTreeNode = previousSibling;
+                if (previousSibling.symlinkedNode) {
+                    trueFutureParent = transformedData.keyedNodes[previousSibling.symlinkedNode.id];
+                }
+                trueFutureParent.children.push(props.thisItem);
                 return {
                     [parentItem.id]: parentItem,
-                    [previousSibling.id]: previousSibling
+                    [trueFutureParent.id]: trueFutureParent
                 }
             } else {
                 return {}
@@ -183,7 +188,7 @@ export const makeItemActions = (props: {
     unindentSelf: () => {
         props.model.setItemsByKey((transformedData) => {
             const returnItem: Record<string, ItemTreeNode> = {};
-            const thisParentId = transformedData.parentById[props.thisItem.id];
+            const thisParentId = props.thisPossiblySymlinkedParent.id;
             const parentItem = transformedData.keyedNodes[thisParentId];
             if (parentItem) {
                 const thisGrandParentId = transformedData.parentById[parentItem.id];
