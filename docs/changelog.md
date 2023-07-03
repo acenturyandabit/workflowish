@@ -16,6 +16,7 @@
 - Add readyForEdits flag to fix cursor jumps
 - Fix infinite loop in link-under focus shortcut
 - Add additional tests + fix shift tab into parent item
+- Fix bug where symlinked item stays in parent
 
 # Version 3.6.0: Add omnibar 
 - Refactor to separate omnibar and search

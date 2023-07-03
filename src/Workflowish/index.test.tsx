@@ -149,8 +149,9 @@ it('Unindents an item correctly when tabbed out from a symlink', async () => {
 
     await user.click(screen.getByTestId("link_item@child"));
     await user.keyboard("{Shift>}{Tab}{/Shift}");
-    const intermediate_parent: FlatItemData = getDataSetByConsumer()["intermediate_parent"] as FlatItemData;
-    expect(intermediate_parent.children[1]).toBe("child")
+    const newData: FlatItemBlob = getDataSetByConsumer() as FlatItemBlob;
+    expect(newData["intermediate_parent"].children[1]).toBe("child")
+    expect(newData["symlink_target"].children.length).toBe(0)
 
 })
 

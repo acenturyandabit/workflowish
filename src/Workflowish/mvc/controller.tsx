@@ -188,15 +188,15 @@ export const makeItemActions = (props: {
     unindentSelf: () => {
         props.model.setItemsByKey((transformedData) => {
             const returnItem: Record<string, ItemTreeNode> = {};
-            const thisParentId = props.thisPossiblySymlinkedParent.id;
+            const thisParentId = transformedData.parentById[props.thisItem.id];
             const parentItem = transformedData.keyedNodes[thisParentId];
             if (parentItem) {
-                const thisGrandParentId = transformedData.parentById[parentItem.id];
+                const thisGrandParentId = transformedData.parentById[props.thisPossiblySymlinkedParent.id];
                 const grandParentItem = transformedData.keyedNodes[thisGrandParentId];
                 if (grandParentItem) {
                     const currentSiblingIdx = parentItem.children.map(i => i.id).indexOf(props.thisItem.id);
                     parentItem.children.splice(currentSiblingIdx, 1);
-                    const parentSiblingIdx = grandParentItem.children.map(i => i.id).indexOf(parentItem.id);
+                    const parentSiblingIdx = grandParentItem.children.map(i => i.id).indexOf(props.thisPossiblySymlinkedParent.id);
                     grandParentItem.children.splice(parentSiblingIdx + 1, 0, props.thisItem);
                     returnItem[grandParentItem.id] = grandParentItem;
                     returnItem[parentItem.id] = parentItem;
