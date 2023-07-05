@@ -14,6 +14,7 @@ export type FocusedActionReceiver =
                 altKey?: boolean,
                 ctrlKey?: boolean,
                 metaKey?: boolean,
+                repeat?: boolean
                 preventDefault?: () => void
             },
             rawEvent?: TriggerEvent
@@ -30,6 +31,8 @@ export const dummyFocusedActionReceiver = {
     }
 }
 
+let expectedFARId: string;
+
 export const makeFocusedActionReceiver = (props: {
     actions: ControllerActions,
     itemsRefArray: React.MutableRefObject<(FocusActions | null)[]>
@@ -42,6 +45,7 @@ export const makeFocusedActionReceiver = (props: {
         keyCommand: (evt, rawEvent) => {
             const currentItem = props.item.current;
             if (currentItem) {
+                if (evt.repeat && currentItem.id != expectedFARId) return;
                 if (evt.key == "Enter") {
                     if (evt.shiftKey) {
                         props.actions.createNewChild();
@@ -78,6 +82,7 @@ export const makeFocusedActionReceiver = (props: {
                 }
                 if (evt.key == "ArrowUp") {
                     if (evt.altKey) {
+                        expectedFARId = currentItem.id
                         props.actions.arrangeBeforePrev();
                         props.actions.focusItemAfterUpdate(currentItem.id);
                     } else if (evt.ctrlKey || evt.metaKey) {
@@ -88,6 +93,7 @@ export const makeFocusedActionReceiver = (props: {
                 }
                 if (evt.key == "ArrowDown") {
                     if (evt.altKey) {
+                        expectedFARId = currentItem.id
                         props.actions.arrangeAfterNext();
                         props.actions.focusItemAfterUpdate(currentItem.id);
                     } else if (evt.ctrlKey || evt.metaKey) {
