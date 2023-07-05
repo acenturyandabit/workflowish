@@ -3,7 +3,7 @@ import { ItemTreeNode, TransformedDataAndSetter } from "~Workflowish/mvc/model";
 import { OmniBarState } from "../States";
 import { ItemRef } from "~Workflowish/Item";
 import { searchPropsFactory } from './search';
-import { commandPropsFactory } from './commands';
+import { commandPropsFactory } from './commandPropsFactory';
 
 type OmniBarSubtype = "Search" | "Command" | "None";
 export type SpecializedPropsFactory = (

@@ -17,6 +17,7 @@
 - Fix infinite loop in link-under focus shortcut
 - Add additional tests + fix shift tab into parent item
 - Fix bug where symlinked item stays in parent
+- Create Symlink Sibling command
 
 # Version 3.6.0: Add omnibar 
 - Refactor to separate omnibar and search
