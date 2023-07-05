@@ -31,7 +31,7 @@ export const dummyFocusedActionReceiver = {
     }
 }
 
-let expectedFARId: string;
+let expectedFARId: string | undefined;
 
 export const makeFocusedActionReceiver = (props: {
     actions: ControllerActions,
@@ -45,7 +45,8 @@ export const makeFocusedActionReceiver = (props: {
         keyCommand: (evt, rawEvent) => {
             const currentItem = props.item.current;
             if (currentItem) {
-                if (evt.repeat && currentItem.id != expectedFARId) return;
+                if (evt.repeat && expectedFARId && currentItem.id != expectedFARId) return;
+                expectedFARId = undefined;
                 if (evt.key == "Enter") {
                     if (evt.shiftKey) {
                         props.actions.createNewChild();
