@@ -37,6 +37,9 @@ export const EditableSection = (props: {
     const setInnerRef = React.useCallback((contenteditableElement: HTMLElement) => {
         props._ref.current = contenteditableElement;
         if (contenteditableElement) {
+            if (renderTimeContext.currentFocusedItem == props.item.id){
+                contenteditableElement.focus();
+            }
             contenteditableElement.onkeydown = (evt: KeyboardEvent) => props.focusedActionReceiver.keyCommand(evt, evt);
         }
 

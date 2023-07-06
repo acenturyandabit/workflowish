@@ -5,6 +5,7 @@
 - fix focus after arrangement
 - fix ought not to interfere with other key commands
 - copying symlinks creates a sibling symlink
+- Better fix for alt movements
 
 # Version 3.6.0: Add omnibar 
 - Refactor to separate omnibar and search

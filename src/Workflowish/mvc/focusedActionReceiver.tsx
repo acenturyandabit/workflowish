@@ -85,7 +85,7 @@ export const makeFocusedActionReceiver = (props: {
                     if (evt.altKey) {
                         expectedFARId = currentItem.id
                         props.actions.arrangeBeforePrev();
-                        props.actions.focusItemAfterUpdate(currentItem.id);
+                        props.actions.focusItem(currentItem.id);
                     } else if (evt.ctrlKey || evt.metaKey) {
                         props.actions.setSelfCollapsed(true);
                     } else {
@@ -96,7 +96,7 @@ export const makeFocusedActionReceiver = (props: {
                     if (evt.altKey) {
                         expectedFARId = currentItem.id
                         props.actions.arrangeAfterNext();
-                        props.actions.focusItemAfterUpdate(currentItem.id);
+                        props.actions.focusItem(currentItem.id);
                     } else if (evt.ctrlKey || evt.metaKey) {
                         props.actions.setSelfCollapsed(false);
                     } else {
