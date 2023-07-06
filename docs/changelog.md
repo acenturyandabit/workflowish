@@ -4,6 +4,7 @@
 - fix focus traversal and child creation
 - fix focus after arrangement
 - fix ought not to interfere with other key commands
+- copying symlinks creates a sibling symlink
 
 # Version 3.6.0: Add omnibar 
 - Refactor to separate omnibar and search

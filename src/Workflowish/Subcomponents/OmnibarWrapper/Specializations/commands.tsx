@@ -107,25 +107,31 @@ export const commands: Command[] = [
         prettyName: "Copy as symlink",
         singleArgument: true,
         command: (commandFunctions) => {
-            const newNode: ItemTreeNode = {
-                id: makeNewUniqueKey(),
-                data: `[LN: ${commandFunctions.currentItemId}]`,
-                children: [],
-                collapsed: false,
-                searchHighlight: [],
-                lastModifiedUnixMillis: Date.now()
-            }
+            const newId = makeNewUniqueKey();
             commandFunctions.transformedDataAndSetter.setItemsByKey((transformedData) => {
+                const thisItem = transformedData.keyedNodes[commandFunctions.currentItemId];
+                let linkId = commandFunctions.currentItemId;
+                if (thisItem.symlinkedNode) {
+                    linkId = thisItem.symlinkedNode.id;
+                }
+                const newNode: ItemTreeNode = {
+                    id: newId,
+                    data: `[LN: ${linkId}]`,
+                    children: [],
+                    collapsed: false,
+                    searchHighlight: [],
+                    lastModifiedUnixMillis: Date.now()
+                }
                 const parentId = transformedData.parentById[commandFunctions.currentItemId]
                 const parentItem = transformedData.keyedNodes[parentId];
                 const currentIdx = parentItem.children.map(i => i.id).indexOf(commandFunctions.currentItemId)
-                parentItem.children.splice(currentIdx, 0, newNode);
+                parentItem.children.splice(currentIdx+1, 0, newNode);
                 return {
                     [parentItem.id]: parentItem,
                     [newNode.id]: newNode
                 }
             })
-            commandFunctions.focusItem(newNode.id);
+            commandFunctions.focusItem(newId);
         },
     }
 ]
