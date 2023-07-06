@@ -56,8 +56,8 @@ export const makeFocusedActionReceiver = (props: {
                             && currentSelection.anchorOffset == currentSelection.focusOffset
                             && currentSelection.anchorNode == currentSelection.focusNode
                         ) {
-                            const halfToKeep = currentItem.data.slice(currentSelection.anchorOffset);
-                            const halfToGiveToChild = currentItem.data.slice(0, currentSelection.anchorOffset);
+                            const halfToKeep = currentItem.data.slice(0, currentSelection.anchorOffset);
+                            const halfToGiveToChild = currentItem.data.slice(currentSelection.anchorOffset);
                             if (evt.shiftKey) {
                                 props.actions.createNewChild(halfToGiveToChild);
                                 props.actions.editSelfContents(halfToKeep);
