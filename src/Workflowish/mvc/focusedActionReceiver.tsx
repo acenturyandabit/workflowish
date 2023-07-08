@@ -87,7 +87,7 @@ export const makeFocusedActionReceiver = (props: {
                     if (evt.altKey) {
                         expectedFARId = currentItem.id
                         props.actions.arrangeBeforePrev();
-                        props.actions.focusItem({ id: currentItem.id });
+                        props.actions.focusItemAfterUpdate({ id: currentItem.id, treePathHint: [...props.treePath.slice(0, props.treePath.length - 1), props.treePath[props.treePath.length - 1] - 1] });
                     } else if (evt.ctrlKey || evt.metaKey) {
                         props.actions.setSelfCollapsed(true);
                     } else {
@@ -98,7 +98,7 @@ export const makeFocusedActionReceiver = (props: {
                     if (evt.altKey) {
                         expectedFARId = currentItem.id
                         props.actions.arrangeAfterNext();
-                        props.actions.focusItem({ id: currentItem.id });
+                        props.actions.focusItemAfterUpdate({ id: currentItem.id, treePathHint: [...props.treePath.slice(0, props.treePath.length - 1), props.treePath[props.treePath.length - 1] + 1] });
                     } else if (evt.ctrlKey || evt.metaKey) {
                         props.actions.setSelfCollapsed(false);
                     } else {

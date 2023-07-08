@@ -1,3 +1,5 @@
+import { virtualRootId } from "./model";
+
 export type TreePath = number[];
 
 export const treeEquals = (left: TreePath, right: TreePath) => {
@@ -20,6 +22,7 @@ export type FocusTaker = {
 }
 
 export type FocusTakerNode = {
+    id: string,
     taker: FocusTaker
     children: FocusTakerNode[]
 }
@@ -32,9 +35,15 @@ type FocusTakerEntry = {
 export class DFSFocusManager {
     focusTakerTree!: FocusTakerNode;
     focusTakersById!: Record<string, Set<FocusTakerEntry>>;
-    constructor() {
+    setLastFocusedItem: React.Dispatch<React.SetStateAction<IdAndFocusPath>>;
+    constructor(setLastFocusedItem: React.Dispatch<React.SetStateAction<IdAndFocusPath>>) {
         this.emptyThis();
         this.focusItem = this.focusItem.bind(this);
+        this.setLastFocusedItem = setLastFocusedItem;
+    }
+    
+    updateSetLastFocusedItem(setLastFocusedItem: React.Dispatch<React.SetStateAction<IdAndFocusPath>>){
+        this.setLastFocusedItem = setLastFocusedItem;
     }
 
     emptyThis() {
@@ -46,12 +55,13 @@ export class DFSFocusManager {
         return [...currentPath, idx];
     }
 
-    getOrInsertNodeAt(currentPath: TreePath, nodeToInsert?: FocusTaker): FocusTakerNode {
+    getOrInsertNodeAt(currentPath: TreePath, nodeToInsert: FocusTaker, id: string): FocusTakerNode {
         let currentItem = this.focusTakerTree;
         for (let pathIdx = 0; pathIdx < currentPath.length; pathIdx++) {
             while (currentItem.children.length < currentPath[pathIdx] + 1) {
                 // need to insert a bunch of stuff
                 currentItem.children.push({
+                    id: "", // overriden on actual insertion
                     taker: {
                         focus: () => {
                             // overridden on actual insertion
@@ -62,6 +72,7 @@ export class DFSFocusManager {
             }
             if (pathIdx == currentPath.length - 1 && nodeToInsert) {
                 currentItem.children[currentPath[pathIdx]] = {
+                    id,
                     taker: nodeToInsert,
                     children: currentItem.children[currentPath[pathIdx]].children
                 }
@@ -81,13 +92,13 @@ export class DFSFocusManager {
     }
 
     registerChild(currentPath: TreePath, id: string, focusTaker: FocusTaker) {
-        this.getOrInsertNodeAt(currentPath, focusTaker);
+        this.getOrInsertNodeAt(currentPath, focusTaker, id);
         if (!this.focusTakersById[id]) this.focusTakersById[id] = new Set();
         this.focusTakersById[id].add({ focusTaker, treePath: currentPath });
     }
 
     focusPrev(currentPath: TreePath) {
-        let nodeToFocus: FocusTakerNode | undefined;
+        let newPath: TreePath;
         if (currentPath[currentPath.length - 1] > 0) {
             const previousSibling: TreePath = [...currentPath.slice(0, -1), currentPath[currentPath.length - 1] - 1];
             const lastDeepestSiblingDescendantCandidate: TreePath = previousSibling;
@@ -98,21 +109,27 @@ export class DFSFocusManager {
                 lastDeepestSiblingDescendantCandidate.push(lastChildOfDescendant);
                 lastChildOfDescendant = (this.getNodeOrNullAt(lastDeepestSiblingDescendantCandidate)?.children.length || 0) - 1;
             }
-            nodeToFocus = this.getNodeOrNullAt(lastDeepestSiblingDescendantCandidate);
+            newPath = lastDeepestSiblingDescendantCandidate;
         } else {
-            nodeToFocus = this.getNodeOrNullAt(currentPath.slice(0, -1));
+            newPath = currentPath.slice(0, -1);
         }
-        nodeToFocus?.taker.focus(true);
+        const nodeToFocus = this.getNodeOrNullAt(newPath);
+        if (nodeToFocus) {
+            nodeToFocus.taker.focus(true);
+            this.setLastFocusedItem({ id: nodeToFocus.id, treePath: newPath });
+        }
     }
 
     focusNext(currentPath: TreePath) {
         let nodeToFocus: FocusTakerNode | undefined;
-        const firstChild = this.getNodeOrNullAt([...currentPath, 0]);
+        let newPath: TreePath = [...currentPath, 0];
+        const firstChild = this.getNodeOrNullAt(newPath);
         if (firstChild) {
             nodeToFocus = firstChild;
         } else {
             for (let i = currentPath.length - 1; i >= 0; i--) {
-                const candidateAncestorSibling = this.getNodeOrNullAt([...currentPath.slice(0, i), currentPath[i] + 1]);
+                newPath = [...currentPath.slice(0, i), currentPath[i] + 1];
+                const candidateAncestorSibling = this.getNodeOrNullAt(newPath);
                 if (candidateAncestorSibling) {
                     nodeToFocus = candidateAncestorSibling;
                     break;
@@ -121,6 +138,7 @@ export class DFSFocusManager {
         }
         if (nodeToFocus) {
             nodeToFocus.taker.focus();
+            this.setLastFocusedItem({ id: nodeToFocus.id, treePath: newPath });
         }
     }
 
@@ -136,6 +154,7 @@ export class DFSFocusManager {
                 })
             }
             chosenFocusEntry.focusTaker.focus(focusRequest.end);
+            this.setLastFocusedItem({ id, treePath: chosenFocusEntry.treePath });
         }
     }
 }
@@ -158,6 +177,7 @@ const chooseCloserOf = (left: FocusTakerEntry, right: FocusTakerEntry, treePath:
 
 const emptyDirectory = () => {
     return {
+        id: virtualRootId,
         taker: {
             focus: () => {
                 // root cannot take focus

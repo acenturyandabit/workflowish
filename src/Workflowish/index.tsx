@@ -21,7 +21,8 @@ export default (props: {
     const [lastFocusedItem, setLastFocusedItem] = React.useState<IdAndFocusPath>({ id: "", treePath: [] });
 
     // ref needed so that callbacks will not access old copies of dfsFocusManager, leading to new items being unselectable
-    const focusManager = React.useRef(new DFSFocusManager());
+    const focusManager = React.useRef(new DFSFocusManager(setLastFocusedItem));
+    focusManager.current.updateSetLastFocusedItem(setLastFocusedItem); // needed otherwise setLastFocusedItem gets outdated when alt-up used
 
     const [showIds, setShowIds] = React.useState<boolean>(false);
     React.useEffect(() => {

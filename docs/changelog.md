@@ -4,6 +4,7 @@
 - Focus correct item when editing near symlink items
 - Focus on correct item after link creation
 - Focus correct item wheen creating new items via commands
+- Fix focus failing on item rearrange
 
 # Version 3.7.0: New Item Modification Tracking System 
 - Add CLI cleanup tools
