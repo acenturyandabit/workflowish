@@ -1,3 +1,6 @@
+# Latest 
+- Move focus to end of element to make it Easier to delete items after each other
+
 # Version 3.7.0: New Item Modification Tracking System 
 - Add CLI cleanup tools
 - first round of top-down-update code removal

@@ -1,14 +1,14 @@
 import { makeNewUniqueKey } from "~CoreDataLake";
 import { ItemTreeNode, TransformedDataAndSetter } from "./model";
-import { TreePath, DFSFocusManager } from "~Workflowish/mvc/DFSFocus";
+import { TreePath, DFSFocusManager, FocusRequest } from "~Workflowish/mvc/DFSFocus";
 
 export type ControllerActions = {
     editSelfContents: (newContents: string) => void,
     createNewChild: (newContents?: string) => Promise<string>,
     createNewSibling: (newContents?: string) => Promise<string>,
     deleteSelf: () => void
-    focusItem: (id: string) => void
-    focusItemAfterUpdate: (id: string) => void
+    focusItem: (focusRequest: FocusRequest) => void
+    focusItemAfterUpdate: (focusRequest: FocusRequest) => void
     focusPreviousListItem: () => void
     focusNextListItem: () => void
     arrangeBeforePrev: () => void
@@ -26,7 +26,7 @@ export const makeItemActions = (props: {
     thisPossiblySymlinkedParent: ItemTreeNode,
     treePath: TreePath,
     focusManager: React.RefObject<DFSFocusManager>,
-    setToFocusAfterUpdate: (id: string) => void,
+    setToFocusAfterUpdate: (focusRequest: FocusRequest) => void,
     model: TransformedDataAndSetter,
 }): ControllerActions => ({
     // Note: All these methods are symlink aware.
@@ -57,7 +57,7 @@ export const makeItemActions = (props: {
     createNewChild: async (newContents?: string, dontFocus?: boolean) => {
         return new Promise<string>((resolve) => {
             const newId = makeNewUniqueKey();
-            if (!dontFocus) props.setToFocusAfterUpdate(newId);
+            if (!dontFocus) props.setToFocusAfterUpdate({ id: newId });
             props.model.setItemsByKey((transformedData) => {
                 const newTreeNode: ItemTreeNode = {
                     id: newId,
@@ -68,6 +68,7 @@ export const makeItemActions = (props: {
                     searchHighlight: []
                 };
                 transformedData.keyedNodes[props.thisItem.id].children.unshift(newTreeNode);
+                transformedData.keyedNodes[props.thisItem.id].collapsed = false;
                 setTimeout(() => resolve(newId));
                 return {
                     [newId]: newTreeNode,
@@ -79,7 +80,7 @@ export const makeItemActions = (props: {
     createNewSibling: async (newContents?: string, dontFocus?: boolean) => {
         return new Promise<string>((resolve) => {
             const newId = makeNewUniqueKey();
-            if (!dontFocus) props.setToFocusAfterUpdate(newId);
+            if (!dontFocus) props.setToFocusAfterUpdate({ id: newId });
             props.model.setItemsByKey((transformedData) => {
                 const thisParentId = transformedData.parentById[props.thisItem.id];
                 const siblings = transformedData.keyedNodes[thisParentId].children;
@@ -126,7 +127,7 @@ export const makeItemActions = (props: {
             }
         })
     },
-    focusItem: (id: string) => props.focusManager.current?.focusItem(id),
+    focusItem: (focusRequest: FocusRequest) => props.focusManager.current?.focusItem(focusRequest.id),
     focusItemAfterUpdate: props.setToFocusAfterUpdate,
     focusPreviousListItem: () => {
         props.focusManager.current?.focusPrev(props.treePath);
@@ -176,6 +177,7 @@ export const makeItemActions = (props: {
                     trueFutureParent = transformedData.keyedNodes[previousSibling.symlinkedNode.id];
                 }
                 trueFutureParent.children.push(props.thisItem);
+                previousSibling.collapsed = false; // Symlinks should uncollapse instead of the underlying item
                 return {
                     [parentItem.id]: parentItem,
                     [trueFutureParent.id]: trueFutureParent

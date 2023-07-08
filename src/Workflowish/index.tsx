@@ -9,7 +9,7 @@ import { FloatyButtons } from "./Subcomponents/FloatyButtons";
 import OmnibarWrapper from "./Subcomponents/OmnibarWrapper";
 import ContextMenu from "./Subcomponents/ContextMenu";
 import { ModelContext, RenderTimeContext } from "./mvc/context";
-import { DFSFocusManager } from "./mvc/DFSFocus";
+import { DFSFocusManager, FocusRequest } from "./mvc/DFSFocus";
 
 export default (props: {
     data: BaseStoreDataType,
@@ -83,10 +83,10 @@ const ItemsList = (
     }
 
 
-    const itemToFocus = React.useRef<string | undefined>();
+    const itemToFocus = React.useRef<FocusRequest | undefined>();
     React.useEffect(() => {
         if (itemToFocus.current) {
-            focusManager.current?.focusItem(itemToFocus.current);
+            focusManager.current?.focusItem(itemToFocus.current.id, itemToFocus.current.end);
             itemToFocus.current = undefined;
         }
     })
@@ -112,7 +112,7 @@ const ItemsList = (
                 disableDelete: () => (itemTree.children.length == 1),
                 thisItem: item,
                 thisPossiblySymlinkedParent: itemTree,
-                setToFocusAfterUpdate: (id: string) => { itemToFocus.current = id },
+                setToFocusAfterUpdate: (focusRequest: FocusRequest) => { itemToFocus.current = focusRequest },
                 model: props.transformedDataAndSetter,
             })}
             focusManager={focusManager}

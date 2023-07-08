@@ -53,8 +53,24 @@ const Item = (props: {
         itemRef.current = props.item
     });
 
-    const focusThis = () => {
-        thisContentEditable.current?.focus();
+    const focusThis = (end?: boolean) => {
+        const currentElement = thisContentEditable.current;
+        if (currentElement) {
+            currentElement.focus();
+            if (end) {
+                const textNode = [...currentElement.childNodes].filter(i => i.nodeType == document.TEXT_NODE)[0];
+                if (textNode && textNode.textContent) {
+                    const range = document.createRange();
+                    range.setStart(textNode, textNode.textContent.length)
+                    range.setEnd(textNode, textNode.textContent.length)
+                    const selection = window.getSelection();
+                    if (selection) {
+                        selection.removeAllRanges()
+                        selection.addRange(range);
+                    }
+                }
+            }
+        }
         props.setThisAsFocused(focusedActionReceiver, props.item.id);
     }
 
@@ -70,7 +86,7 @@ const Item = (props: {
 
     const jumpToSymlink = () => {
         if (props.item.symlinkedNode) {
-            props.actions.focusItem(props.item.symlinkedNode.id);
+            props.actions.focusItem({ id: props.item.symlinkedNode.id });
             return true;
         } else {
             return false;

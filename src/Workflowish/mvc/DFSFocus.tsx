@@ -1,7 +1,12 @@
 export type TreePath = number[];
 
+export type FocusRequest = {
+    id: string,
+    end?: boolean
+}
+
 export type FocusTaker = {
-    focus: () => void
+    focus: (end?: boolean) => void
 }
 
 export type FocusTakerNode = {
@@ -81,7 +86,7 @@ export class DFSFocusManager {
         } else {
             nodeToFocus = this.getNodeOrNullAt(currentPath.slice(0, -1));
         }
-        nodeToFocus?.taker.focus();
+        nodeToFocus?.taker.focus(true);
     }
 
     focusNext(currentPath: TreePath) {
@@ -103,9 +108,16 @@ export class DFSFocusManager {
         }
     }
 
-    focusItem(id: string) {
-        if (this.focusTakerById[id]){
-            this.focusTakerById[id].focus();
+    focusItem(focusRequestOrId: string | FocusRequest, end?: boolean) {
+        let id: string;
+        if (typeof (focusRequestOrId) == "string") {
+            id = focusRequestOrId;
+        } else {
+            id = focusRequestOrId.id;
+            end = focusRequestOrId.end;
+        }
+        if (this.focusTakerById[id]) {
+            this.focusTakerById[id].focus(end);
         }
     }
 }

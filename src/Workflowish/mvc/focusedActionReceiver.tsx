@@ -74,10 +74,10 @@ export const makeFocusedActionReceiver = (props: {
                 if (evt.key == "Tab") {
                     if (evt.shiftKey) {
                         props.actions.unindentSelf();
-                        props.actions.focusItemAfterUpdate(currentItem.id);
+                        props.actions.focusItemAfterUpdate({ id: currentItem.id });
                     } else {
                         props.actions.indentSelf();
-                        props.actions.focusItemAfterUpdate(currentItem.id);
+                        props.actions.focusItemAfterUpdate({ id: currentItem.id });
                     }
                     if (evt.preventDefault) evt.preventDefault()
                 }
@@ -85,7 +85,7 @@ export const makeFocusedActionReceiver = (props: {
                     if (evt.altKey) {
                         expectedFARId = currentItem.id
                         props.actions.arrangeBeforePrev();
-                        props.actions.focusItem(currentItem.id);
+                        props.actions.focusItem({ id: currentItem.id });
                     } else if (evt.ctrlKey || evt.metaKey) {
                         props.actions.setSelfCollapsed(true);
                     } else {
@@ -96,7 +96,7 @@ export const makeFocusedActionReceiver = (props: {
                     if (evt.altKey) {
                         expectedFARId = currentItem.id
                         props.actions.arrangeAfterNext();
-                        props.actions.focusItem(currentItem.id);
+                        props.actions.focusItem({ id: currentItem.id });
                     } else if (evt.ctrlKey || evt.metaKey) {
                         props.actions.setSelfCollapsed(false);
                     } else {

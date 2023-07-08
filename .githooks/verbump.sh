@@ -1,4 +1,8 @@
 #!/bin/bash
+
+# Usage:
+# npm run verbump major|minor|patch message
+
 VERBUMP_LEVEL=$1
 shift
 MESSAGE=$@
@@ -32,6 +36,8 @@ case "$VERBUMP_LEVEL" in
         exit 1
         ;;
 esac
+
+# TODO: Also version bump the package.json version
 
 ### Check changelog has Latest
 if (cat docs/changelog.md | tr -d '\r' | tr '\n' '%' \

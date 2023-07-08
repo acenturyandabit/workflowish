@@ -3,7 +3,7 @@ import { ItemTreeNode, TransformedDataAndSetter } from "~Workflowish/mvc/model";
 import Item, { FocusActions, ItemRef, ItemStyleParams } from ".";
 import { ControllerActions, makeItemActions } from "../mvc/controller"
 import { FocusedActionReceiver } from "~Workflowish/mvc/focusedActionReceiver";
-import { TreePath, DFSFocusManager } from "~Workflowish/mvc/DFSFocus";
+import { TreePath, DFSFocusManager, FocusRequest } from "~Workflowish/mvc/DFSFocus";
 
 export const ChildItems = (props: {
     shouldUncollapse: boolean,
@@ -31,7 +31,7 @@ export const ChildItems = (props: {
         }]
     }
 
-    const itemToFocus = React.useRef<string | undefined>();
+    const itemToFocus = React.useRef<FocusRequest | undefined>();
     React.useEffect(() => {
         if (itemToFocus.current) {
             props.focusManager.current?.focusItem(itemToFocus.current);
@@ -62,7 +62,7 @@ export const ChildItems = (props: {
                             thisPossiblySymlinkedParent: props.item,
                             treePath,
                             focusManager: props.focusManager,
-                            setToFocusAfterUpdate: (id: string) => { itemToFocus.current = id },
+                            setToFocusAfterUpdate: (focusRequest: FocusRequest) => { itemToFocus.current = focusRequest },
                             model: props.model
                         })}
                         treePath={treePath}
