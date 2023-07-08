@@ -104,9 +104,9 @@ export const makeItemActions = (props: {
     },
     deleteSelf: () => {
         if (!props.disableDelete || props.disableDelete() == false) {
-            props.model.setItemsByKey(() => {
+            props.model.setItemsByKey((transformedData) => {
                 const itemsToDelete: Record<string, ItemTreeNode> = {};
-                const cleanupQueue = [props.thisItem];
+                const cleanupQueue = [transformedData.keyedNodes[props.thisItem.id]];
                 while (cleanupQueue.length) {
                     const front = cleanupQueue.shift();
                     if (front) {

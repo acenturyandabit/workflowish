@@ -1,5 +1,6 @@
 # Latest 
 - Move focus to end of element to make it Easier to delete items after each other
+- Fix deleetion getting rid of child items that have been outdented
 
 # Version 3.7.0: New Item Modification Tracking System 
 - Add CLI cleanup tools
