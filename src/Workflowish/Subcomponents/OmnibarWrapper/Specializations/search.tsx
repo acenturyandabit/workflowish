@@ -5,6 +5,7 @@ import { SpecializedPropsFactory } from '.';
 import { ItemRef } from '~Workflowish/Item';
 import { getDefaultOmnibarState } from '..';
 import { expandParentsAndFocusItem } from './utilities';
+import { DFSFocusManager } from '~Workflowish/mvc/DFSFocus';
 
 type SearchState = {
     searchText: string,
@@ -20,15 +21,22 @@ export const searchPropsFactory: SpecializedPropsFactory = (
     omniBarState: OmniBarState,
     setOmniBarState: React.Dispatch<React.SetStateAction<OmniBarState>>,
     transformedDataAndSetter: TransformedDataAndSetter,
-    itemsRefDictionary: Record<string, ItemRef>
+    itemsRefDictionary: Record<string, ItemRef>,
+    dfsFocusManager: DFSFocusManager,
 ) => {
     const { rootNode, nMatches, currentMatchId } = searchTransformFromOmnibarState(transformedDataAndSetter.transformedData.rootNode, omniBarState, setOmniBarState);
     const matchMessage = nMatches > 0 ? `${omniBarState.selectionIdx + 1} / ${nMatches} matches` : "No matches"
     const scrollToCurrentItem = () => itemsRefDictionary[currentMatchId]?.scrollThisIntoView();
-    const focusOriginalItem = () => itemsRefDictionary[omniBarState.preOmnibarFocusItemId || ""]?.focusThis();
+    let focusOriginalItem = () => {
+        // if no selected item, do nothing
+    };
+    if (omniBarState.preOmnibarFocusItem) {
+        const prevFocusItem = omniBarState.preOmnibarFocusItem;
+        focusOriginalItem = () => dfsFocusManager.focusItem({ id: prevFocusItem.id, treePathHint: prevFocusItem.treePath });
+    }
     const expandCurrentItem = () => {
         if (currentMatchId != NO_MATCH) {
-            expandParentsAndFocusItem(transformedDataAndSetter, itemsRefDictionary, currentMatchId);
+            expandParentsAndFocusItem(transformedDataAndSetter, dfsFocusManager, { id: currentMatchId });
         }
     };
     return {

@@ -1,5 +1,7 @@
+import { IdAndFocusPath } from "~Workflowish/mvc/DFSFocus"
+
 export type OmniBarState = {
     barContents: string,
-    preOmnibarFocusItemId?: string,
+    preOmnibarFocusItem?: IdAndFocusPath,
     selectionIdx: number
 }

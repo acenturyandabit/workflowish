@@ -2,6 +2,7 @@
 - Move focus to end of element to make it Easier to delete items after each other
 - Fix deleetion getting rid of child items that have been outdented
 - Focus correct item when editing near symlink items
+- Focus on correct item after link creation
 
 # Version 3.7.0: New Item Modification Tracking System 
 - Add CLI cleanup tools

@@ -5,16 +5,18 @@ import { ItemRef } from '~Workflowish/Item';
 import "./index.css"
 import { OmniBarState } from './States';
 import { getSpecializedProps } from './Specializations';
+import { DFSFocusManager, IdAndFocusPath } from '~Workflowish/mvc/DFSFocus';
 
 
 const OmniBarWrapper = (props: {
     children: React.ReactElement,
     itemRefsDictionary: Record<string, ItemRef>,
     transformedDataAndSetter: TransformedDataAndSetter,
-    lastFocusedItem: string,
+    dfsFocusManager: DFSFocusManager,
+    lastFocusedItem: IdAndFocusPath,
 }) => {
     const [omniBarState, setOmniBarState] = React.useState<OmniBarState>(getDefaultOmnibarState());
-    const { omnibarKeyHandler, rootNode, extraAnnotations } = getSpecializedProps(omniBarState, setOmniBarState, props.transformedDataAndSetter, props.itemRefsDictionary);
+    const { omnibarKeyHandler, rootNode, extraAnnotations } = getSpecializedProps(omniBarState, setOmniBarState, props.transformedDataAndSetter, props.itemRefsDictionary, props.dfsFocusManager);
     return <>
         <OmniBar
             omniBarState={omniBarState}
@@ -34,11 +36,14 @@ const OmniBar = (props: {
     omniBarState: OmniBarState,
     setOmniBarState: React.Dispatch<React.SetStateAction<OmniBarState>>,
     omnibarKeyHandler: (evt: React.KeyboardEvent) => void,
-    lastFocusedItem: string, // Todo: Elevate this property + the inputReference up
+    lastFocusedItem: IdAndFocusPath, // Todo: Elevate this property + the inputReference up
     children: React.ReactElement
 }) => {
     const inputReference = React.useRef<HTMLInputElement>(null);
-    const lastFocusedItem_ = React.useRef<string>("");
+    const lastFocusedItem_ = React.useRef<IdAndFocusPath>({
+        id: "",
+        treePath: []
+    });
     React.useEffect(() => {
         const listenForCtrlFP = (e: KeyboardEvent) => {
             if ((e.key == "f" || e.key == "p") && (e.ctrlKey || e.metaKey)) {
@@ -50,12 +55,12 @@ const OmniBar = (props: {
                 }
                 if (e.key == "p") {
                     // Save currently focused item
-                    props.setOmniBarState((currentState) => {
+                    props.setOmniBarState((currentState): OmniBarState => {
                         if (!currentState.barContents.startsWith(">")) {
                             return {
                                 ...currentState,
                                 barContents: ">",
-                                preOmnibarFocusItemId: lastFocusedItem_.current
+                                preOmnibarFocusItem: lastFocusedItem_.current
                             }
                         } else {
                             return currentState;

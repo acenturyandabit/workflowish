@@ -9,7 +9,7 @@ import { FloatyButtons } from "./Subcomponents/FloatyButtons";
 import OmnibarWrapper from "./Subcomponents/OmnibarWrapper";
 import ContextMenu from "./Subcomponents/ContextMenu";
 import { ModelContext, RenderTimeContext } from "./mvc/context";
-import { DFSFocusManager, FocusRequest } from "./mvc/DFSFocus";
+import { DFSFocusManager, FocusRequest, IdAndFocusPath } from "./mvc/DFSFocus";
 
 export default (props: {
     data: BaseStoreDataType,
@@ -18,7 +18,10 @@ export default (props: {
     const transformedDataAndSetter = getTransformedDataAndSetter({ data: props.data, updateData: props.updateData });
     const [focusedActionReceiver, setFocusedActionReceiver] = React.useState<FocusedActionReceiver>(dummyFocusedActionReceiver);
     const itemsRefDictionary = React.useRef<Record<string, ItemRef>>({});
-    const [lastFocusedItem, setLastFocusedItem] = React.useState<string>("");
+    const [lastFocusedItem, setLastFocusedItem] = React.useState<IdAndFocusPath>({ id: "", treePath: [] });
+
+    // ref needed so that callbacks will not access old copies of dfsFocusManager, leading to new items being unselectable
+    const focusManager = React.useRef(new DFSFocusManager());
 
     const [showIds, setShowIds] = React.useState<boolean>(false);
     React.useEffect(() => {
@@ -42,6 +45,7 @@ export default (props: {
                         itemRefsDictionary={itemsRefDictionary.current}
                         transformedDataAndSetter={transformedDataAndSetter}
                         lastFocusedItem={lastFocusedItem}
+                        dfsFocusManager={focusManager.current}
                     >
                         <ItemsList
                             showIds={showIds}
@@ -49,6 +53,7 @@ export default (props: {
                             setFocusedActionReceiver={setFocusedActionReceiver}
                             lastFocusedItem={lastFocusedItem}
                             setLastFocusedItem={setLastFocusedItem}
+                            dfsFocusManager={focusManager}
                             transformedDataAndSetter={transformedDataAndSetter}
                         ></ItemsList>
                     </OmnibarWrapper>
@@ -67,17 +72,17 @@ const ItemsList = (
         setFocusedActionReceiver: React.Dispatch<React.SetStateAction<FocusedActionReceiver>>,
         itemRefsDictionary: Record<string, ItemRef>,
         transformedDataAndSetter: TransformedDataAndSetter,
-        lastFocusedItem: string,
-        setLastFocusedItem: React.Dispatch<React.SetStateAction<string>>
+        lastFocusedItem: IdAndFocusPath,
+        dfsFocusManager: React.MutableRefObject<DFSFocusManager>,
+        setLastFocusedItem: React.Dispatch<React.SetStateAction<IdAndFocusPath>>
         showIds: boolean
     }
 ) => {
     const itemTree = React.useContext<ItemTreeNode>(ModelContext);
+    const focusManager = props.dfsFocusManager;
 
-    // ref needed so that callbacks will not access old copies of dfsFocusManager, leading to new items being unselectable
-    const focusManager = React.useRef(new DFSFocusManager());
     focusManager.current?.emptyThis();
-    const setFocusedItem = (focusedActionReceiver: FocusedActionReceiver, focusItemKey: string) => {
+    const setFocusedItem = (focusedActionReceiver: FocusedActionReceiver, focusItemKey: IdAndFocusPath) => {
         props.setFocusedActionReceiver(focusedActionReceiver);
         props.setLastFocusedItem(focusItemKey);
     }
@@ -95,7 +100,7 @@ const ItemsList = (
     return <RenderTimeContext.Provider value={{
         currentFocusedItem: props.lastFocusedItem
     }}>{itemTree.children.map((item, ii) => {
-        const treePath = focusManager.current?.childPath(rootPath, ii);
+        const treePath = focusManager.current.childPath(rootPath, ii);
         return (<Item
             key={ii}
             styleParams={{

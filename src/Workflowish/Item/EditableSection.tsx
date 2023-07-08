@@ -10,10 +10,12 @@ import { FocusedActionReceiver } from '~Workflowish/mvc/focusedActionReceiver';
 import { TriggerEvent, useContextMenu } from 'react-contexify';
 import { BulletPoint } from './BulletPoint';
 import { RenderTimeContext } from '~Workflowish/mvc/context';
+import { TreePath, treeEquals } from '~Workflowish/mvc/DFSFocus';
 
 
 export const EditableSection = (props: {
     item: ItemTreeNode,
+    treePath: TreePath,
     model: TransformedDataAndSetter,
     _ref: React.MutableRefObject<HTMLElement | null>,
     shouldUncollapse: boolean,
@@ -23,7 +25,6 @@ export const EditableSection = (props: {
     raiseContextCopyIdEvent: (event: TriggerEvent) => void,
     onFocusClick: () => void
 }) => {
-
     const sanitizeConf = {
         allowedTags: ["b", "i", "a", "p"],
         allowedAttributes: { a: ["href"] }
@@ -37,7 +38,7 @@ export const EditableSection = (props: {
     const setInnerRef = React.useCallback((contenteditableElement: HTMLElement) => {
         props._ref.current = contenteditableElement;
         if (contenteditableElement) {
-            if (renderTimeContext.currentFocusedItem == props.item.id){
+            if (renderTimeContext.currentFocusedItem.id == props.item.id && treeEquals(renderTimeContext.currentFocusedItem.treePath, props.treePath)) {
                 contenteditableElement.focus();
             }
             contenteditableElement.onkeydown = (evt: KeyboardEvent) => props.focusedActionReceiver.keyCommand(evt, evt);
@@ -54,7 +55,7 @@ export const EditableSection = (props: {
     let searchHighlightBackground = "";
     if (props.item.searchHighlight.includes("SEARCH_SELECTED")) {
         searchHighlightBackground = "blue";
-    } else if (renderTimeContext.currentFocusedItem == props.item.id) {
+    } else if (renderTimeContext.currentFocusedItem.id == props.item.id && treeEquals(renderTimeContext.currentFocusedItem.treePath, props.treePath)) {
         searchHighlightBackground = "#b36200";
     } else if (props.item.searchHighlight.includes("SEARCH_MATCH")) {
         searchHighlightBackground = "darkslateblue";

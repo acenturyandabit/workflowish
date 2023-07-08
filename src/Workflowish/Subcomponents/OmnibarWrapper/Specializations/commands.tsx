@@ -1,4 +1,5 @@
 import { makeNewUniqueKey } from "~CoreDataLake";
+import { FocusRequest, TreePath } from "~Workflowish/mvc/DFSFocus";
 import { ItemTreeNode, TransformedDataAndSetter } from "~Workflowish/mvc/model";
 
 
@@ -9,8 +10,8 @@ export type Command = {
     command: (commandFunctions: {
         itemGetSetter: TransformedDataAndSetter,
         searchedItemId: string,
-        currentItemId: string,
-        focusItem: (id: string) => void,
+        currentItem: { id: string, treePath: TreePath },
+        focusItem: (focusRequest: FocusRequest) => void,
         transformedDataAndSetter: TransformedDataAndSetter
     }) => void
 }
@@ -20,7 +21,7 @@ export const commands: Command[] = [
         commandName: "g",
         prettyName: "Jump to item",
         command: (commandFunctions) => {
-            commandFunctions.focusItem(commandFunctions.searchedItemId);
+            commandFunctions.focusItem({ id: commandFunctions.searchedItemId });
         }
     },
     {
@@ -28,8 +29,8 @@ export const commands: Command[] = [
         prettyName: "Add sibling with link to...",
         command: (commandFunctions) => {
             commandFunctions.transformedDataAndSetter.setItemsByKey((transformedData) => {
-                const currentItem = transformedData.keyedNodes[commandFunctions.currentItemId]
-                const parentItemId = transformedData.parentById[commandFunctions.currentItemId];
+                const currentItem = transformedData.keyedNodes[commandFunctions.currentItem.id]
+                const parentItemId = transformedData.parentById[commandFunctions.currentItem.id];
                 const parentItem = transformedData.keyedNodes[parentItemId];
                 const currentChildIdx = parentItem.children.indexOf(currentItem);
                 const newNode: ItemTreeNode = {
@@ -47,7 +48,7 @@ export const commands: Command[] = [
                     [newNode.id]: newNode
                 }
             })
-            commandFunctions.focusItem(commandFunctions.currentItemId);
+            commandFunctions.focusItem({ id: commandFunctions.currentItem.id, treePathHint: commandFunctions.currentItem.treePath });
         },
     },
     {
@@ -55,7 +56,7 @@ export const commands: Command[] = [
         prettyName: "Add child with link to...",
         command: (commandFunctions) => {
             commandFunctions.transformedDataAndSetter.setItemsByKey((transformedData) => {
-                const currentItem = transformedData.keyedNodes[commandFunctions.currentItemId]
+                const currentItem = transformedData.keyedNodes[commandFunctions.currentItem.id]
                 const newNode: ItemTreeNode = {
                     id: makeNewUniqueKey(),
                     data: `[LN: ${commandFunctions.searchedItemId}]`,
@@ -73,7 +74,7 @@ export const commands: Command[] = [
                     [newNode.id]: newNode
                 }
             })
-            commandFunctions.focusItem(commandFunctions.currentItemId);
+            commandFunctions.focusItem({ id: commandFunctions.currentItem.id, treePathHint: commandFunctions.currentItem.treePath });
         },
     },
     {
@@ -82,7 +83,7 @@ export const commands: Command[] = [
         command: (commandFunctions) => {
             const newNode: ItemTreeNode = {
                 id: makeNewUniqueKey(),
-                data: `[LN: ${commandFunctions.currentItemId}]`,
+                data: `[LN: ${commandFunctions.currentItem.id}]`,
                 children: [],
                 collapsed: false,
                 searchHighlight: [],
@@ -99,7 +100,7 @@ export const commands: Command[] = [
                     [newNode.id]: newNode
                 }
             })
-            commandFunctions.focusItem(newNode.id);
+            commandFunctions.focusItem({ id: newNode.id });
         },
     },
     {
@@ -109,8 +110,8 @@ export const commands: Command[] = [
         command: (commandFunctions) => {
             const newId = makeNewUniqueKey();
             commandFunctions.transformedDataAndSetter.setItemsByKey((transformedData) => {
-                const thisItem = transformedData.keyedNodes[commandFunctions.currentItemId];
-                let linkId = commandFunctions.currentItemId;
+                const thisItem = transformedData.keyedNodes[commandFunctions.currentItem.id];
+                let linkId = commandFunctions.currentItem.id;
                 if (thisItem.symlinkedNode) {
                     linkId = thisItem.symlinkedNode.id;
                 }
@@ -122,16 +123,16 @@ export const commands: Command[] = [
                     searchHighlight: [],
                     lastModifiedUnixMillis: Date.now()
                 }
-                const parentId = transformedData.parentById[commandFunctions.currentItemId]
+                const parentId = transformedData.parentById[commandFunctions.currentItem.id]
                 const parentItem = transformedData.keyedNodes[parentId];
-                const currentIdx = parentItem.children.map(i => i.id).indexOf(commandFunctions.currentItemId)
-                parentItem.children.splice(currentIdx+1, 0, newNode);
+                const currentIdx = parentItem.children.map(i => i.id).indexOf(commandFunctions.currentItem.id)
+                parentItem.children.splice(currentIdx + 1, 0, newNode);
                 return {
                     [parentItem.id]: parentItem,
                     [newNode.id]: newNode
                 }
             })
-            commandFunctions.focusItem(newId);
+            commandFunctions.focusItem({ id: newId });
         },
     }
 ]

@@ -1,14 +1,14 @@
-import { ItemRef } from "~Workflowish/Item";
+import { DFSFocusManager, FocusRequest } from "~Workflowish/mvc/DFSFocus";
 import { ItemTreeNode, TransformedDataAndSetter, virtualRootId } from "~Workflowish/mvc/model";
 
 export const expandParentsAndFocusItem = (
     transformedDataAndSetter: TransformedDataAndSetter,
-    itemsRefDictionary: Record<string, ItemRef>,
-    itemToReveal: string
+    focusManager: DFSFocusManager,
+    focusRequest: FocusRequest
 ) => {
     transformedDataAndSetter.setItemsByKey((transformedData) => {
         const itemsToReveal = [];
-        let treeClimbItem = itemToReveal;
+        let treeClimbItem = focusRequest.id;
         while (treeClimbItem && treeClimbItem != virtualRootId) {
             treeClimbItem = transformedData.parentById[treeClimbItem];
             itemsToReveal.push(treeClimbItem);
@@ -25,5 +25,5 @@ export const expandParentsAndFocusItem = (
         }
         return itemsToUpdate;
     });
-    setTimeout(() => itemsRefDictionary[itemToReveal]?.focusThis(), 1);
+    setTimeout(() => focusManager.focusItem(focusRequest), 1);
 };

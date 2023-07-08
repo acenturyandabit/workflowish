@@ -1,5 +1,14 @@
 export type TreePath = number[];
 
+export const treeEquals = (left: TreePath, right: TreePath) => {
+    return left.reduce((prev, i, ii) => prev && right[ii] == i, true);
+}
+
+export type IdAndFocusPath = {
+    id: string,
+    treePath: TreePath
+}
+
 export type FocusRequest = {
     id: string,
     end?: boolean,
@@ -135,9 +144,11 @@ const chooseCloserOf = (left: FocusTakerEntry, right: FocusTakerEntry, treePath:
     const deepestCommonLevel = (leftTreePath: TreePath, rightTreePath: TreePath) => {
         const longerList = leftTreePath.length > rightTreePath.length ? leftTreePath : rightTreePath;
         const otherList = leftTreePath.length > rightTreePath.length ? rightTreePath : leftTreePath;
-        let deepestCommon = -1;
-        longerList.forEach((i, ii) => { if (otherList[ii] == i) deepestCommon = ii });
-        return deepestCommon;
+        return longerList.reduce((state, i, ii) => {
+            if (otherList[ii] == i && state.valid) state.deepest = ii;
+            else state.valid = false;
+            return state;
+        }, { deepest: -1, valid: true }).deepest;
     }
     const leftDeepest = deepestCommonLevel(left.treePath, treePath);
     const rightDeepest = deepestCommonLevel(right.treePath, treePath);

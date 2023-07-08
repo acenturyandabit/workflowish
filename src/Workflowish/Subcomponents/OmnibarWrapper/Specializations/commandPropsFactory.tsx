@@ -2,10 +2,11 @@ import * as React from 'react'
 import { ItemTreeNode, TransformedDataAndSetter } from "../../../mvc/model"
 import { OmniBarState } from '../States'
 import { SpecializedPropsFactory } from '.'
-import { ItemRef } from '~Workflowish/Item'
 import { getDefaultOmnibarState } from '..'
 import { expandParentsAndFocusItem } from './utilities'
 import { Command, commands } from './commands'
+import { DFSFocusManager, FocusRequest } from '~Workflowish/mvc/DFSFocus'
+import { ItemRef } from '~Workflowish/Item'
 
 
 
@@ -13,9 +14,16 @@ export const commandPropsFactory: SpecializedPropsFactory = (
     omniBarState: OmniBarState,
     setOmniBarState: React.Dispatch<React.SetStateAction<OmniBarState>>,
     transformedDataAndSetter: TransformedDataAndSetter,
-    itemsRefDictionary: Record<string, ItemRef>
+    itemsRefDictionary: Record<string, ItemRef>,
+    dfsFocusManager: DFSFocusManager
 ) => {
-    const focusOriginalItem = () => itemsRefDictionary[omniBarState.preOmnibarFocusItemId || ""]?.focusThis();
+    let focusOriginalItem = () => {
+        // if no selected item, do nothing
+    };
+    if (omniBarState.preOmnibarFocusItem) {
+        const prevFocusItem = omniBarState.preOmnibarFocusItem;
+        focusOriginalItem = () => dfsFocusManager.focusItem({ id: prevFocusItem.id, treePathHint: prevFocusItem.treePath });
+    }
     const { matchedCommand, matchingNodes } = getMatchedCommandAndMatchingNodes(omniBarState, transformedDataAndSetter);
     return {
         omnibarKeyHandler: (evt: React.KeyboardEvent) => {
@@ -28,8 +36,8 @@ export const commandPropsFactory: SpecializedPropsFactory = (
                     matchedCommand.command({
                         itemGetSetter: transformedDataAndSetter,
                         searchedItemId: matchingNodes[omniBarState.selectionIdx].id,
-                        currentItemId: omniBarState.preOmnibarFocusItemId || "",
-                        focusItem: (id: string) => expandParentsAndFocusItem(transformedDataAndSetter, itemsRefDictionary, id),
+                        currentItem: omniBarState.preOmnibarFocusItem ?? { id: "", treePath: [] },
+                        focusItem: (focusRequest: FocusRequest) => expandParentsAndFocusItem(transformedDataAndSetter, dfsFocusManager, focusRequest),
                         transformedDataAndSetter
                     })
                     setOmniBarState(getDefaultOmnibarState());
@@ -60,7 +68,7 @@ const getMatchedCommandAndMatchingNodes = (omniBarState: OmniBarState, transform
     if (commandPart) {
         matchedCommand = commands.filter((command) => commandMatchesFilter(command, commandPart.slice(">".length)))[0];
         let searchPart = contentParts.join(":");
-        searchPart = searchPart.replace(/^\s+/,"");
+        searchPart = searchPart.replace(/^\s+/, "");
         matchingNodes = Object.values(transformedDataAndSetter.transformedData.keyedNodes).filter(node => node.data.toLowerCase().includes(searchPart.toLowerCase()));
     }
     return {

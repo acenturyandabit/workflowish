@@ -7,7 +7,7 @@ import "./index.css"
 import { ChildItems } from "./ChildItems";
 import { SIDECLIP_CONTEXT_MENU_ID } from '~Workflowish/Subcomponents/ContextMenu';
 import { TriggerEvent, useContextMenu } from 'react-contexify';
-import { DFSFocusManager, TreePath } from "~Workflowish/mvc/DFSFocus";
+import { DFSFocusManager, IdAndFocusPath, TreePath } from "~Workflowish/mvc/DFSFocus";
 
 
 export type FocusActions = {
@@ -35,7 +35,7 @@ const Item = (props: {
     actions: ControllerActions,
     model: TransformedDataAndSetter,
     pushRef: (id: string, ref: ItemRef) => void
-    setThisAsFocused: (focusedActionReceiver: FocusedActionReceiver, focusItemKey: string) => void
+    setThisAsFocused: (focusedActionReceiver: FocusedActionReceiver, focusItemKey: IdAndFocusPath) => void
 }) => {
     const itemsRefArray = React.useRef<Array<FocusActions | null>>([])
     const thisContentEditable = React.useRef<HTMLElement | null>(null);
@@ -71,7 +71,7 @@ const Item = (props: {
                 }
             }
         }
-        props.setThisAsFocused(focusedActionReceiver, props.item.id);
+        props.setThisAsFocused(focusedActionReceiver, { id: props.item.id, treePath: props.treePath });
     }
 
     const { show: showSideclipContextMenu, hideAll } = useContextMenu({
@@ -120,6 +120,7 @@ const Item = (props: {
             _ref={thisContentEditable}
             focusedActionReceiver={focusedActionReceiver}
             item={props.item}
+            treePath={props.treePath}
             model={props.model}
             onFocusClick={focusThis}
             actions={props.actions}

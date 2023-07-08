@@ -3,7 +3,7 @@ import { ItemTreeNode, TransformedDataAndSetter } from "~Workflowish/mvc/model";
 import Item, { FocusActions, ItemRef, ItemStyleParams } from ".";
 import { ControllerActions, makeItemActions } from "../mvc/controller"
 import { FocusedActionReceiver } from "~Workflowish/mvc/focusedActionReceiver";
-import { TreePath, DFSFocusManager, FocusRequest } from "~Workflowish/mvc/DFSFocus";
+import { TreePath, DFSFocusManager, FocusRequest, IdAndFocusPath } from "~Workflowish/mvc/DFSFocus";
 
 export const ChildItems = (props: {
     shouldUncollapse: boolean,
@@ -12,7 +12,7 @@ export const ChildItems = (props: {
     focusManager: React.RefObject<DFSFocusManager>,
     styleParams: ItemStyleParams,
     itemsRefArray: React.MutableRefObject<(FocusActions | null)[]>,
-    setThisAsFocused: (focusedActionReceiver: FocusedActionReceiver, focusItemKey: string) => void,
+    setThisAsFocused: (focusedActionReceiver: FocusedActionReceiver, focusItemKey: IdAndFocusPath) => void,
     actions: ControllerActions,
     pushRef: (id: string, ref: ItemRef) => void,
     model: TransformedDataAndSetter

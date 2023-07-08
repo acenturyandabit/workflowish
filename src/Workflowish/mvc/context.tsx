@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { ItemTreeNode } from './model';
+import { IdAndFocusPath } from './DFSFocus';
 
 // TODO: Consider using TransformedData instead of ItemTreeNode here
 // would need to refactor Items to use full capabilities of TransformedData 
@@ -13,9 +14,9 @@ export const ModelContext = React.createContext<ItemTreeNode>({
 });
 
 export type RenderTimeContext = {
-    currentFocusedItem: string
+    currentFocusedItem: IdAndFocusPath
 }
 
 export const RenderTimeContext = React.createContext<RenderTimeContext>({
-    currentFocusedItem: ""
+    currentFocusedItem: { id: "", treePath: [] }
 });
