@@ -21,7 +21,7 @@ export const commands: Command[] = [
         commandName: "g",
         prettyName: "Jump to item",
         command: (commandFunctions) => {
-            commandFunctions.focusItem({ id: commandFunctions.searchedItemId });
+            commandFunctions.focusItem({ id: commandFunctions.searchedItemId, treePathHint: commandFunctions.currentItem.treePath });
         }
     },
     {
@@ -100,7 +100,7 @@ export const commands: Command[] = [
                     [newNode.id]: newNode
                 }
             })
-            commandFunctions.focusItem({ id: newNode.id });
+            commandFunctions.focusItem({ id: newNode.id, treePathHint: commandFunctions.currentItem.treePath });
         },
     },
     {
@@ -132,7 +132,7 @@ export const commands: Command[] = [
                     [newNode.id]: newNode
                 }
             })
-            commandFunctions.focusItem({ id: newId });
+            commandFunctions.focusItem({ id: newId, treePathHint: commandFunctions.currentItem.treePath });
         },
     }
 ]

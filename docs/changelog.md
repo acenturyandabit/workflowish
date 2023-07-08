@@ -3,6 +3,7 @@
 - Fix deleetion getting rid of child items that have been outdented
 - Focus correct item when editing near symlink items
 - Focus on correct item after link creation
+- Focus correct item wheen creating new items via commands
 
 # Version 3.7.0: New Item Modification Tracking System 
 - Add CLI cleanup tools
