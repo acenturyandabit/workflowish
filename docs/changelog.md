@@ -1,4 +1,4 @@
-# Latest 
+# Version 3.7.0: New Item Modification Tracking System 
 - Add CLI cleanup tools
 - first round of top-down-update code removal
 - fix focus traversal and child creation
