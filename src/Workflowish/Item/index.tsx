@@ -99,7 +99,8 @@ const Item = (props: {
         item: itemRef,
         raiseContextCopyIdEvent,
         jumpToSymlink,
-        focusThis
+        focusThis,
+        treePath: props.treePath
     })
 
     props.pushRef(props.item.id, {

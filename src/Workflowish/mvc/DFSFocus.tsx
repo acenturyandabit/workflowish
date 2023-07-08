@@ -2,7 +2,8 @@ export type TreePath = number[];
 
 export type FocusRequest = {
     id: string,
-    end?: boolean
+    end?: boolean,
+    treePathHint?: TreePath
 }
 
 export type FocusTaker = {
@@ -14,9 +15,14 @@ export type FocusTakerNode = {
     children: FocusTakerNode[]
 }
 
+type FocusTakerEntry = {
+    focusTaker: FocusTaker,
+    treePath: TreePath
+}
+
 export class DFSFocusManager {
     focusTakerTree!: FocusTakerNode;
-    focusTakerById!: Record<string, FocusTaker>;
+    focusTakersById!: Record<string, Set<FocusTakerEntry>>;
     constructor() {
         this.emptyThis();
         this.focusItem = this.focusItem.bind(this);
@@ -24,7 +30,7 @@ export class DFSFocusManager {
 
     emptyThis() {
         this.focusTakerTree = emptyDirectory();
-        this.focusTakerById = {}
+        this.focusTakersById = {}
     }
 
     childPath(currentPath: TreePath, idx: number): TreePath {
@@ -66,8 +72,9 @@ export class DFSFocusManager {
     }
 
     registerChild(currentPath: TreePath, id: string, focusTaker: FocusTaker) {
-        this.getOrInsertNodeAt(currentPath, focusTaker)
-        this.focusTakerById[id] = focusTaker;
+        this.getOrInsertNodeAt(currentPath, focusTaker);
+        if (!this.focusTakersById[id]) this.focusTakersById[id] = new Set();
+        this.focusTakersById[id].add({ focusTaker, treePath: currentPath });
     }
 
     focusPrev(currentPath: TreePath) {
@@ -108,20 +115,35 @@ export class DFSFocusManager {
         }
     }
 
-    focusItem(focusRequestOrId: string | FocusRequest, end?: boolean) {
-        let id: string;
-        if (typeof (focusRequestOrId) == "string") {
-            id = focusRequestOrId;
-        } else {
-            id = focusRequestOrId.id;
-            end = focusRequestOrId.end;
-        }
-        if (this.focusTakerById[id]) {
-            this.focusTakerById[id].focus(end);
+    focusItem(focusRequest: FocusRequest) {
+        const id = focusRequest.id;
+        if (this.focusTakersById[id]) {
+            const focusCandidates = this.focusTakersById[id];
+            let chosenFocusEntry: FocusTakerEntry = [...focusCandidates.values()][0];
+            if (focusRequest.treePathHint) {
+                const treePathHint = focusRequest.treePathHint;
+                focusCandidates.forEach(entry => {
+                    chosenFocusEntry = chooseCloserOf(entry, chosenFocusEntry, treePathHint);
+                })
+            }
+            chosenFocusEntry.focusTaker.focus(focusRequest.end);
         }
     }
 }
 
+const chooseCloserOf = (left: FocusTakerEntry, right: FocusTakerEntry, treePath: TreePath): FocusTakerEntry => {
+    const deepestCommonLevel = (leftTreePath: TreePath, rightTreePath: TreePath) => {
+        const longerList = leftTreePath.length > rightTreePath.length ? leftTreePath : rightTreePath;
+        const otherList = leftTreePath.length > rightTreePath.length ? rightTreePath : leftTreePath;
+        let deepestCommon = -1;
+        longerList.forEach((i, ii) => { if (otherList[ii] == i) deepestCommon = ii });
+        return deepestCommon;
+    }
+    const leftDeepest = deepestCommonLevel(left.treePath, treePath);
+    const rightDeepest = deepestCommonLevel(right.treePath, treePath);
+    // TODO: lots of room for finer cases here but this case isn't used often yet
+    return (leftDeepest > rightDeepest) ? left : right;
+}
 
 const emptyDirectory = () => {
     return {

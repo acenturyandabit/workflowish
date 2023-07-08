@@ -86,7 +86,7 @@ const ItemsList = (
     const itemToFocus = React.useRef<FocusRequest | undefined>();
     React.useEffect(() => {
         if (itemToFocus.current) {
-            focusManager.current?.focusItem(itemToFocus.current.id, itemToFocus.current.end);
+            focusManager.current?.focusItem(itemToFocus.current);
             itemToFocus.current = undefined;
         }
     })

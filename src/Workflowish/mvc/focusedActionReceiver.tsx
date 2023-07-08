@@ -3,6 +3,7 @@ import { ItemTreeNode } from "./model";
 import { ControllerActions } from "./controller";
 import { TriggerEvent } from "react-contexify";
 import { MOBILE_ACTION_1 } from "~Workflowish/Subcomponents/FloatyButtons";
+import { TreePath } from "./DFSFocus";
 
 export type FocusedActionReceiver =
     {
@@ -40,6 +41,7 @@ export const makeFocusedActionReceiver = (props: {
     raiseContextCopyIdEvent: (event: TriggerEvent) => void,
     jumpToSymlink: () => boolean,
     focusThis: () => void,
+    treePath: TreePath
 }): FocusedActionReceiver => {
     return {
         keyCommand: (evt, rawEvent) => {
@@ -74,10 +76,10 @@ export const makeFocusedActionReceiver = (props: {
                 if (evt.key == "Tab") {
                     if (evt.shiftKey) {
                         props.actions.unindentSelf();
-                        props.actions.focusItemAfterUpdate({ id: currentItem.id });
+                        props.actions.focusItemAfterUpdate({ id: currentItem.id, treePathHint: props.treePath });
                     } else {
                         props.actions.indentSelf();
-                        props.actions.focusItemAfterUpdate({ id: currentItem.id });
+                        props.actions.focusItemAfterUpdate({ id: currentItem.id, treePathHint: props.treePath });
                     }
                     if (evt.preventDefault) evt.preventDefault()
                 }

@@ -127,7 +127,7 @@ export const makeItemActions = (props: {
             }
         })
     },
-    focusItem: (focusRequest: FocusRequest) => props.focusManager.current?.focusItem(focusRequest.id),
+    focusItem: (focusRequest: FocusRequest) => props.focusManager.current?.focusItem(focusRequest),
     focusItemAfterUpdate: props.setToFocusAfterUpdate,
     focusPreviousListItem: () => {
         props.focusManager.current?.focusPrev(props.treePath);
