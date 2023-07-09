@@ -7,6 +7,7 @@
 - Fix focus failing on item rearrange
 - improve focus on insertion of new items
 - Improve safety in script engine
+- Add move command
 
 # Version 3.7.0: New Item Modification Tracking System 
 - Add CLI cleanup tools

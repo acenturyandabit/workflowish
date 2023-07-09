@@ -3,17 +3,19 @@ import { FocusRequest, TreePath } from "~Workflowish/mvc/DFSFocus";
 import { ItemTreeNode, TransformedDataAndSetter } from "~Workflowish/mvc/model";
 
 
+type CommandFunctionsBundle = {
+    itemGetSetter: TransformedDataAndSetter,
+    searchedItemId: string,
+    currentItem: { id: string, treePath: TreePath },
+    focusItem: (focusRequest: FocusRequest) => void,
+    transformedDataAndSetter: TransformedDataAndSetter
+};
+
 export type Command = {
     commandName: string,
     prettyName: string,
     singleArgument?: boolean
-    command: (commandFunctions: {
-        itemGetSetter: TransformedDataAndSetter,
-        searchedItemId: string,
-        currentItem: { id: string, treePath: TreePath },
-        focusItem: (focusRequest: FocusRequest) => void,
-        transformedDataAndSetter: TransformedDataAndSetter
-    }) => void
+    command: (commandFunctions: CommandFunctionsBundle) => void
 }
 
 export const commands: Command[] = [
@@ -52,28 +54,26 @@ export const commands: Command[] = [
         },
     },
     {
+        commandName: "m",
+        prettyName: "Move current item under...",
+        command: (commandFunctions) => {
+            moveItem(commandFunctions);
+            commandFunctions.focusItem({ id: commandFunctions.currentItem.id });
+        },
+    },
+    {
+        commandName: "ma",
+        prettyName: "Move away current item under... (Doesn't focus after move)",
+        command: (commandFunctions) => {
+            moveItem(commandFunctions);
+            commandFunctions.focusItem({ treePathHint: commandFunctions.currentItem.treePath });
+        },
+    },
+    {
         commandName: "lc",
         prettyName: "Add child with link to...",
         command: (commandFunctions) => {
-            commandFunctions.transformedDataAndSetter.setItemsByKey((transformedData) => {
-                const currentItem = transformedData.keyedNodes[commandFunctions.currentItem.id]
-                const newNode: ItemTreeNode = {
-                    id: makeNewUniqueKey(),
-                    data: `[LN: ${commandFunctions.searchedItemId}]`,
-                    children: [],
-                    collapsed: false,
-                    searchHighlight: [],
-                    lastModifiedUnixMillis: Date.now()
-                }
-                return {
-                    [currentItem.id]: {
-                        ...currentItem,
-                        lastModifiedUnixMillis: Date.now(),
-                        children: [...currentItem.children, newNode]
-                    },
-                    [newNode.id]: newNode
-                }
-            })
+
             commandFunctions.focusItem({ id: commandFunctions.currentItem.id, treePathHint: commandFunctions.currentItem.treePath });
         },
     },
@@ -136,3 +136,20 @@ export const commands: Command[] = [
         },
     }
 ]
+
+const moveItem = (commandFunctions: CommandFunctionsBundle) => {
+    commandFunctions.transformedDataAndSetter.setItemsByKey((transformedData) => {
+        const currentItem = transformedData.keyedNodes[commandFunctions.currentItem.id]
+        const currentParentItemId = transformedData.parentById[commandFunctions.currentItem.id];
+        const currentParentItem = transformedData.keyedNodes[currentParentItemId];
+        const currentChildIdx = currentParentItem.children.indexOf(currentItem);
+        currentParentItem.children.splice(currentChildIdx, 1);
+
+        const newParentItem = transformedData.keyedNodes[commandFunctions.searchedItemId];
+        newParentItem.children.push(currentItem);
+        return {
+            [currentParentItemId]: currentParentItem,
+            [newParentItem.id]: newParentItem,
+        }
+    })
+}

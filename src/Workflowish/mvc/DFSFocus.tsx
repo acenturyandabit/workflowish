@@ -12,7 +12,7 @@ export type IdAndFocusPath = {
 }
 
 export type FocusRequest = {
-    id: string,
+    id?: string,
     end?: boolean,
     treePathHint?: TreePath
 }
@@ -41,8 +41,8 @@ export class DFSFocusManager {
         this.focusItem = this.focusItem.bind(this);
         this.setLastFocusedItem = setLastFocusedItem;
     }
-    
-    updateSetLastFocusedItem(setLastFocusedItem: React.Dispatch<React.SetStateAction<IdAndFocusPath>>){
+
+    updateSetLastFocusedItem(setLastFocusedItem: React.Dispatch<React.SetStateAction<IdAndFocusPath>>) {
         this.setLastFocusedItem = setLastFocusedItem;
     }
 
@@ -82,13 +82,19 @@ export class DFSFocusManager {
         return currentItem;
     }
 
-    getNodeOrNullAt(currentPath: TreePath): FocusTakerNode | undefined {
+    getNode(currentPath: TreePath, onMissing: "orNull" | "orClosest"): FocusTakerNode | undefined {
         let currentItem = this.focusTakerTree;
+        let lastValidNode = this.focusTakerTree;
         for (let pathIdx = 0; pathIdx < currentPath.length; pathIdx++) {
             currentItem = currentItem.children[currentPath[pathIdx]];
             if (!currentItem) break;
+            lastValidNode = currentItem;
         }
-        return currentItem;
+        if (onMissing == "orNull") {
+            return currentItem;
+        } else {
+            return lastValidNode;
+        }
     }
 
     registerChild(currentPath: TreePath, id: string, focusTaker: FocusTaker) {
@@ -104,16 +110,16 @@ export class DFSFocusManager {
             const lastDeepestSiblingDescendantCandidate: TreePath = previousSibling;
             // don't have to worry about iscollapsed here since we re-index the tree after each render
             // Try to get last deepest child ancestor of sibling
-            let lastChildOfDescendant = (this.getNodeOrNullAt(lastDeepestSiblingDescendantCandidate)?.children.length || 0) - 1;
+            let lastChildOfDescendant = (this.getNode(lastDeepestSiblingDescendantCandidate, "orNull")?.children.length || 0) - 1;
             while (lastChildOfDescendant >= 0) {
                 lastDeepestSiblingDescendantCandidate.push(lastChildOfDescendant);
-                lastChildOfDescendant = (this.getNodeOrNullAt(lastDeepestSiblingDescendantCandidate)?.children.length || 0) - 1;
+                lastChildOfDescendant = (this.getNode(lastDeepestSiblingDescendantCandidate, "orNull")?.children.length || 0) - 1;
             }
             newPath = lastDeepestSiblingDescendantCandidate;
         } else {
             newPath = currentPath.slice(0, -1);
         }
-        const nodeToFocus = this.getNodeOrNullAt(newPath);
+        const nodeToFocus = this.getNode(newPath, "orNull");
         if (nodeToFocus) {
             nodeToFocus.taker.focus(true);
             this.setLastFocusedItem({ id: nodeToFocus.id, treePath: newPath });
@@ -123,13 +129,13 @@ export class DFSFocusManager {
     focusNext(currentPath: TreePath) {
         let nodeToFocus: FocusTakerNode | undefined;
         let newPath: TreePath = [...currentPath, 0];
-        const firstChild = this.getNodeOrNullAt(newPath);
+        const firstChild = this.getNode(newPath, "orNull");
         if (firstChild) {
             nodeToFocus = firstChild;
         } else {
             for (let i = currentPath.length - 1; i >= 0; i--) {
                 newPath = [...currentPath.slice(0, i), currentPath[i] + 1];
-                const candidateAncestorSibling = this.getNodeOrNullAt(newPath);
+                const candidateAncestorSibling = this.getNode(newPath, "orNull");
                 if (candidateAncestorSibling) {
                     nodeToFocus = candidateAncestorSibling;
                     break;
@@ -144,17 +150,22 @@ export class DFSFocusManager {
 
     focusItem(focusRequest: FocusRequest) {
         const id = focusRequest.id;
-        if (this.focusTakersById[id]) {
-            const focusCandidates = this.focusTakersById[id];
-            let chosenFocusEntry: FocusTakerEntry = [...focusCandidates.values()][0];
-            if (focusRequest.treePathHint) {
-                const treePathHint = focusRequest.treePathHint;
-                focusCandidates.forEach(entry => {
-                    chosenFocusEntry = chooseCloserOf(entry, chosenFocusEntry, treePathHint);
-                })
+        if (id) {
+            if (this.focusTakersById[id]) {
+                const focusCandidates = this.focusTakersById[id];
+                let chosenFocusEntry: FocusTakerEntry = [...focusCandidates.values()][0];
+                if (focusRequest.treePathHint) {
+                    const treePathHint = focusRequest.treePathHint;
+                    focusCandidates.forEach(entry => {
+                        chosenFocusEntry = chooseCloserOf(entry, chosenFocusEntry, treePathHint);
+                    })
+                }
+                chosenFocusEntry.focusTaker.focus(focusRequest.end);
+                this.setLastFocusedItem({ id, treePath: chosenFocusEntry.treePath });
             }
-            chosenFocusEntry.focusTaker.focus(focusRequest.end);
-            this.setLastFocusedItem({ id, treePath: chosenFocusEntry.treePath });
+        } else if (focusRequest.treePathHint) {
+            const closestFocusNode = this.getNode(focusRequest.treePathHint, "orClosest");
+            closestFocusNode?.taker.focus();
         }
     }
 }
