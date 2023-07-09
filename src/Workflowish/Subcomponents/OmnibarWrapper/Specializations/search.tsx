@@ -200,7 +200,7 @@ export const makeSearchKeyEventHandler = (
     focusOriginalItem: () => void,
     expandParentsAndFocusItem: () => void
 ) => {
-    return (evt: React.KeyboardEvent) => {
+    return (evt: { key: string }) => {
         if (evt.key == "ArrowUp") {
             setOmniBarState((oldState) => ({ ...oldState, selectionIdx: oldState.selectionIdx - 1 }))
             window.setTimeout(scrollToCurrentItem, 1);

@@ -1,6 +1,7 @@
 import * as React from 'react';
 import "./FloatyButtons.css"
 import { FocusedActionReceiver } from '../mvc/focusedActionReceiver';
+import { OmniBarHandlerAndState } from './OmnibarWrapper';
 
 const tristateSwitches = ["shiftKey", "altKey", "ctrlKey"] as const;
 const tristates = ["ON", "HELD", "OFF"] as const;
@@ -11,7 +12,8 @@ type FloatyButtonTristates = {
 
 
 export const FloatyButtons = (props: {
-    focusedActionReceiver: FocusedActionReceiver
+    focusedActionReceiver: FocusedActionReceiver,
+    omniBarHandlerRef: React.MutableRefObject<OmniBarHandlerAndState>
 }) => {
     // code derived from https://developer.mozilla.org/en-US/docs/Web/API/VisualViewport
     const [transformString, setTransformString] = React.useState<string>("");
@@ -70,30 +72,35 @@ export const FloatyButtons = (props: {
                 text={"Up"}
                 setTristates={setTristates}
                 focusedActionReceiver={props.focusedActionReceiver}
+                omniBarHandlerRef={props.omniBarHandlerRef}
             />
             <KeyButton
                 _key={"ArrowDown"}
                 text={"Down"}
                 setTristates={setTristates}
                 focusedActionReceiver={props.focusedActionReceiver}
+                omniBarHandlerRef={props.omniBarHandlerRef}
             />
             <KeyButton
                 _key={"Enter"}
                 text={"Enter"}
                 setTristates={setTristates}
                 focusedActionReceiver={props.focusedActionReceiver}
+                omniBarHandlerRef={props.omniBarHandlerRef}
             />
             <KeyButton
                 _key={"Tab"}
                 text={"Tab"}
                 setTristates={setTristates}
                 focusedActionReceiver={props.focusedActionReceiver}
+                omniBarHandlerRef={props.omniBarHandlerRef}
             />
             <KeyButton
                 _key={MOBILE_ACTION_1}
                 text={"Act"}
                 setTristates={setTristates}
                 focusedActionReceiver={props.focusedActionReceiver}
+                omniBarHandlerRef={props.omniBarHandlerRef}
             />
         </span>
     </>
@@ -131,12 +138,16 @@ const KeyButton = (props: {
     _key: string,
     text: string,
     setTristates: React.Dispatch<React.SetStateAction<FloatyButtonTristates>>,
+    omniBarHandlerRef: React.MutableRefObject<OmniBarHandlerAndState>,
     focusedActionReceiver: FocusedActionReceiver
 }) => (
     <button onClick={(rawEvent) => {
         props.setTristates(tristates => {
             const { event, resetTristates } = composeEvent(tristates, props._key);
-            props.focusedActionReceiver.keyCommand(event, rawEvent);
+            if (props.omniBarHandlerRef.current.state.barContents.length == 0) {
+                props.focusedActionReceiver.keyCommand(event, rawEvent);
+            }
+            setTimeout(() => props.omniBarHandlerRef.current.handler(event), 1);
             return resetTristates;
         })
     }}> {props.text} </button>

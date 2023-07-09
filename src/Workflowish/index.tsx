@@ -6,7 +6,7 @@ import Item, { ItemRef } from "./Item"
 import { ItemTreeNode, getTransformedDataAndSetter, TransformedDataAndSetter } from "./mvc/model"
 import { isMobile } from '~util/isMobile';
 import { FloatyButtons } from "./Subcomponents/FloatyButtons";
-import OmnibarWrapper from "./Subcomponents/OmnibarWrapper";
+import OmnibarWrapper, { OmniBarHandlerAndState, getDefaultOmnibarState } from "./Subcomponents/OmnibarWrapper";
 import ContextMenu from "./Subcomponents/ContextMenu";
 import { ModelContext, RenderTimeContext } from "./mvc/context";
 import { DFSFocusManager, FocusRequest, IdAndFocusPath } from "./mvc/DFSFocus";
@@ -19,7 +19,12 @@ export default (props: {
     const [focusedActionReceiver, setFocusedActionReceiver] = React.useState<FocusedActionReceiver>(dummyFocusedActionReceiver);
     const itemsRefDictionary = React.useRef<Record<string, ItemRef>>({});
     const [lastFocusedItem, setLastFocusedItem] = React.useState<IdAndFocusPath>({ id: "", treePath: [] });
-
+    const omniBarHandlerRef = React.useRef<OmniBarHandlerAndState>({
+        handler: () => {
+            // default empty
+        },
+        state: getDefaultOmnibarState()
+    });
     // ref needed so that callbacks will not access old copies of dfsFocusManager, leading to new items being unselectable
     const focusManager = React.useRef(new DFSFocusManager(setLastFocusedItem));
     focusManager.current.updateSetLastFocusedItem(setLastFocusedItem); // needed otherwise setLastFocusedItem gets outdated when alt-up used
@@ -46,6 +51,7 @@ export default (props: {
                         itemRefsDictionary={itemsRefDictionary.current}
                         transformedDataAndSetter={transformedDataAndSetter}
                         lastFocusedItem={lastFocusedItem}
+                        omniBarHandlerRef={omniBarHandlerRef}
                         dfsFocusManager={focusManager.current}
                     >
                         <ItemsList
@@ -60,7 +66,7 @@ export default (props: {
                     </OmnibarWrapper>
                 </div>
             </ModelContext.Provider>
-            {isMobile() ? <FloatyButtons focusedActionReceiver={focusedActionReceiver}></FloatyButtons> : null}
+            {isMobile() ? <FloatyButtons focusedActionReceiver={focusedActionReceiver} omniBarHandlerRef={omniBarHandlerRef}></FloatyButtons> : null}
         </div>
     } else {
         return <div>Loading...</div>

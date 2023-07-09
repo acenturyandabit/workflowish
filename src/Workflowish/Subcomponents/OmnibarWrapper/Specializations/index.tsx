@@ -7,6 +7,7 @@ import { commandPropsFactory } from './commandPropsFactory';
 import { DFSFocusManager } from '~Workflowish/mvc/DFSFocus';
 
 type OmniBarSubtype = "Search" | "Command" | "None";
+export type OmniBarHandler = (evt: { key: string }) => void;
 export type SpecializedPropsFactory = (
     omniBarState: OmniBarState,
     setOmniBarState: React.Dispatch<React.SetStateAction<OmniBarState>>,
@@ -14,7 +15,7 @@ export type SpecializedPropsFactory = (
     itemsRefDictionary: Record<string, ItemRef>,
     dfsFocusManager: DFSFocusManager
 ) => {
-    omnibarKeyHandler: (evt: React.KeyboardEvent) => void,
+    omnibarKeyHandler: OmniBarHandler,
     rootNode: ItemTreeNode,
     extraAnnotations: React.ReactElement
 }

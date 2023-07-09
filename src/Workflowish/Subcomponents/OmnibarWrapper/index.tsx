@@ -4,19 +4,28 @@ import { ModelContext } from '~Workflowish/mvc/context';
 import { ItemRef } from '~Workflowish/Item';
 import "./index.css"
 import { OmniBarState } from './States';
-import { getSpecializedProps } from './Specializations';
+import { OmniBarHandler, getSpecializedProps } from './Specializations';
 import { DFSFocusManager, IdAndFocusPath } from '~Workflowish/mvc/DFSFocus';
 
+export type OmniBarHandlerAndState = {
+    handler: OmniBarHandler,
+    state: OmniBarState
+}
 
 const OmniBarWrapper = (props: {
     children: React.ReactElement,
     itemRefsDictionary: Record<string, ItemRef>,
+    omniBarHandlerRef: React.MutableRefObject<OmniBarHandlerAndState>
     transformedDataAndSetter: TransformedDataAndSetter,
     dfsFocusManager: DFSFocusManager,
     lastFocusedItem: IdAndFocusPath,
 }) => {
     const [omniBarState, setOmniBarState] = React.useState<OmniBarState>(getDefaultOmnibarState());
     const { omnibarKeyHandler, rootNode, extraAnnotations } = getSpecializedProps(omniBarState, setOmniBarState, props.transformedDataAndSetter, props.itemRefsDictionary, props.dfsFocusManager);
+    props.omniBarHandlerRef.current = {
+        handler: omnibarKeyHandler,
+        state: omniBarState
+    }
     return <>
         <OmniBar
             omniBarState={omniBarState}

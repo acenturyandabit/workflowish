@@ -26,7 +26,7 @@ export const commandPropsFactory: SpecializedPropsFactory = (
     }
     const { matchedCommand, matchingNodes } = getMatchedCommandAndMatchingNodes(omniBarState, transformedDataAndSetter);
     return {
-        omnibarKeyHandler: (evt: React.KeyboardEvent) => {
+        omnibarKeyHandler: (evt: { key: string }) => {
             if (evt.key == "ArrowUp") {
                 setOmniBarState((oldState) => ({ ...oldState, selectionIdx: oldState.selectionIdx - 1 }))
             } else if (evt.key == "ArrowDown") {

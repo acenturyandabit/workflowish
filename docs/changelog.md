@@ -8,6 +8,7 @@
 - improve focus on insertion of new items
 - Improve safety in script engine
 - Add move command
+- Allow interacting with mobile buttons using floaty buttons
 
 # Version 3.7.0: New Item Modification Tracking System 
 - Add CLI cleanup tools
