@@ -3,7 +3,7 @@ import * as React from 'react';
 import { BaseItemType } from "~CoreDataLake";
 import getDiffsAndResolvedItems from "~CoreDataLake/getResolvedItems";
 import stringify from 'json-stable-stringify';
-import { FlatItemBlob, FlatItemData, ItemTreeNode, TransformedData, flattenItemNode} from "~Workflowish/mvc/model";
+import { FlatItemBlob, FlatItemData, ItemTreeNode, TransformedData, flattenItemNode } from "~Workflowish/mvc/model";
 import { transformData as workflowishTransformData } from "~Workflowish/mvc/model";
 export const ScriptEngineInstance = (props: {
     script: string,
@@ -155,13 +155,17 @@ const getHandlersFromUserScript = (props: {
                 props.getSetData((data) => {
                     const transformedData = workflowishTransformData(data as FlatItemBlob);
                     let newItemsToSet: Record<string, ItemTreeNode>;
-                    if (itemsToSet instanceof Function) {
-                        newItemsToSet = itemsToSet(transformedData);
-                    } else {
-                        newItemsToSet = itemsToSet;
-                    }
-                    for (const key in newItemsToSet) {
-                        updatesStash[key] = flattenItemNode(newItemsToSet[key]);
+                    try {
+                        if (itemsToSet instanceof Function) {
+                            newItemsToSet = itemsToSet(transformedData);
+                        } else {
+                            newItemsToSet = itemsToSet;
+                        }
+                        for (const key in newItemsToSet) {
+                            updatesStash[key] = flattenItemNode(newItemsToSet[key]);
+                        }
+                    } catch (e) {
+                        console.error(e);
                     }
                     return data;
                 })
