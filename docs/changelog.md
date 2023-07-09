@@ -5,6 +5,7 @@
 - Focus on correct item after link creation
 - Focus correct item wheen creating new items via commands
 - Fix focus failing on item rearrange
+- improve focus on insertion of new items
 
 # Version 3.7.0: New Item Modification Tracking System 
 - Add CLI cleanup tools

@@ -51,7 +51,8 @@ export const makeFocusedActionReceiver = (props: {
                 expectedFARId = undefined;
                 if (evt.key == "Enter") {
                     if (evt.shiftKey) {
-                        props.actions.createNewChild();
+                        const newId = props.actions.createNewChild();
+                        props.actions.focusItemAfterUpdate({ id: newId, treePathHint: props.treePath });
                     } else if (evt.altKey) {
                         const currentSelection = window.getSelection();
                         if (currentSelection
@@ -61,17 +62,20 @@ export const makeFocusedActionReceiver = (props: {
                             const halfToKeep = currentItem.data.slice(0, currentSelection.anchorOffset);
                             const halfToGiveToChild = currentItem.data.slice(currentSelection.anchorOffset);
                             if (evt.shiftKey) {
-                                props.actions.createNewChild(halfToGiveToChild);
+                                const newId = props.actions.createNewChild(halfToGiveToChild);
+                                props.actions.focusItemAfterUpdate({ id: newId, treePathHint: props.treePath });
                                 props.actions.editSelfContents(halfToKeep);
                             } else {
-                                props.actions.createNewSibling(halfToGiveToChild);
+                                const newId = props.actions.createNewSibling(halfToGiveToChild);
+                                props.actions.focusItemAfterUpdate({ id: newId, treePathHint: props.treePath });
                                 props.actions.editSelfContents(halfToKeep);
                             }
                         }
                     } else {
-                        props.actions.createNewSibling();
+                        const newId = props.actions.createNewSibling();
+                        props.actions.focusItemAfterUpdate({ id: newId, treePathHint: props.treePath });
                     }
-                    if (evt.preventDefault) evt.preventDefault()
+                    if (evt.preventDefault) evt.preventDefault();
                 }
                 if (evt.key == "Tab") {
                     if (evt.shiftKey) {

@@ -4,8 +4,8 @@ import { TreePath, DFSFocusManager, FocusRequest } from "~Workflowish/mvc/DFSFoc
 
 export type ControllerActions = {
     editSelfContents: (newContents: string) => void,
-    createNewChild: (newContents?: string) => Promise<string>,
-    createNewSibling: (newContents?: string) => Promise<string>,
+    createNewChild: (newContents?: string) => string,
+    createNewSibling: (newContents?: string) => string,
     deleteSelf: () => void
     focusItem: (focusRequest: FocusRequest) => void
     focusItemAfterUpdate: (focusRequest: FocusRequest) => void
@@ -54,53 +54,47 @@ export const makeItemActions = (props: {
             }
         })
     },
-    createNewChild: async (newContents?: string, dontFocus?: boolean) => {
-        return new Promise<string>((resolve) => {
-            const newId = makeNewUniqueKey();
-            if (!dontFocus) props.setToFocusAfterUpdate({ id: newId });
-            props.model.setItemsByKey((transformedData) => {
-                const newTreeNode: ItemTreeNode = {
-                    id: newId,
-                    lastModifiedUnixMillis: Date.now(),
-                    data: newContents || "",
-                    children: [],
-                    collapsed: false,
-                    searchHighlight: []
-                };
-                transformedData.keyedNodes[props.thisItem.id].children.unshift(newTreeNode);
-                transformedData.keyedNodes[props.thisItem.id].collapsed = false;
-                setTimeout(() => resolve(newId));
-                return {
-                    [newId]: newTreeNode,
-                    [props.thisItem.id]: transformedData.keyedNodes[props.thisItem.id]
-                }
-            })
+    createNewChild: (newContents?: string) => {
+        const newId = makeNewUniqueKey();
+        props.model.setItemsByKey((transformedData) => {
+            const newTreeNode: ItemTreeNode = {
+                id: newId,
+                lastModifiedUnixMillis: Date.now(),
+                data: newContents || "",
+                children: [],
+                collapsed: false,
+                searchHighlight: []
+            };
+            transformedData.keyedNodes[props.thisItem.id].children.unshift(newTreeNode);
+            transformedData.keyedNodes[props.thisItem.id].collapsed = false;
+            return {
+                [newId]: newTreeNode,
+                [props.thisItem.id]: transformedData.keyedNodes[props.thisItem.id]
+            }
         })
+        return newId;
     },
-    createNewSibling: async (newContents?: string, dontFocus?: boolean) => {
-        return new Promise<string>((resolve) => {
-            const newId = makeNewUniqueKey();
-            if (!dontFocus) props.setToFocusAfterUpdate({ id: newId });
-            props.model.setItemsByKey((transformedData) => {
-                const thisParentId = transformedData.parentById[props.thisItem.id];
-                const siblings = transformedData.keyedNodes[thisParentId].children;
-                const currentSiblingIdx = siblings.map(i => i.id).indexOf(props.thisItem.id);
-                const newTreeNode: ItemTreeNode = {
-                    id: newId,
-                    lastModifiedUnixMillis: Date.now(),
-                    data: newContents || "",
-                    children: [],
-                    collapsed: false,
-                    searchHighlight: []
-                };
-                siblings.splice(currentSiblingIdx + 1, 0, newTreeNode);
-                setTimeout(() => resolve(newId));
-                return {
-                    [newId]: newTreeNode,
-                    [thisParentId]: transformedData.keyedNodes[thisParentId]
-                }
-            })
+    createNewSibling: (newContents?: string) => {
+        const newId = makeNewUniqueKey();
+        props.model.setItemsByKey((transformedData) => {
+            const thisParentId = transformedData.parentById[props.thisItem.id];
+            const siblings = transformedData.keyedNodes[thisParentId].children;
+            const currentSiblingIdx = siblings.map(i => i.id).indexOf(props.thisItem.id);
+            const newTreeNode: ItemTreeNode = {
+                id: newId,
+                lastModifiedUnixMillis: Date.now(),
+                data: newContents || "",
+                children: [],
+                collapsed: false,
+                searchHighlight: []
+            };
+            siblings.splice(currentSiblingIdx + 1, 0, newTreeNode);
+            return {
+                [newId]: newTreeNode,
+                [thisParentId]: transformedData.keyedNodes[thisParentId]
+            }
         })
+        return newId;
     },
     deleteSelf: () => {
         if (!props.disableDelete || props.disableDelete() == false) {
