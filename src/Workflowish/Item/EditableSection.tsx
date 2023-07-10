@@ -23,7 +23,7 @@ export const EditableSection = (props: {
     styleParams: ItemStyleParams,
     focusedActionReceiver: FocusedActionReceiver,
     raiseContextCopyIdEvent: (event: TriggerEvent) => void,
-    onFocusClick: () => void
+    onClick: () => void
 }) => {
     const sanitizeConf = {
         allowedTags: ["b", "i", "a", "p"],
@@ -78,7 +78,7 @@ export const EditableSection = (props: {
             className={"__editable_" + classNameToForceReRenderOnItemDeletion}
             html={htmlToShow}
             onChange={onContentChange}
-            onClick={props.onFocusClick}
+            onClick={props.onClick}
             style={{
                 flex: "1 1 auto",
                 scrollMarginTop: "100px"

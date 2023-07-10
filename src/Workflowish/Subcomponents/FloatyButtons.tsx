@@ -60,7 +60,7 @@ export const FloatyButtons = (props: {
         };
     }
     const restoreFocus = () => {
-        props.focusedActionReceiver.refocusSelf();
+        props.focusedActionReceiver.focusThis();
     }
     return <>
         <span className="floatyButtons" style={{ transform: transformString }}>

@@ -96,7 +96,7 @@ const Item = (props: {
     const focusedActionReceiver = makeFocusedActionReceiver({
         actions: props.actions,
         itemsRefArray,
-        item: itemRef,
+        itemRef,
         raiseContextCopyIdEvent,
         jumpToSymlink,
         focusThis,
@@ -122,7 +122,10 @@ const Item = (props: {
             item={props.item}
             treePath={props.treePath}
             model={props.model}
-            onFocusClick={focusThis}
+            onClick={()=>{
+                // dont call focusThis otherwise the cursor will jump around
+                props.setThisAsFocused(focusedActionReceiver, { id: props.item.id, treePath: props.treePath });
+            }}
             actions={props.actions}
             shouldUncollapse={shouldUncollapse}
             raiseContextCopyIdEvent={raiseContextCopyIdEvent}

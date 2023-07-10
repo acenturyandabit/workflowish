@@ -20,14 +20,14 @@ export type FocusedActionReceiver =
             },
             rawEvent?: TriggerEvent
         ) => void,
-        refocusSelf: () => void,
+        focusThis: () => void,
     };
 
 export const dummyFocusedActionReceiver = {
     keyCommand: () => {
         // Set by children
     },
-    refocusSelf: () => {
+    focusThis: () => {
         // set by children
     }
 }
@@ -37,7 +37,7 @@ let expectedFARId: string | undefined;
 export const makeFocusedActionReceiver = (props: {
     actions: ControllerActions,
     itemsRefArray: React.MutableRefObject<(FocusActions | null)[]>
-    item: React.RefObject<ItemTreeNode>,
+    itemRef: React.RefObject<ItemTreeNode>,
     raiseContextCopyIdEvent: (event: TriggerEvent) => void,
     jumpToSymlink: () => boolean,
     focusThis: () => void,
@@ -45,7 +45,7 @@ export const makeFocusedActionReceiver = (props: {
 }): FocusedActionReceiver => {
     return {
         keyCommand: (evt, rawEvent) => {
-            const currentItem = props.item.current;
+            const currentItem = props.itemRef.current;
             if (currentItem) {
                 if (evt.repeat && expectedFARId && currentItem.id != expectedFARId) return;
                 expectedFARId = undefined;
@@ -124,6 +124,6 @@ export const makeFocusedActionReceiver = (props: {
                 }
             }
         },
-        refocusSelf: props.focusThis,
+        focusThis: props.focusThis,
     }
 }
