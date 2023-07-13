@@ -34,6 +34,7 @@ export const commandPropsFactory: SpecializedPropsFactory = (
             } else if (evt.key == "Enter") {
                 if (matchedCommand) {
                     matchedCommand.command({
+                        currentCommand: matchedCommand,
                         itemGetSetter: transformedDataAndSetter,
                         searchedItemId: matchingNodes[omniBarState.selectionIdx].id,
                         currentItem: omniBarState.preOmnibarFocusItem ?? { id: "", treePath: [] },
