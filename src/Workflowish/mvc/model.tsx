@@ -192,7 +192,7 @@ export const fromTree = (root: ItemTreeNode): FlatItemBlob => {
             let foundDuplicate = false;
             const noDuplicateChildren = top.children.map((child): ItemTreeNode => {
                 if (child.id in seenChildRecord) {
-                    console.error(`Duplicate node ${top.id}! Making into a symlink and moving on.`);
+                    console.error(`Duplicate node ${child.id}! Making into a symlink and moving on.`);
                     const newItem = makeNewItem();
                     newItem.data = `[LN: ${child.id}]`;
                     foundDuplicate = true;

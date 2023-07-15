@@ -51,7 +51,6 @@ export const generateFirstTimeWorkflowishDoc = (): ItemTreeNode => {
                             },
                             {
                                 data: "Symbolic links!",
-                                id: "symlink_id",
                                 children: [
                                     { data: "[LN: symlink_id]", collapsed: true },
                                     "You can create symlinks using the omnibar: Press CTRL+P then type 'l:' followed by the item you want to link to.",

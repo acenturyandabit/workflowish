@@ -174,14 +174,14 @@ exports[`Renders an item 1`] = `
           </span>
         </span>
         <div
-          className="__editable___help_23"
+          className="__editable___help_24"
           contentEditable={true}
           dangerouslySetInnerHTML={
             {
               "__html": "This means you can nest bullet points...",
             }
           }
-          data-testid="__help_23"
+          data-testid="__help_24"
           onBlur={[Function]}
           onChange={[Function]}
           onClick={[Function]}
@@ -233,14 +233,14 @@ exports[`Renders an item 1`] = `
               </span>
             </span>
             <div
-              className="__editable___help_24"
+              className="__editable___help_25"
               contentEditable={true}
               dangerouslySetInnerHTML={
                 {
                   "__html": "Like this,",
                 }
               }
-              data-testid="__help_24"
+              data-testid="__help_25"
               onBlur={[Function]}
               onChange={[Function]}
               onClick={[Function]}
@@ -292,14 +292,14 @@ exports[`Renders an item 1`] = `
                   </span>
                 </span>
                 <div
-                  className="__editable___help_25"
+                  className="__editable___help_26"
                   contentEditable={true}
                   dangerouslySetInnerHTML={
                     {
                       "__html": "And this,",
                     }
                   }
-                  data-testid="__help_25"
+                  data-testid="__help_26"
                   onBlur={[Function]}
                   onChange={[Function]}
                   onClick={[Function]}
@@ -351,14 +351,14 @@ exports[`Renders an item 1`] = `
                       </span>
                     </span>
                     <div
-                      className="__editable___help_26"
+                      className="__editable___help_27"
                       contentEditable={true}
                       dangerouslySetInnerHTML={
                         {
                           "__html": "And so on.",
                         }
                       }
-                      data-testid="__help_26"
+                      data-testid="__help_27"
                       onBlur={[Function]}
                       onChange={[Function]}
                       onClick={[Function]}
@@ -417,14 +417,14 @@ exports[`Renders an item 1`] = `
           </span>
         </span>
         <div
-          className="__editable___help_27"
+          className="__editable___help_28"
           contentEditable={true}
           dangerouslySetInnerHTML={
             {
               "__html": "You can edit any item in the list by clicking it and typing :)",
             }
           }
-          data-testid="__help_27"
+          data-testid="__help_28"
           onBlur={[Function]}
           onChange={[Function]}
           onClick={[Function]}
@@ -476,71 +476,11 @@ exports[`Renders an item 1`] = `
               </span>
             </span>
             <div
-              className="__editable___help_28"
-              contentEditable={true}
-              dangerouslySetInnerHTML={
-                {
-                  "__html": "You can also add new items by pressing Enter on an existing item; or,",
-                }
-              }
-              data-testid="__help_28"
-              onBlur={[Function]}
-              onChange={[Function]}
-              onClick={[Function]}
-              onInput={[Function]}
-              onKeyDown={[Function]}
-              onKeyUp={[Function]}
-              style={
-                {
-                  "flex": "1 1 auto",
-                  "scrollMarginTop": "100px",
-                }
-              }
-            />
-          </span>
-          <div
-            style={
-              {
-                "borderLeft": "1px solid white",
-                "marginLeft": "0.5em",
-                "paddingLeft": "5px",
-              }
-            }
-          />
-        </span>
-        <span
-          className="itemWrapperClass"
-        >
-          <span
-            onContextMenu={[Function]}
-            style={
-              {
-                "background": "",
-              }
-            }
-          >
-            <span
-              style={
-                {
-                  "color": "white",
-                  "cursor": "pointer",
-                  "paddingLeft": "0.2em",
-                  "userSelect": "none",
-                }
-              }
-            >
-              <span
-                onClick={[Function]}
-              >
-                ●
-              </span>
-            </span>
-            <div
               className="__editable___help_29"
               contentEditable={true}
               dangerouslySetInnerHTML={
                 {
-                  "__html": "Backspace all the way to the end, and then once more, to delete an item.",
+                  "__html": "You can also add new items by pressing Enter on an existing item; or,",
                 }
               }
               data-testid="__help_29"
@@ -600,10 +540,70 @@ exports[`Renders an item 1`] = `
               contentEditable={true}
               dangerouslySetInnerHTML={
                 {
-                  "__html": "Press CTRL+S to save your changes to your browser. (Other save options are available, read on!)",
+                  "__html": "Backspace all the way to the end, and then once more, to delete an item.",
                 }
               }
               data-testid="__help_30"
+              onBlur={[Function]}
+              onChange={[Function]}
+              onClick={[Function]}
+              onInput={[Function]}
+              onKeyDown={[Function]}
+              onKeyUp={[Function]}
+              style={
+                {
+                  "flex": "1 1 auto",
+                  "scrollMarginTop": "100px",
+                }
+              }
+            />
+          </span>
+          <div
+            style={
+              {
+                "borderLeft": "1px solid white",
+                "marginLeft": "0.5em",
+                "paddingLeft": "5px",
+              }
+            }
+          />
+        </span>
+        <span
+          className="itemWrapperClass"
+        >
+          <span
+            onContextMenu={[Function]}
+            style={
+              {
+                "background": "",
+              }
+            }
+          >
+            <span
+              style={
+                {
+                  "color": "white",
+                  "cursor": "pointer",
+                  "paddingLeft": "0.2em",
+                  "userSelect": "none",
+                }
+              }
+            >
+              <span
+                onClick={[Function]}
+              >
+                ●
+              </span>
+            </span>
+            <div
+              className="__editable___help_31"
+              contentEditable={true}
+              dangerouslySetInnerHTML={
+                {
+                  "__html": "Press CTRL+S to save your changes to your browser. (Other save options are available, read on!)",
+                }
+              }
+              data-testid="__help_31"
               onBlur={[Function]}
               onChange={[Function]}
               onClick={[Function]}
@@ -658,14 +658,14 @@ exports[`Renders an item 1`] = `
           </span>
         </span>
         <div
-          className="__editable___help_31"
+          className="__editable___help_32"
           contentEditable={true}
           dangerouslySetInnerHTML={
             {
               "__html": "Since lists get complicated, you can also collapse/show lists by focusing on an item and pressing CTRL+UP/DOWN.",
             }
           }
-          data-testid="__help_31"
+          data-testid="__help_32"
           onBlur={[Function]}
           onChange={[Function]}
           onClick={[Function]}
