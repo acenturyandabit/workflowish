@@ -13,6 +13,7 @@
 - Add copy-symlink-under commands
 - refactor tutorial; rename copy symlink commands; add tests for commands
 - Fix duplicated symlink node
+- Add replay buffer + fix tests
 
 # Version 3.7.0: New Item Modification Tracking System 
 - Add CLI cleanup tools

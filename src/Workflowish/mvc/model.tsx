@@ -63,7 +63,7 @@ export const getTransformedDataAndSetter = (props: {
             // Must check second time otherwise this is called multiple times.
             // feels like locks all over again
             if (!(virtualRootId in data)) return firstTimeData;
-            else return data;
+            else return {};
         }), 1);
         setItemsByKey = () => {
             // Don't allow user modifications before first load
@@ -88,7 +88,7 @@ export const virtualRootId = "__virtualRoot";
 
 export const getItemSetterByKey = (updateData: React.Dispatch<React.SetStateAction<BaseStoreDataType>>, oldTransformedData: React.RefObject<TransformedData | undefined>): ItemSetterByKey => {
     return (itemsToSet: Record<string, ItemTreeNode> | ((transformedData: TransformedData) => Record<string, ItemTreeNode>)) => {
-        updateData((oldData) => {
+        updateData(() => {
             let todoItemsToSet: Record<string, ItemTreeNode>;
             if (itemsToSet instanceof Function) {
                 const currentData = oldTransformedData.current;
@@ -100,13 +100,14 @@ export const getItemSetterByKey = (updateData: React.Dispatch<React.SetStateActi
             } else {
                 todoItemsToSet = itemsToSet;
             }
+            const flatItemsToSet: BaseStoreDataType = {};
             for (const key in todoItemsToSet) {
-                oldData[key] = {
+                flatItemsToSet[key]={
                     ...flattenItemNode(todoItemsToSet[key]),
                     lastModifiedUnixMillis: Date.now()
-                };
+                }
             }
-            return { ...oldData };
+            return flatItemsToSet;
         })
     }
 }

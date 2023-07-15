@@ -9,10 +9,12 @@ import { render, screen } from '@testing-library/react';
 import * as React from "react";
 import { it, expect, jest } from '@jest/globals';
 import Workflowish from "./index";
-import { BaseStoreDataType } from '~CoreDataLake';
+import { BaseStoreDataType, jestSetMakeUniqueKey } from '~CoreDataLake';
 import { resolveAllDocuments } from '~CoreDataLake';
 import { fromNestedRecord } from './mvc/firstTimeDoc';
 import { FlatItemBlob, FlatItemData, fromTree, virtualRootId } from './mvc/model';
+
+jestSetMakeUniqueKey(() => "newItem");
 
 export const makeMockData = (mockData: BaseStoreDataType): [
     (newData:
@@ -32,7 +34,7 @@ export const makeMockData = (mockData: BaseStoreDataType): [
         } else {
             newDataToSet = newData;
         }
-        dataSetByConsumer = resolveAllDocuments([newDataToSet, mockData]);
+        dataSetByConsumer = resolveAllDocuments([dataSetByConsumer, newDataToSet]);
     }
     const getDataSetByConsumer = () => dataSetByConsumer;
     return [mockUpdateData, getDataSetByConsumer]
@@ -41,7 +43,6 @@ export const makeMockData = (mockData: BaseStoreDataType): [
 it('Creates the new document if no document is provided', () => {
     jest.useFakeTimers();
     jest.spyOn(global, 'setTimeout');
-    Date.now = jest.fn(() => 1337);
 
     const initialEmptyData = {};
     const [mockUpdateData, getDataSetByConsumer] = makeMockData(initialEmptyData);
@@ -65,6 +66,8 @@ it('Creates the new document if no document is provided', () => {
     )
     const secondRenderJ = secondRender.toJSON();
     expect(secondRenderJ).toMatchSnapshot();
+    jest.restoreAllMocks();
+    jest.useRealTimers();
 })
 
 it('Indents an item correctly when tabbed into a symlink', async () => {
@@ -157,7 +160,6 @@ it('Unindents an item correctly when tabbed out from a symlink', async () => {
 
 
 it("Unindent at root level doesn't explode", async () => {
-    Date.now = jest.fn(() => 1337);
     const user = userEvent.setup({ delay: null }) // https://github.com/testing-library/user-event/issues/833
 
     const initialData: FlatItemBlob = fromTree(fromNestedRecord({

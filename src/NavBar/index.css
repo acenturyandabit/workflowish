@@ -15,16 +15,33 @@
     z-index: 1000;
 }
 
-.filemenu>li>a:hover {
+.filemenu li>a:hover {
     background: var(--topbar-highlight-color);
 }
 
-.filemenu>li>a {
-    text-align: center;
+.filemenu>li>ul{
+    display: none;
+}
+
+.filemenu>li:hover>ul {
+    display: block;
+    position: absolute;
+    top: 2em;
+    margin: 0;
+    padding: 0;
+    text-align: left;
+    background: black;
+    list-style-type: none;
+}
+
+.filemenu li>a {
     text-decoration: none;
     padding: 0.5em 16px;
     z-index: 1000;
     display: block;
     cursor: pointer;
     user-select: none;
+}
+.filemenu>li>a{
+    text-align: center;
 }

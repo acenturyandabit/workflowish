@@ -9,7 +9,7 @@ import Workflowish from "~Workflowish";
 export default () => {
 
   const [kvStores, setKVStores] = useKVStoresList();
-  const [dataAndLoadState, updateData, doSave] = useCoreDataLake(kvStores);
+  const {dataAndLoadState, updateData, doSave} = useCoreDataLake(kvStores);
 
   React.useEffect(() => {
     const keydownListener = (e: KeyboardEvent) => {

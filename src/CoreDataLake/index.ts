@@ -10,9 +10,15 @@ export type BaseItemType = {
 export type BaseStoreDataType = {
     [key: string]: BaseItemType
 }
+export type BaseDeltaType = {
+    key: string,
+    from?: BaseItemType
+    to?: BaseItemType
+}
 
 export type DataAndLoadState = {
     data: BaseStoreDataType,
+    replayBuffer: BaseDeltaType[],
     loaded: boolean,
     changed: boolean
 }
@@ -30,7 +36,7 @@ export const makeNewUniqueKey = (): string => {
     return uniqueKeyGenerator()
 }
 
-export const jsetSetMakeUniqueKey = (_uniqueKeyGenerator: () => string) => {
+export const jestSetMakeUniqueKey = (_uniqueKeyGenerator: () => string) => {
     // esbuild doesn't allow Jest to mock exported functions; so we use a setter here
     uniqueKeyGenerator = _uniqueKeyGenerator;
 }
@@ -44,14 +50,15 @@ export const setToDeleted = (itm: BaseItemType) => {
     itm.lastModifiedUnixMillis = Date.now();
 }
 
-export const useCoreDataLake = (kvStores: KVStoresAndLoadedState): [
-    DataAndLoadState,
-    React.Dispatch<React.SetStateAction<BaseStoreDataType>>,
-    () => void
-] => {
+export const useCoreDataLake = (kvStores: KVStoresAndLoadedState): {
+    dataAndLoadState: DataAndLoadState,
+    updateData: React.Dispatch<React.SetStateAction<BaseStoreDataType>>,
+    doSave: () => void,
+} => {
     const [dataAndLoadState, setDataAndLoadState] = React.useState<DataAndLoadState>({
         loaded: false,
         changed: false,
+        replayBuffer: [],
         data: {}
     });
 
@@ -66,9 +73,9 @@ export const useCoreDataLake = (kvStores: KVStoresAndLoadedState): [
                         setDataAndLoadState((dataAndLoadState) => {
                             const mergedDoc = resolveAllDocuments([syncedDoc, dataAndLoadState.data]);
                             return {
+                                ...dataAndLoadState,
                                 data: mergedDoc,
                                 loaded: true,
-                                changed: dataAndLoadState.changed
                             }
                         })
                     } else {
@@ -98,11 +105,12 @@ export const useCoreDataLake = (kvStores: KVStoresAndLoadedState): [
                     documentsToBeMerged.push(generateFirstTimeDoc());
                 }
 
-                setDataAndLoadState({
+                setDataAndLoadState((dataAndLoadState) => ({
+                    ...dataAndLoadState,
                     loaded: true,
                     changed: false,
                     data: resolveAllDocuments(documentsToBeMerged)
-                });
+                }));
             }
         })()
     }, [kvStores, dataAndLoadState])
@@ -119,13 +127,16 @@ export const useCoreDataLake = (kvStores: KVStoresAndLoadedState): [
         setDataAndLoadState(olddataAndLoadState => {
             let dataToSet: BaseStoreDataType;
             if (data instanceof Function) {
-                dataToSet = data(olddataAndLoadState.data);
+                dataToSet = data({...olddataAndLoadState.data});
             } else {
                 dataToSet = data;
             }
-            dataToSet = resolveAllDocuments([dataToSet, olddataAndLoadState.data]);
+            const { resolved, deltas } = getDiffsAndResolvedItems(dataToSet, olddataAndLoadState.data);
+            const newReplayBuffer = [...olddataAndLoadState.replayBuffer, ...deltas]
+            dataToSet = resolved;
             return {
                 ...olddataAndLoadState,
+                replayBuffer: newReplayBuffer,
                 data: dataToSet,
                 changed: true
             }
@@ -133,7 +144,7 @@ export const useCoreDataLake = (kvStores: KVStoresAndLoadedState): [
     }
     const _window = window as unknown as Record<string, DataAndLoadState>;
     _window["dataAndLoadState"] = dataAndLoadState;
-    return [dataAndLoadState, updateData, doSave]
+    return { dataAndLoadState, updateData, doSave }
 }
 
 export const resolveAllDocuments = (documents: BaseStoreDataType[]): BaseStoreDataType => {

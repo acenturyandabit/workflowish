@@ -12,6 +12,7 @@ import { ScriptingEngineNavbarAndDialog } from '~ScriptingEngine';
 import { KVStoresAndLoadedState } from '~Stores/KVStoreInstances';
 import { BaseStoreDataType, DataAndLoadState } from '~CoreDataLake';
 import { isMobile } from '~util/isMobile';
+import { ReplayRendererNavbarAndDialog } from './ReplayRenderer';
 
 export default (props: {
     setKVStores: React.Dispatch<React.SetStateAction<KVStoresAndLoadedState>>,
@@ -32,10 +33,16 @@ export default (props: {
                 setKVStores={props.setKVStores}
             ></FileNavbarAndDialog>
             <HelpNavbarAndDialog></HelpNavbarAndDialog>
-            <ScriptingEngineNavbarAndDialog
-                data={props.dataAndLoadState.data}
-                setData={props.setData}
-            ></ScriptingEngineNavbarAndDialog>
+            <li>
+                <a>Tools</a>
+                <ul>
+                    <ReplayRendererNavbarAndDialog replayBuffer={props.dataAndLoadState.replayBuffer}></ReplayRendererNavbarAndDialog>
+                    <ScriptingEngineNavbarAndDialog
+                        data={props.dataAndLoadState.data}
+                        setData={props.setData}
+                    ></ScriptingEngineNavbarAndDialog>
+                </ul>
+            </li>
             <li style={{ float: "right" }}><a>
                 {props.dataAndLoadState.changed ? unsavedChangesText : ""}
             </a></li>

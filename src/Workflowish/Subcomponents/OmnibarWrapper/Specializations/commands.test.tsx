@@ -12,9 +12,9 @@ import Workflowish from "~/Workflowish";
 import { fromNestedRecord } from '~/Workflowish/mvc/firstTimeDoc';
 import { makeMockData } from '~/Workflowish/index.test';
 import { FlatItemBlob, FlatItemData, fromTree, virtualRootId } from '~/Workflowish/mvc/model';
-import * as CoreDataLake from "~CoreDataLake";
+import { jestSetMakeUniqueKey } from "~CoreDataLake";
 
-CoreDataLake.jsetSetMakeUniqueKey(() => "newItem");
+jestSetMakeUniqueKey(() => "newItem");
 
 it('Copy Symlink Command works on plain item', async () => {
     const user = userEvent.setup({ delay: null }) // https://github.com/testing-library/user-event/issues/833
