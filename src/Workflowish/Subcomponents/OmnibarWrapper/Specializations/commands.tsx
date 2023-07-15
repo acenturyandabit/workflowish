@@ -105,7 +105,7 @@ export const commands: Command[] = [
     },
     {
         commandName: "csl",
-        prettyName: "Copy as symlink",
+        prettyName: "Copy as symlink here",
         singleArgument: true,
         command: (commandFunctions) => copySymlink(commandFunctions),
     },
@@ -115,14 +115,20 @@ export const commands: Command[] = [
         command: (commandFunctions) => copySymlink(commandFunctions),
     },
     {
-        commandName: "csla",
-        prettyName: "Copy as symlink away under...",
+        commandName: "msl",
+        prettyName: "Keep symlink here but move away to...",
+        command: (commandFunctions) => copySymlink(commandFunctions),
+    },
+    {
+        commandName: "msla",
+        prettyName: "Keep symlink here and move this away under...",
         command: (commandFunctions) => copySymlink(commandFunctions),
     }
 ]
 
 const copySymlink = (commandFunctions: CommandFunctionsBundle) => {
     const newId = makeNewUniqueKey();
+    const commandName = commandFunctions.currentCommand.commandName;
     commandFunctions.transformedDataAndSetter.setItemsByKey((transformedData) => {
         const thisItem = transformedData.keyedNodes[commandFunctions.currentItem.id];
         let linkId = commandFunctions.currentItem.id;
@@ -137,16 +143,30 @@ const copySymlink = (commandFunctions: CommandFunctionsBundle) => {
             searchHighlight: [],
             lastModifiedUnixMillis: Date.now()
         }
-        const parentId = commandFunctions.currentCommand.commandName == "csl" ? transformedData.parentById[commandFunctions.currentItem.id] : commandFunctions.searchedItemId
-        const parentItem = transformedData.keyedNodes[parentId];
-        const currentIdx = parentItem.children.map(i => i.id).indexOf(commandFunctions.currentItem.id)
-        parentItem.children.splice(currentIdx + 1, 0, newNode);
-        return {
-            [parentItem.id]: parentItem,
+        const thisParentId = transformedData.parentById[commandFunctions.currentItem.id];
+        const thisParentItem = transformedData.keyedNodes[thisParentId];
+        const symlinkParentId = commandName == "csl" ? thisParentId : commandFunctions.searchedItemId
+        const symlinkParentItem = transformedData.keyedNodes[symlinkParentId];
+        const currentIdx = symlinkParentItem.children.map(i => i.id).indexOf(commandFunctions.currentItem.id)
+        const modifiedItems: Record<string, ItemTreeNode> = {
             [newNode.id]: newNode
         }
+        if (commandName != "cslu") {
+            const removeItemFromThisParent = () => {
+                const shouldRemoveItem = commandName.startsWith("m") ? 1 : 0;
+                thisParentItem.children.splice(currentIdx + 1, shouldRemoveItem, newNode);
+                modifiedItems[thisParentItem.id] = thisParentItem;
+            };
+            removeItemFromThisParent();
+        }
+        const itemAlreadyAddedToOldParent = (commandName == "csl");
+        if (!itemAlreadyAddedToOldParent) {
+            symlinkParentItem.children.push(newNode);
+            modifiedItems[symlinkParentItem.id] = symlinkParentItem;
+        }
+        return modifiedItems;
     })
-    if (commandFunctions.currentCommand.commandName == "csla") {
+    if (commandFunctions.currentCommand.commandName.length == 4) {
         commandFunctions.focusItem({ treePathHint: commandFunctions.currentItem.treePath });
     } else {
         commandFunctions.focusItem({ id: newId, treePathHint: commandFunctions.currentItem.treePath });

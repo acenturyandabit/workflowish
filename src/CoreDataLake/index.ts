@@ -22,9 +22,17 @@ export const generateFirstTimeDoc = (): BaseStoreDataType => {
 }
 
 let uniqueCounter = 0;
-export const makeNewUniqueKey = (): string => {
+let uniqueKeyGenerator = (): string => {
     uniqueCounter++;
     return Date.now().toString() + `_${uniqueCounter}`;
+}
+export const makeNewUniqueKey = (): string => {
+    return uniqueKeyGenerator()
+}
+
+export const jsetSetMakeUniqueKey = (_uniqueKeyGenerator: () => string) => {
+    // esbuild doesn't allow Jest to mock exported functions; so we use a setter here
+    uniqueKeyGenerator = _uniqueKeyGenerator;
 }
 
 export const setToDeleted = (itm: BaseItemType) => {

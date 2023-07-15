@@ -5,7 +5,7 @@ module.exports = {
   preset: 'ts-jest',
   testEnvironment: 'jsdom',
   transform: {
-    '^.+\\.tsx?$': 'esbuild-jest',
+    '^.+\\.tsx?$': 'jest-esbuild',
   },
   moduleNameMapper: {
     '\\.(css|less)$': '<rootDir>/src/util/jest_css_placeholder.tsx',

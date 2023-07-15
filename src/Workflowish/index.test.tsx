@@ -14,7 +14,7 @@ import { resolveAllDocuments } from '~CoreDataLake';
 import { fromNestedRecord } from './mvc/firstTimeDoc';
 import { FlatItemBlob, FlatItemData, fromTree, virtualRootId } from './mvc/model';
 
-const makeMockData = (mockData: BaseStoreDataType): [
+export const makeMockData = (mockData: BaseStoreDataType): [
     (newData:
         BaseStoreDataType |
         ((oldData: BaseStoreDataType) => BaseStoreDataType)

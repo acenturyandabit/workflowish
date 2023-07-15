@@ -49,10 +49,6 @@ const OmniBar = (props: {
     children: React.ReactElement
 }) => {
     const inputReference = React.useRef<HTMLInputElement>(null);
-    const lastFocusedItem_ = React.useRef<IdAndFocusPath>({
-        id: "",
-        treePath: []
-    });
     React.useEffect(() => {
         const listenForCtrlFP = (e: KeyboardEvent) => {
             if ((e.key == "f" || e.key == "p") && (e.ctrlKey || e.metaKey)) {
@@ -69,7 +65,6 @@ const OmniBar = (props: {
                             return {
                                 ...currentState,
                                 barContents: ">",
-                                preOmnibarFocusItem: lastFocusedItem_.current
                             }
                         } else {
                             return currentState;
@@ -89,12 +84,16 @@ const OmniBar = (props: {
     React.useEffect(() => {
         // TODO: Consider promoting this state to parent
         if (props.omniBarState.barContents == "") {
-            lastFocusedItem_.current = props.lastFocusedItem;
+            props.setOmniBarState({
+                ...props.omniBarState,
+                preOmnibarFocusItem: props.lastFocusedItem
+            });
         }
     }, [props.lastFocusedItem]);
 
     return <div className="search-bar">
         <input ref={inputReference}
+            data-testid={`search-bar`}
             placeholder={"🔍 Search"}
             value={props.omniBarState.barContents}
             onChange={(evt) => props.setOmniBarState((oldState) => ({ ...oldState, barContents: evt.target.value }))}

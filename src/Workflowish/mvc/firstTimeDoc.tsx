@@ -17,9 +17,66 @@ export const generateFirstTimeWorkflowishDoc = (): ItemTreeNode => {
                 data: "Workflowish is a keyboard-focused nested listing app.",
                 collapsed: true,
                 children: [
-                    "With a few nifty tricks up its sleeve, like:",
-                    { data: "[LN: symlink_id]", collapsed: true },
-                    { data: "[LN: scripting_engine]", collapsed: true }
+                    {
+                        data: "Workflowish is inspired by Workflowy (https://workflowy.com/), but is free and open source, with in-browser storage or self-hosting.",
+                        children: [{
+                            data: "Workflowish also works on a mobile phone, again with a keyboard-first experience.",
+                            collapsed: true,
+                            children: [
+                                "On mobile, you can use the modifiers provided to perform the same actions as on desktop.",
+                                "You can configure autosave in the File menu.",
+                                "Workflowish is a Progressive Web App - so you can add it to your homepage and start using it immediately!.",
+                            ]
+                        }, {
+                            data: "For self-hosted storage, clone the github repository (https://github.com/acenturyandabit/workflowish) and follow the README.",
+                        }]
+                    },
+                    {
+                        data: "As an extra treat for superusers out there, Workflowish also comes with:",
+                        collapsed: true,
+                        children: [
+                            {
+                                data: "A scripting engine to automate your workflow!",
+                                children: ["See the Scripts menu for more information."],
+                                id: "scripting_engine",
+                                collapsed: true
+                            },
+                            {
+                                data: "An omni-bar like VSCode with search and a command palette.",
+                                children: [
+                                    "Press CTRL+F to search in workflowy; or if you really want to use the browser search, press CTRL+F twice.",
+                                    "Press CTRL+P to open the command palette; then type the short name of the command to use it.",
+                                    "Use the arrrow keys to navigate between the options of the search / commands.",
+                                ]
+                            },
+                            {
+                                data: "Symbolic links!",
+                                id: "symlink_id",
+                                children: [
+                                    { data: "[LN: symlink_id]", collapsed: true },
+                                    "You can create symlinks using the omnibar: Press CTRL+P then type 'l:' followed by the item you want to link to.",
+                                    {
+                                        data: "Or, you can use the legacy method...",
+                                        collapsed: true,
+                                        children: [
+                                            "Write [LN: <item id>] to create a link to another item.",
+                                            // TODO: Add a keyboard shortcut insetad of clicking on IDs.
+                                            "You can determine item IDs by pressing ALT+SHIFT, then clicking on the ID to copy it to your clipboard.",
+                                            "The keyboard shortcut for copying IDs is ALT+SHIFT+C. or ALT+SHIFT+ACT on mobile.",
+                                            "You can also jump to a linked item using CTRL+J CTRL+ACT on mobile.",
+                                            {
+                                                data: "Symlinks refer to another item in the tree, and inherit all the same text and children as the item they refer to.",
+                                                id: "symlink_id",
+                                                children: [
+                                                    "However, symlinked items have their own collapsed state.",
+                                                ]
+                                            }
+                                        ]
+                                    },
+                                ]
+                            }
+                        ]
+                    },
                 ]
             },
             {
@@ -60,60 +117,6 @@ export const generateFirstTimeWorkflowishDoc = (): ItemTreeNode => {
                 }
                 ],
             },
-            {
-                data: "Workflowish is inspired by Workflowy (https://workflowy.com/), but is free and open source, with in-browser storage or self-hosting.",
-                children: [{
-                    data: "Workflowish also works on a mobile phone, again with a keyboard-first experience.",
-                    collapsed: true,
-                    children: [
-                        "On mobile, you can use the modifiers provided to perform the same actions as on desktop.",
-                        "You can configure autosave in the File menu.",
-                        "Workflowish is a Progressive Web App - so you can add it to your homepage and start using it immediately!.",
-                    ]
-                }, {
-                    data: "For self-hosted storage, clone the github repository (https://github.com/acenturyandabit/workflowish) and follow the README.",
-                }]
-            },
-            {
-                data: "As an extra treat for superusers out there, Workflowish also comes with:",
-                collapsed: true,
-                children: [
-                    {
-                        data: "A scripting engine to automate your workflow!",
-                        children: ["See the Scripts menu for more information."],
-                        id: "scripting_engine",
-                        collapsed: true
-                    },
-                    {
-                        data: "An omni-bar like VSCode with search and a command palette.",
-                        children: [
-                            "Press CTRL+F to search in workflowy; or if you really want to use the browser search, press CTRL+F twice.",
-                            "Press CTRL+P to open the command palette; then type the short name of the command to use it.",
-                            "Use the arrrow keys to navigate between the options of the search / commands.",
-                        ]
-                    },
-                    {
-                        data: "Symbolic links!",
-                        id: "symlink_id",
-                        children: [
-                            "Symlinked items will have the same text and children as the item they refer to.",
-                            "However, symlinked items have their own collapsed state.",
-                            "You can create symlinks using the omnibar: Press CTRL+P then type 'l:' followed by the item you want to link to.",
-                            {
-                                data: "Or, you can use the legacy method...",
-                                collapsed: true,
-                                children: [
-                                    "Write [LN: <item id>] to create a link to another item.",
-                                    // TODO: Add a keyboard shortcut insetad of clicking on IDs.
-                                    "You can determine item IDs by pressing ALT+SHIFT, then clicking on the ID to copy it to your clipboard.",
-                                    "The keyboard shortcut for copying IDs is ALT+SHIFT+C. or ALT+SHIFT+ACT on mobile.",
-                                    "You can also jump to a linked item using CTRL+J CTRL+ACT on mobile.",
-                                ]
-                            },
-                        ]
-                    }
-                ]
-            }
         ]
 
     }
