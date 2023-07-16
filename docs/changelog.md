@@ -3,6 +3,7 @@
 - fix bug which duplicates entire data object for every key
 - Fix bug that prevents item deletion
 - Remove minwidth constraint for phone
+- Split the same subcard by time
 
 # Version 4.0.0: Anki memorization system; move to _lm key for last modified 
 - Move focus to end of element to make it easier to delete items after each other

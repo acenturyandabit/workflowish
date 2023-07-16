@@ -68,14 +68,16 @@ const isTestable = (item: BaseItemType) => {
     }
 }
 const INITIAL_TEST_TIME = 24 * 60 * 60 * 1000;
+const SAME_ROOT_SPLIT_TIME = 60 * 60 * 1000;
 
 const getOrMakeInitialQuestionData = (data: string, oldData: QuestionData | undefined): QuestionData => {
     const desiredFamiliarity: QuestionData = {};
     const matches = [...data.matchAll(/\{\{(.+?)\}\}/g)];
-    matches.forEach(match => {
+    matches.forEach((match, idx) => {
+        const thisInitialTime = INITIAL_TEST_TIME + idx * SAME_ROOT_SPLIT_TIME;
         desiredFamiliarity[match[1]] = {
-            familiarity: INITIAL_TEST_TIME,
-            lastTested: Date.now() - INITIAL_TEST_TIME
+            familiarity: thisInitialTime,
+            lastTested: Date.now() - thisInitialTime
         };
     })
     if (oldData) {
