@@ -15,6 +15,7 @@
 - Fix duplicated symlink node
 - Add replay buffer + fix tests
 - Fix move symlink under behavior
+- Ensure replay renderer does not consume resources if user did not request
 
 # Version 3.7.0: New Item Modification Tracking System 
 - Add CLI cleanup tools

@@ -1,0 +1,11 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Doesn't render replay buffer if not shown 1`] = `
+<li>
+  <a
+    onClick={[Function]}
+  >
+    Show undo buffer
+  </a>
+</li>
+`;
