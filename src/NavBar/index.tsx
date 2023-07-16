@@ -13,19 +13,23 @@ import { KVStoresAndLoadedState } from '~Stores/KVStoreInstances';
 import { BaseStoreDataType, DataAndLoadState } from '~CoreDataLake';
 import { isMobile } from '~util/isMobile';
 import { ReplayRendererNavbarAndDialog } from './ReplayRenderer';
+import { AvailableApps, CoreAppState } from '~App';
 
 export default (props: {
     setKVStores: React.Dispatch<React.SetStateAction<KVStoresAndLoadedState>>,
     kvStores: KVStoresAndLoadedState,
     setData: React.Dispatch<React.SetStateAction<BaseStoreDataType>>,
     dataAndLoadState: DataAndLoadState,
+    coreAppState: CoreAppState,
+    setCoreAppState: React.Dispatch<React.SetStateAction<CoreAppState>>
 }) => {
     const unsavedChangesText = isMobile() ? "*" : "Unsaved Changes";
     return <>
         <ul className="filemenu">
-            <li>
-                <a>Workflowish</a>
-            </li>
+            <AppSelector
+                coreAppState={props.coreAppState}
+                setCoreAppState={props.setCoreAppState}
+            ></AppSelector>
             <FileNavbarAndDialog
                 data={props.dataAndLoadState.data}
                 setData={props.setData}
@@ -48,6 +52,21 @@ export default (props: {
             </a></li>
         </ul>
     </>
+}
+
+const AppSelector = (props: {
+    coreAppState: CoreAppState,
+    setCoreAppState: React.Dispatch<React.SetStateAction<CoreAppState>>
+}) => {
+    return <li>
+        <a style={{ minWidth: "150px", textAlign: "left" }}>T &gt; {props.coreAppState.selectedApp}</a>
+        <ul>
+            {Object.keys(AvailableApps).map((_app) => {
+                const app = _app as keyof typeof AvailableApps;
+                return <li key={app}><a onClick={() => props.setCoreAppState((state) => ({ ...state, selectedApp: app }))}>{app}</a></li>
+            })}
+        </ul>
+    </li>
 }
 
 const HelpNavbarAndDialog = () => {

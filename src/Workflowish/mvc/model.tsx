@@ -2,6 +2,7 @@ import * as React from "react";
 import { BaseItemType, BaseStoreDataType, makeNewUniqueKey, setToDeleted } from "~CoreDataLake";
 import { HighlightStates as SearchHighlightStates } from "../Subcomponents/OmnibarWrapper/Specializations/search";
 import { generateFirstTimeWorkflowishDoc } from "./firstTimeDoc";
+import { excludeKeys } from "~util/getStateToSet";
 
 type HighlightStates = SearchHighlightStates;
 
@@ -88,13 +89,13 @@ export const virtualRootId = "__virtualRoot";
 
 export const getItemSetterByKey = (updateData: React.Dispatch<React.SetStateAction<BaseStoreDataType>>, oldTransformedData: React.RefObject<TransformedData | undefined>): ItemSetterByKey => {
     return (itemsToSet: Record<string, ItemTreeNode> | ((transformedData: TransformedData) => Record<string, ItemTreeNode>)) => {
-        updateData(() => {
+        updateData((data) => {
             let todoItemsToSet: Record<string, ItemTreeNode>;
             if (itemsToSet instanceof Function) {
                 const currentData = oldTransformedData.current;
-                if (currentData){
+                if (currentData) {
                     todoItemsToSet = itemsToSet(currentData);
-                }else{
+                } else {
                     throw "Data ref was undefined!"
                 }
             } else {
@@ -102,8 +103,10 @@ export const getItemSetterByKey = (updateData: React.Dispatch<React.SetStateActi
             }
             const flatItemsToSet: BaseStoreDataType = {};
             for (const key in todoItemsToSet) {
-                flatItemsToSet[key]={
-                    ...flattenItemNode(todoItemsToSet[key]),
+                const flatItem = flattenItemNode(todoItemsToSet[key]);
+                flatItemsToSet[key] = {
+                    ...excludeKeys(data, Object.keys(flatItem)),
+                    ...flatItem,
                     lastModifiedUnixMillis: Date.now()
                 }
             }
