@@ -58,3 +58,43 @@ it('Copy Symlink Command works on plain item', async () => {
     expect(symlinkFlat.children[2]).toBe("newItem")
 
 })
+
+it('Move Symlink (msl) Command moves item and creates symlink', async () => {
+    const user = userEvent.setup({ delay: null }) // https://github.com/testing-library/user-event/issues/833
+
+    const initialData: FlatItemBlob = fromTree(fromNestedRecord({
+        data: virtualRootId,
+        id: virtualRootId,
+        children: [
+            {
+                data: "move target",
+                id: "move_target"
+            },
+            {
+                data: "source parent",
+                id: "source_parent",
+                children: [
+                    {
+                        data: "a child",
+                        id: "child"
+                    }
+                ]
+            }
+        ]
+    }));
+    const [mockUpdateData, getDataSetByConsumer] = makeMockData(initialData);
+    render(
+        <Workflowish
+            data={initialData}
+            updateData={mockUpdateData}
+        ></Workflowish>
+    );
+
+    await user.click(screen.getByTestId("child"));
+    await user.click(screen.getByTestId("search-bar"));
+    await user.keyboard(">msl:move target{Enter}");
+    const set_data = getDataSetByConsumer();
+    expect((set_data["move_target"] as FlatItemData).children[0]).toBe("child");
+    expect((set_data["source_parent"] as FlatItemData).children[0]).toBe("newItem");
+    expect((set_data["source_parent"] as FlatItemData).children.length).toBe(1);
+})

@@ -14,6 +14,7 @@
 - refactor tutorial; rename copy symlink commands; add tests for commands
 - Fix duplicated symlink node
 - Add replay buffer + fix tests
+- Fix move symlink under behavior
 
 # Version 3.7.0: New Item Modification Tracking System 
 - Add CLI cleanup tools

@@ -164,6 +164,14 @@ const copySymlink = (commandFunctions: CommandFunctionsBundle) => {
             symlinkParentItem.children.push(newNode);
             modifiedItems[symlinkParentItem.id] = symlinkParentItem;
         }
+        const should_move_original_item_from_old_parent = (commandName.startsWith("m"));
+        if (should_move_original_item_from_old_parent){
+            symlinkParentItem.children.splice(symlinkParentItem.children.map(i=>i.id).indexOf(commandFunctions.currentItem.id), 1);
+            modifiedItems[symlinkParentItem.id] = symlinkParentItem;
+            const thisItemNewParent = transformedData.keyedNodes[commandFunctions.searchedItemId];
+            thisItemNewParent.children.push(thisItem);
+            modifiedItems[thisItemNewParent.id] = thisItemNewParent;
+        }
         return modifiedItems;
     })
     if (commandFunctions.currentCommand.commandName.length == 4) {
