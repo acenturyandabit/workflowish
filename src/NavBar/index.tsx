@@ -59,7 +59,7 @@ const AppSelector = (props: {
     setCoreAppState: React.Dispatch<React.SetStateAction<CoreAppState>>
 }) => {
     return <li>
-        <a style={{ minWidth: "150px", textAlign: "left" }}>T &gt; {props.coreAppState.selectedApp}</a>
+        <a style={{textAlign: "left" }}>T &gt; {props.coreAppState.selectedApp}</a>
         <ul>
             {Object.keys(AvailableApps).map((_app) => {
                 const app = _app as keyof typeof AvailableApps;
