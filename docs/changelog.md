@@ -1,4 +1,5 @@
-# Latest 
+# Version 4.0.0: Anki memorization system; move to _lm key for last modified 
+- Move to _lm key for last modified
 - Move focus to end of element to make it easier to delete items after each other
 - Fix deletion getting rid of child items that have been outdented
 - Focus correct item when editing near symlink items

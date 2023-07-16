@@ -4,6 +4,10 @@
 # npm run verbump major|minor|patch message
 
 VERBUMP_LEVEL=$1
+if [ -z $VERBUMP_LEVEL ]; then
+    echo "Usage: verbump major|minor|patch <message>"
+    exit 1
+fi
 shift
 MESSAGE=$@
 LAST_VERSION=$(git tag | grep -E "v[0-9]+\.[0-9]+(\.[0-9])+?" | sort -rV | head -n 1 | cut -c 2-)
