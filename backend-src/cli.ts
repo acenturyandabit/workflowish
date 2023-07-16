@@ -11,15 +11,8 @@ const main = () => {
     program.parse();
 }
 
-const getLatestCommand = (filename: string, options: { dropDeleted: boolean }) => {
+const getLatestCommand = (filename: string) => {
     const snapshot = loadFromFile(filename);
-    if (options.dropDeleted) {
-        for (const key in snapshot) {
-            if (Object.keys(snapshot[key]).length == 1) {
-                delete snapshot[key];
-            }
-        }
-    }
     console.log(JSON.stringify(snapshot));
 }
 

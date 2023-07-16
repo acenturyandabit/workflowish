@@ -1,4 +1,4 @@
-import { BaseStoreDataType } from "../src/CoreDataLake";
+import { BaseItemType, BaseStoreDataType } from "../src/CoreDataLake";
 import * as fs from 'fs'
 
 export const loadFromFile = (fileName: string): BaseStoreDataType => {
@@ -16,9 +16,13 @@ export const loadFromFile = (fileName: string): BaseStoreDataType => {
         }, {});
     }
     for (const key in savedDoc) {
-        if (savedDoc[key] == null) {
+        if (objectIsDeleted(savedDoc[key])) {
             delete savedDoc[key];
         }
     }
-    return savedDoc
+    return savedDoc;
+}
+
+const objectIsDeleted = (obj: BaseItemType | null) => {
+    return obj == null || Object.keys(obj).length == 1;
 }
