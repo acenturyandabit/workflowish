@@ -52,7 +52,7 @@ export const appFactory_build = (config: Config): ReturnType<typeof express> => 
         if (!checkAuthPasses(docPath, req.headers)) {
             res.sendStatus(401);
         } else {
-            const resolved = innerSaveOrSync(docPath, req.body);
+            const { resolved } = innerSaveOrSync(docPath, req.body);
             res.send(resolved);
         }
         console.log("Synced");

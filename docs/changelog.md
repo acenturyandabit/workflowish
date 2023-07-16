@@ -1,5 +1,6 @@
 # Latest 
 - Sync only sends diffs
+- fix bug which duplicates entire data object for every key
 
 # Version 4.0.0: Anki memorization system; move to _lm key for last modified 
 - Move to _lm key for last modified
