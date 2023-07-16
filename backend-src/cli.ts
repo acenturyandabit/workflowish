@@ -6,12 +6,12 @@ const main = () => {
         .command("get-latest")
         .argument("filename")
         .option("-d, --drop-deleted", "Drop deleted items")
-        .action(getLatestCommand);
+        .action(getLatestVersionOfFile);
 
     program.parse();
 }
 
-const getLatestCommand = (filename: string) => {
+const getLatestVersionOfFile = (filename: string) => {
     const snapshot = loadFromFile(filename);
     console.log(JSON.stringify(snapshot));
 }

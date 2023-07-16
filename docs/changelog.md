@@ -18,6 +18,7 @@
 - Ensure replay renderer does not consume resources if user did not request
 - Add Anki Test and card statistics V1
 - Don't send deleted items to frontend
+- change from lastUpdatedMillis to _lm
 
 # Version 3.7.0: New Item Modification Tracking System 
 - Add CLI cleanup tools
@@ -152,7 +153,7 @@
 `The MVP Mobile Version`
 - Deployment with the web server
 - Add push-pull functionality on save
-     - Breaking change! Now all stored items must have a lastModifiedUnixMillis
+     - Breaking change! Now all stored items must have a _lm
      - Breaking change! Now trees are stored as rendered (i.e. with a childArray rather than with a parent pointer)
         - this makes it more flexible
         - this also better suits a data model where we fetch individual items from the datamodel on an as-needed basis rather than dumping every change to every consumer always.

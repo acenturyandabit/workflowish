@@ -12,7 +12,7 @@ export const getTimeUntilNextTest = (entry: QuestionDataEntry) => entry.lastTest
 export type QuestionData = Record<string, QuestionDataEntry>;
 
 export type Card = {
-    lastModifiedUnixMillis: number
+    _lm: number
     data: string,
     questionData: QuestionData,
 }
@@ -38,7 +38,7 @@ export const getTransformedDataAndSetter = (props: {
             transformedData[key] = {
                 data,
                 questionData: getOrMakeInitialQuestionData(data, item.questionData as QuestionData | undefined), // default
-                lastModifiedUnixMillis: item.lastModifiedUnixMillis
+                _lm: item._lm
             }
         }
     }
@@ -50,7 +50,7 @@ export const getTransformedDataAndSetter = (props: {
                 dataToUpdate[key] = {
                     ...data[key],
                     ...itemsToSet[key],
-                    lastModifiedUnixMillis: Date.now()
+                    _lm: Date.now()
                 }
             }
             return dataToUpdate;

@@ -4,7 +4,7 @@ import getDiffsAndResolvedItems from './getResolvedItems';
 import { generateFirstTimeWorkflowishDoc } from '~Workflowish/mvc/firstTimeDoc';
 import { fromTree } from '~Workflowish/mvc/model';
 export type BaseItemType = {
-    lastModifiedUnixMillis: number,
+    _lm: number,
     [key: string]: unknown
 }
 export type BaseStoreDataType = {
@@ -43,11 +43,11 @@ export const jestSetMakeUniqueKey = (_uniqueKeyGenerator: () => string) => {
 
 export const setToDeleted = (itm: BaseItemType) => {
     for (const key in itm) {
-        if (key != "lastModifiedUnixMillis") {
+        if (key != "_lm") {
             delete itm[key];
         }
     }
-    itm.lastModifiedUnixMillis = Date.now();
+    itm._lm = Date.now();
 }
 
 export const useCoreDataLake = (kvStores: KVStoresAndLoadedState): {

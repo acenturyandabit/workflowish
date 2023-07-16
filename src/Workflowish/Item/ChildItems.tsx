@@ -23,7 +23,7 @@ export const ChildItems = (props: {
     if (props.styleParams.symlinkedParents.indexOf(props.item.id) != -1) {
         childrenToRender = [{
             data: "Infinite loop...",
-            lastModifiedUnixMillis: 0,
+            _lm: 0,
             id: "",
             children: [],
             collapsed: true,

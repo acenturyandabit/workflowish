@@ -59,7 +59,7 @@ export const makeItemActions = (props: {
         props.model.setItemsByKey((transformedData) => {
             const newTreeNode: ItemTreeNode = {
                 id: newId,
-                lastModifiedUnixMillis: Date.now(),
+                _lm: Date.now(),
                 data: newContents || "",
                 children: [],
                 collapsed: false,
@@ -82,7 +82,7 @@ export const makeItemActions = (props: {
             const currentSiblingIdx = siblings.map(i => i.id).indexOf(props.thisItem.id);
             const newTreeNode: ItemTreeNode = {
                 id: newId,
-                lastModifiedUnixMillis: Date.now(),
+                _lm: Date.now(),
                 data: newContents || "",
                 children: [],
                 collapsed: false,

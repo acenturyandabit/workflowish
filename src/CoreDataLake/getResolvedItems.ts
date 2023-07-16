@@ -34,7 +34,7 @@ const leftRightKeysChanged = (left: BaseStoreDataType, right: BaseStoreDataType)
     const rightNewerKeys: string[] = []
     const halfKeysChanged = (_left: BaseStoreDataType, _right: BaseStoreDataType, _leftItemsNewer: string[]) => {
         for (const key in _left) {
-            if (!(key in _right) || _right[key].lastModifiedUnixMillis < _left[key].lastModifiedUnixMillis) {
+            if (!(key in _right) || _right[key]._lm < _left[key]._lm) {
                 _leftItemsNewer.push(key);
             }
         }

@@ -7,7 +7,7 @@ import { excludeKeys } from "~util/getStateToSet";
 type HighlightStates = SearchHighlightStates;
 
 export type ItemTreeNode = {
-    lastModifiedUnixMillis: number
+    _lm: number
     id: string,
     data: string,
     children: ItemTreeNode[],
@@ -18,7 +18,7 @@ export type ItemTreeNode = {
 }
 
 export type FlatItemData = {
-    lastModifiedUnixMillis: number
+    _lm: number
     data: string,
     children: string[],
     collapsed: boolean
@@ -28,7 +28,7 @@ export type FlatItemBlob = Record<string, FlatItemData>;
 
 export const makeNewItem = (): ItemTreeNode => ({
     id: makeNewUniqueKey(),
-    lastModifiedUnixMillis: Date.now(),
+    _lm: Date.now(),
     data: "",
     children: [],
     searchHighlight: [],
@@ -107,7 +107,7 @@ export const getItemSetterByKey = (updateData: React.Dispatch<React.SetStateActi
                 flatItemsToSet[key] = {
                     ...excludeKeys(data, Object.keys(flatItem)),
                     ...flatItem,
-                    lastModifiedUnixMillis: Date.now()
+                    _lm: Date.now()
                 }
             }
             return flatItemsToSet;
@@ -127,7 +127,7 @@ export const transformData = (flatItemBlob: FlatItemBlob): TransformedData => {
             orphanedTreeItemCandidates.add(nodeId);
             treeConstructorRecord[nodeId] = {
                 id: nodeId,
-                lastModifiedUnixMillis: flatItemBlob[nodeId].lastModifiedUnixMillis,
+                _lm: flatItemBlob[nodeId]._lm,
                 data: flatItemBlob[nodeId].data,
                 children: [],
                 searchHighlight: [],
@@ -209,7 +209,7 @@ export const fromTree = (root: ItemTreeNode): FlatItemBlob => {
             });
             if (foundDuplicate) {
                 top.children = noDuplicateChildren;
-                top.lastModifiedUnixMillis = Date.now();
+                top._lm = Date.now();
             }
             flatBlob[top.id] = flattenItemNode(top);
         }
@@ -219,7 +219,7 @@ export const fromTree = (root: ItemTreeNode): FlatItemBlob => {
 
 export const flattenItemNode = (itemNode: ItemTreeNode): FlatItemData => {
     const flatBlob: FlatItemData = {
-        lastModifiedUnixMillis: itemNode.lastModifiedUnixMillis,
+        _lm: itemNode._lm,
         data: itemNode.data,
         collapsed: itemNode.collapsed,
         children: itemNode.children.map(child => child.id)

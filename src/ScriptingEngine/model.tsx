@@ -1,12 +1,12 @@
 import * as React from "react";
 import { BaseStoreDataType } from "~CoreDataLake";
 export type SavedUserScript = {
-    lastModifiedUnixMillis: number
+    _lm: number
     scriptContents: string,
 }
 
 export type UserScript = {
-    lastModifiedUnixMillis: number
+    _lm: number
     scriptContents: string,
     lastActivateTime?: number
 }
@@ -47,7 +47,7 @@ const extractUserScript = (data: BaseStoreDataType) => {
         currentScript = data[scriptKey] as SavedUserScript;
     } else {
         currentScript = {
-            lastModifiedUnixMillis: Date.now(),
+            _lm: Date.now(),
             scriptContents: ""
         }
     }

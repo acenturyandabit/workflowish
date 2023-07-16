@@ -19,7 +19,7 @@ export const expandParentsAndFocusItem = (
                 itemsToUpdate[key] = {
                     ...transformedData.keyedNodes[key],
                     collapsed: false,
-                    lastModifiedUnixMillis: Date.now()
+                    _lm: Date.now()
                 }
             })
         }

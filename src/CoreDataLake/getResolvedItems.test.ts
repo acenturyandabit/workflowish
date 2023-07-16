@@ -5,13 +5,13 @@ import getDiffsAndResolvedItems from "./getResolvedItems"
 it('Merges two collections correctly', () => {
     const itemA: BaseStoreDataType = {
         item1: {
-            lastModifiedUnixMillis: 0,
+            _lm: 0,
             cameFrom: "A"
         }
     }
     const itemB: BaseStoreDataType = {
         item1: {
-            lastModifiedUnixMillis: 1,
+            _lm: 1,
             cameFrom: "B"
         }
     }

@@ -5,7 +5,7 @@ import { IdAndFocusPath } from './DFSFocus';
 // TODO: Consider using TransformedData instead of ItemTreeNode here
 // would need to refactor Items to use full capabilities of TransformedData 
 export const ModelContext = React.createContext<ItemTreeNode>({
-    lastModifiedUnixMillis: 0,
+    _lm: 0,
     id: "MODEL_CONTEXT_DEFAULT",
     data: "If you're seeing this, something's probably gone wrong :(",
     children: [],

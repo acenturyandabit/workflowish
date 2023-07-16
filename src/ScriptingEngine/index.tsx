@@ -42,7 +42,7 @@ export const ScriptingEngineNavbarAndDialog = (props: {
                         setCurrentScript((oldScript) => ({
                             ...oldScript,
                             scriptContents: value || "",
-                            lastModifiedUnixMillis: Date.now(),
+                            _lm: Date.now(),
                         }))
                     }}
                 />

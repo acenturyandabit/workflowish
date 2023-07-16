@@ -43,7 +43,7 @@ export const ScriptEngineInstance = (props: {
                         concreteUserModifiedItems = updateFunction(oldItem);
                     }
                     if (!oldItem || stringify(concreteUserModifiedItems) != stringify(oldItem)) {
-                        newData[key] = { ...concreteUserModifiedItems, lastModifiedUnixMillis: Date.now() }
+                        newData[key] = { ...concreteUserModifiedItems, _lm: Date.now() }
                         modifiedKeysList.push(key);
                     }
                 }
@@ -134,7 +134,7 @@ const getHandlersFromUserScript = (props: {
                 props.getSetData((data) => {
                     const id = args.id || makeNewUniqueKey();
                     const newItem: FlatItemData = {
-                        lastModifiedUnixMillis: Date.now(),
+                        _lm: Date.now(),
                         data: args.text,
                         children: [],
                         collapsed: false,
@@ -174,7 +174,7 @@ const getHandlersFromUserScript = (props: {
                 const id = makeNewUniqueKey();
                 const newItem: ItemTreeNode = {
                     id,
-                    lastModifiedUnixMillis: Date.now(),
+                    _lm: Date.now(),
                     data: "",
                     children: [],
                     collapsed: false,

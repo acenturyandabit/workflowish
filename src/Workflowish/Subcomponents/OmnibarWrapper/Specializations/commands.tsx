@@ -42,10 +42,10 @@ export const commands: Command[] = [
                     children: [],
                     collapsed: false,
                     searchHighlight: [],
-                    lastModifiedUnixMillis: Date.now()
+                    _lm: Date.now()
                 }
                 parentItem.children.splice(currentChildIdx + 1, 0, newNode);
-                parentItem.lastModifiedUnixMillis = Date.now();
+                parentItem._lm = Date.now();
                 return {
                     [parentItemId]: parentItem,
                     [newNode.id]: newNode
@@ -87,14 +87,14 @@ export const commands: Command[] = [
                 children: [],
                 collapsed: false,
                 searchHighlight: [],
-                lastModifiedUnixMillis: Date.now()
+                _lm: Date.now()
             }
             commandFunctions.transformedDataAndSetter.setItemsByKey((transformedData) => {
                 const searchedItem = transformedData.keyedNodes[commandFunctions.searchedItemId]
                 return {
                     [searchedItem.id]: {
                         ...searchedItem,
-                        lastModifiedUnixMillis: Date.now(),
+                        _lm: Date.now(),
                         children: [...searchedItem.children, newNode]
                     },
                     [newNode.id]: newNode
@@ -141,7 +141,7 @@ const copySymlink = (commandFunctions: CommandFunctionsBundle) => {
             children: [],
             collapsed: false,
             searchHighlight: [],
-            lastModifiedUnixMillis: Date.now()
+            _lm: Date.now()
         }
         const thisParentId = transformedData.parentById[commandFunctions.currentItem.id];
         const thisParentItem = transformedData.keyedNodes[thisParentId];

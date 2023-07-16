@@ -8,7 +8,7 @@ export const testDocuments: Record<string, () => BaseStoreDataType> = {
             const top = createStack.pop() as [number, number, string];
             const thisID = `generated_idx_${top[1]}`;
             items[thisID] = {
-                lastModifiedUnixMillis: 0,
+                _lm: 0,
                 data: thisID,
                 children: [],
                 collapsed: true
@@ -25,19 +25,19 @@ export const testDocuments: Record<string, () => BaseStoreDataType> = {
     "ohNoADuplicate": (): BaseStoreDataType => {
         const items = getDataBlockWithVirtualRoot();
         items["test"] = {
-            lastModifiedUnixMillis: 0,
+            _lm: 0,
             data: "Hello world",
             children: ["test3"],
             collapsed: true
         }
         items["test2"] = {
-            lastModifiedUnixMillis: 0,
+            _lm: 0,
             data: "Hello world",
             children: ["test3"],
             collapsed: true
         }
         items["test3"] = {
-            lastModifiedUnixMillis: 0,
+            _lm: 0,
             data: "I am a child",
             children: [],
             collapsed: true
@@ -49,7 +49,7 @@ export const testDocuments: Record<string, () => BaseStoreDataType> = {
 const getDataBlockWithVirtualRoot = (): BaseStoreDataType => {
     return {
         [virtualRootId]: {
-            lastModifiedUnixMillis: 0,
+            _lm: 0,
             data: "",
             children: [],
             collapsed: false
