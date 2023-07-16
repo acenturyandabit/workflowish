@@ -58,7 +58,7 @@ export const appFactory_build = (config: Config): ReturnType<typeof express> => 
         console.log("Synced");
     })
 
-    const innerSaveOrSync = (docPath: string, incomingDoc: BaseStoreDataType): BaseStoreDataType => {
+    const innerSaveOrSync = (docPath: string, incomingDoc: BaseStoreDataType): { resolved: BaseStoreDataType, incomingDiffs: BaseStoreDataType } => {
         const savedDoc = loadFromFile(docPath);
 
         const { resolved, incomingDiffs } = getDiffsAndResolvedItems(incomingDoc, savedDoc)
@@ -67,7 +67,7 @@ export const appFactory_build = (config: Config): ReturnType<typeof express> => 
         } else {
             console.log("Nothing to save")
         }
-        return resolved;
+        return { resolved, incomingDiffs };
     }
 
     app.get("/load", (req, res) => {

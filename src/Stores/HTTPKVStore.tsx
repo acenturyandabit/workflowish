@@ -2,6 +2,7 @@ import { DefaultKVConstructionArgs, KVStore, KVStoreSettingsStruct } from "./typ
 import * as React from "react";
 import { Checkbox, FormControlLabel, TextField } from "@mui/material"
 import { BaseStoreDataType } from "~CoreDataLake";
+import getDiffsAndResolvedItems from "~CoreDataLake/getResolvedItems";
 
 const HTTPKVStoreType = "HTTPStore" as const;
 export interface HTTPKVStoreSettings extends KVStoreSettingsStruct {
@@ -22,6 +23,7 @@ const isHTTPKVStoreSettings = (x: KVStoreSettingsStruct | DefaultKVConstructionA
 class HTTPKVStore implements
     KVStore<HTTPKVStoreSettings>{
     settings: HTTPKVStoreSettings
+    cachedDataFile: BaseStoreDataType
     password: string
     static type = HTTPKVStoreType
     constructor(_settings: HTTPKVStoreSettings | DefaultKVConstructionArgs) {
@@ -39,6 +41,7 @@ class HTTPKVStore implements
             };
         }
         this.password = ""
+        this.cachedDataFile = {};
         this.sync = this.sync.bind(this)
     }
 
@@ -139,14 +142,16 @@ class HTTPKVStore implements
     }
 
     async sync(data: BaseStoreDataType): Promise<BaseStoreDataType> {
+        const { incomingDiffs } = getDiffsAndResolvedItems(data, this.cachedDataFile);
         const response = this.authedFetch(this.settings.syncURL, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify(data)
+            body: JSON.stringify(incomingDiffs)
         })
-        return await (await response).json()
+        this.cachedDataFile = await (await response).json();
+        return this.cachedDataFile;
     }
 
     async load(): Promise<BaseStoreDataType> {
@@ -155,7 +160,8 @@ class HTTPKVStore implements
             this.password = prompt("Please enter your password for " + this.settings.loadURL) || "";
         }
         const response = await this.authedFetch(this.settings.loadURL);
-        return await response.json();
+        this.cachedDataFile = await response.json();
+        return this.cachedDataFile;
     }
 
     async authedFetch(url: string, args?: RequestInit): Promise<ReturnType<typeof fetch>> {

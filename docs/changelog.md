@@ -1,3 +1,6 @@
+# Latest 
+- Sync only sends diffs
+
 # Version 4.0.0: Anki memorization system; move to _lm key for last modified 
 - Move to _lm key for last modified
 - Move focus to end of element to make it easier to delete items after each other
