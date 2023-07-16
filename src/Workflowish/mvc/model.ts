@@ -105,7 +105,7 @@ export const getItemSetterByKey = (updateData: React.Dispatch<React.SetStateActi
             for (const key in todoItemsToSet) {
                 const flatItem = flattenItemNode(todoItemsToSet[key]);
                 flatItemsToSet[key] = {
-                    ...excludeKeys(data[key], Object.keys(flatItem)),
+                    ...excludeKeys(data[key], Object.keys(flattenItemNode(makeNewItem()))),
                     ...flatItem,
                     _lm: Date.now()
                 }
