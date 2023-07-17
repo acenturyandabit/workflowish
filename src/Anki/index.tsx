@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { BaseStoreDataType } from '~CoreDataLake';
-import { TransformedDataAndSetter, getTimeUntilNextTest, getTransformedDataAndSetter } from './mvc/model';
+import { TransformedDataAndSetter, flattenItems, getTransformedDataAndSetter } from './mvc/model';
 import { Button, Menu, MenuItem } from '@mui/material';
 import "./index.css";
 import { TestModePanel, toDurationString } from './TestModePanel';
@@ -60,16 +60,10 @@ export default (props: {
 const CardStatsPanel = (props: {
     transformedDataAndSetter: TransformedDataAndSetter
 }) => {
-    const testableRows = Object.entries(props.transformedDataAndSetter.transformedData).map(([key, value]) => {
-        const individualTestables = Object.entries(value.questionData).map(([text, questionData]) => {
-            return <div key={text}>
-                <p>{text}: {toDurationString(questionData.familiarity)} test interval; {toDurationString(getTimeUntilNextTest(questionData))} until next</p>
-            </div>
-        })
-        return <div key={key}>
-            <h3>{value.data}</h3>
-            {individualTestables}
-        </div>
+    const allItems = flattenItems(props.transformedDataAndSetter.transformedData);
+    const testableRows = allItems.map((item)=>{
+        const key = item.id + item.questionId;
+        return <div key={key}>{item.testText}: {toDurationString(item.testability)}</div>
     })
     return <>{testableRows}</>
 }

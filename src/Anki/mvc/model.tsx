@@ -89,3 +89,22 @@ const getOrMakeInitialQuestionData = (data: string, oldData: QuestionData | unde
     }
     return desiredFamiliarity;
 }
+
+export const flattenItems = (transformedData: TransformedData) => {
+    const testableItems = Object.entries(transformedData);
+    return testableItems.flatMap(([id, card]) => {
+        return Object.entries(card.questionData).map(([questionId, questionData]) => {
+            let testText = card.data.replace(questionId, "???");
+            testText = testText.replace(/\{\{|\}\}/g, "")
+            const revealText = card.data.replace(/\{\{|\}\}/g, "")
+            return {
+                id,
+                data: card.data,
+                testText,
+                revealText,
+                questionId,
+                testability: getTimeUntilNextTest(questionData)
+            };
+        })
+    });
+}
