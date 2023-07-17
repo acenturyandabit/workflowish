@@ -11,9 +11,9 @@ export const TestModePanel = (props: {
     const testableItems = Object.entries(items);
     const [reveal, setReveal] = React.useState(false);
     if (testableItems.length) {
-        const allItemsByTestability = flattenItems(items);
-        allItemsByTestability.sort((a, b) => a.testability - b.testability);
-        const mostTestable = allItemsByTestability[0];
+        const allItemsBynextDue = flattenItems(items);
+        allItemsBynextDue.sort((a, b) => a.nextDue - b.nextDue);
+        const mostTestable = allItemsBynextDue[0];
         const updateCurrentCard = (goodOrBad: "good" | "bad") => {
             props.transformedDataAndSetter.setItemsByKey((transformedData) => {
                 const itemToUpdate = transformedData[mostTestable.id];
@@ -31,7 +31,7 @@ export const TestModePanel = (props: {
 
         return <>
             <h2>{reveal ? mostTestable.revealText : mostTestable.testText}</h2>
-            <h3>This card repeats every: {toDurationString(mostTestable.testability)}</h3>
+            <h3>This card repeats every: {toDurationString(mostTestable.nextDue)}</h3>
             <div className="anki-buttons">
                 <Button fullWidth variant="contained" onClick={() => setReveal(true)}>Reveal</Button>
                 <Button fullWidth variant="contained" onClick={() => { updateCurrentCard("good"); setReveal(false) }}>Good</Button>

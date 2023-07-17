@@ -21,6 +21,7 @@
     "@emotion/styled": "^11.10.6",
     "@monaco-editor/react": "^4.4.6",
     "@mui/material": "^5.11.12",
+    "@mui/x-data-grid": "^6.10.0",
     "@testing-library/user-event": "^14.4.3",
     "@types/json-stable-stringify": "^1.0.34",
     "argparse": "^2.0.1",
@@ -38,7 +39,7 @@
     "react-dom": "^18.2.0",
     "sanitize-html": "^2.10.0",
     "tsx": "^3.12.6",
-    "uuid": "^9.0.0" 
+    "uuid": "^9.0.0"
   },
   "devDependencies": {
     "@jest/globals": "^29.5.0",

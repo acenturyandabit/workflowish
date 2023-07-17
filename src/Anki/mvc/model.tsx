@@ -103,7 +103,8 @@ export const flattenItems = (transformedData: TransformedData) => {
                 testText,
                 revealText,
                 questionId,
-                testability: getTimeUntilNextTest(questionData)
+                nextDue: getTimeUntilNextTest(questionData),
+                familiarity: questionData.familiarity
             };
         })
     });

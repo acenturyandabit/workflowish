@@ -4,6 +4,7 @@ import { TransformedDataAndSetter, flattenItems, getTransformedDataAndSetter } f
 import { Button, Menu, MenuItem } from '@mui/material';
 import "./index.css";
 import { TestModePanel, toDurationString } from './TestModePanel';
+import { DataGrid } from '@mui/x-data-grid';
 
 interface TabPanelProps {
     children?: React.ReactNode;
@@ -60,10 +61,21 @@ export default (props: {
 const CardStatsPanel = (props: {
     transformedDataAndSetter: TransformedDataAndSetter
 }) => {
-    const allItems = flattenItems(props.transformedDataAndSetter.transformedData);
-    const testableRows = allItems.map((item)=>{
-        const key = item.id + item.questionId;
-        return <div key={key}>{item.testText}: {toDurationString(item.testability)}</div>
-    })
-    return <>{testableRows}</>
+    const allItems = flattenItems(props.transformedDataAndSetter.transformedData).map(item => ({
+        ...item,
+    }));
+    return <DataGrid
+        rows={allItems}
+        style={{ color: "white" }}
+        columns={[{
+            field: "testText",
+            flex: 1
+        }, {
+            field: "nextDue",
+            valueGetter: (params) => toDurationString(params.row.nextDue)
+        }, {
+            field: "familiarity",
+            valueGetter: (params) => toDurationString(params.row.familiarity)
+        }]}
+    ></DataGrid>
 }
