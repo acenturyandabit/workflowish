@@ -67,6 +67,7 @@ const CardStatsPanel = (props: {
     return <DataGrid
         rows={allItems}
         style={{ color: "white" }}
+        getRowId={(row) => row.id + row.questionId}
         columns={[{
             field: "testText",
             flex: 1
