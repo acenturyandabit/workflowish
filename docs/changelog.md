@@ -8,6 +8,7 @@
 - Add datagrid for card statistics
 - Fix sorting for card statistics
 - Fix broken sorting by providing id in anki
+- Fix intent of card staggering
 
 # Version 4.0.0: Anki memorization system; move to _lm key for last modified 
 - Move focus to end of element to make it easier to delete items after each other

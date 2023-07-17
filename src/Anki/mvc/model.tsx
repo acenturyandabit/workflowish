@@ -77,7 +77,7 @@ const getOrMakeInitialQuestionData = (data: string, oldData: QuestionData | unde
         const thisInitialTime = INITIAL_TEST_TIME + idx * SAME_ROOT_SPLIT_TIME;
         desiredFamiliarity[match[1]] = {
             familiarity: thisInitialTime,
-            lastTested: Date.now() - thisInitialTime
+            lastTested: Date.now()
         };
     })
     if (oldData) {
