@@ -72,10 +72,14 @@ const CardStatsPanel = (props: {
             flex: 1
         }, {
             field: "nextDue",
-            valueGetter: (params) => toDurationString(params.row.nextDue)
+            headerName: "Next Due",
+            renderCell: (params) => toDurationString(params.row.nextDue),
+            sortComparator: (rowA, rowB) => rowA - rowB
         }, {
             field: "familiarity",
-            valueGetter: (params) => toDurationString(params.row.familiarity)
+            headerName: "Repetition Period",
+            renderCell: (params) => toDurationString(params.row.familiarity),
+            sortComparator: (rowA, rowB) => rowA - rowB
         }]}
     ></DataGrid>
 }
