@@ -1,7 +1,4 @@
-# Latest 
-- fix linefeeds in git hooks
-
-# Version 2.0.1: Post-Anki Minor Bugfixes 
+# Version 4.0.1: Post-Anki Minor Bugfixes 
 - Sync only sends diffs
 - fix bug which duplicates entire data object for every key
 - Fix bug that prevents item deletion
