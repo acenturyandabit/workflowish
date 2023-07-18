@@ -1,6 +1,7 @@
 import React from "react";
 import { TransformedDataAndSetter, flattenItems } from "./mvc/model";
 import { Button } from '@mui/material';
+import './TestModePanel.css';
 
 const RETEST_IMMINENTLY_TIME = 60 * 60 * 1000;
 
@@ -29,15 +30,21 @@ export const TestModePanel = (props: {
             })
         }
 
-        return <>
+        return <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
             <h2>{reveal ? mostTestable.revealText : mostTestable.testText}</h2>
             <h3>This card repeats every: {toDurationString(mostTestable.nextDue)}</h3>
-            <div className="anki-buttons">
-                <Button fullWidth variant="contained" onClick={() => setReveal(true)}>Reveal</Button>
-                <Button fullWidth variant="contained" onClick={() => { updateCurrentCard("good"); setReveal(false) }}>Good</Button>
-                <Button fullWidth variant="contained" onClick={() => { updateCurrentCard("bad"); setReveal(false) }}>Bad</Button>
+            <div style={{ flex: " 1 0 1%" }}></div>
+            <div>
+                {reveal ?
+                    <div className={"good-bad-btns"}>
+                        <Button variant="contained" onClick={() => { updateCurrentCard("good"); setReveal(false) }}>Good</Button>
+                        <Button variant="contained" onClick={() => { updateCurrentCard("bad"); setReveal(false) }}>Bad</Button>
+                    </div>
+                    :
+                    <Button fullWidth variant="contained" onClick={() => setReveal(true)}>Reveal</Button>
+                }
             </div>
-        </>
+        </div>
     } else {
         return <>
             <h2>No cards available</h2>

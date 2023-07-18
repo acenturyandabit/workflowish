@@ -1,0 +1,7 @@
+.good-bad-btns {
+    display: flex;
+}
+
+.good-bad-btns>button {
+    flex: 1 0 10px;
+}

@@ -40,13 +40,13 @@ export default (props: {
         tab: 0
     })
 
-    return <>
+    return <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
         <Button variant="contained" onClick={(evt) => { setTabState({ ...tabState, open: true, anchorEl: evt.currentTarget }); }} id="anki-mode-switch" fullWidth><h1 style={{ margin: 0 }}>{tabs[tabState.tab]}</h1></Button>
         <Menu open={tabState.open} onClose={() => setTabState({ ...tabState, open: false })} MenuListProps={{
             'aria-labelledby': 'anki-mode-switch',
         }} anchorEl={tabState.anchorEl}>
             {tabs.map((tabName, tabIdx) => {
-                return <MenuItem key={tabName} onClick={() => setTabState({ ...tabState, tab: tabIdx })}>{tabName}</MenuItem>
+                return <MenuItem key={tabName} onClick={() => setTabState({ ...tabState, tab: tabIdx, open: false })}>{tabName}</MenuItem>
             })}
         </Menu >
         <TabPanel value={tabState.tab} index={0}>
@@ -55,7 +55,7 @@ export default (props: {
         <TabPanel value={tabState.tab} index={1}>
             <CardStatsPanel transformedDataAndSetter={transformedDataAndSetter} />
         </TabPanel>
-    </>
+    </div>
 }
 
 const CardStatsPanel = (props: {
@@ -66,7 +66,7 @@ const CardStatsPanel = (props: {
     }));
     return <DataGrid
         rows={allItems}
-        style={{ color: "white" }}
+        sx={{ color: "white" }}
         getRowId={(row) => row.id + row.questionId}
         columns={[{
             field: "testText",
