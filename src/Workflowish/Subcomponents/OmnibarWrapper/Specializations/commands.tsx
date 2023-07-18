@@ -145,32 +145,28 @@ const copySymlink = (commandFunctions: CommandFunctionsBundle) => {
         }
         const thisParentId = transformedData.parentById[commandFunctions.currentItem.id];
         const thisParentItem = transformedData.keyedNodes[thisParentId];
-        const symlinkParentId = commandName == "csl" ? thisParentId : commandFunctions.searchedItemId
-        const symlinkParentItem = transformedData.keyedNodes[symlinkParentId];
-        const currentIdx = symlinkParentItem.children.map(i => i.id).indexOf(commandFunctions.currentItem.id)
+        const currentIdx = thisParentItem.children.map(i => i.id).indexOf(commandFunctions.currentItem.id)
+
         const modifiedItems: Record<string, ItemTreeNode> = {
             [newNode.id]: newNode
         }
-        if (commandName != "cslu") {
-            const removeItemFromThisParent = () => {
-                const shouldRemoveItem = commandName.startsWith("m") ? 1 : 0;
-                thisParentItem.children.splice(currentIdx + 1, shouldRemoveItem, newNode);
+        if (commandName.startsWith("m")) {
+            // remove original item from parent and insert symlink
+            thisParentItem.children.splice(currentIdx, 1, newNode);
+            modifiedItems[thisParentItem.id] = thisParentItem;
+            // insert into target
+            const moveTarget = transformedData.keyedNodes[commandFunctions.searchedItemId];
+            moveTarget.children.push(thisItem);
+            modifiedItems[moveTarget.id] = moveTarget;
+        } else {
+            if (commandName == "csl") {
+                thisParentItem.children.splice(currentIdx + 1, 0, newNode);
                 modifiedItems[thisParentItem.id] = thisParentItem;
-            };
-            removeItemFromThisParent();
-        }
-        const itemAlreadyAddedToOldParent = (commandName == "csl");
-        if (!itemAlreadyAddedToOldParent) {
-            symlinkParentItem.children.push(newNode);
-            modifiedItems[symlinkParentItem.id] = symlinkParentItem;
-        }
-        const should_move_original_item_from_old_parent = (commandName.startsWith("m"));
-        if (should_move_original_item_from_old_parent){
-            symlinkParentItem.children.splice(symlinkParentItem.children.map(i=>i.id).indexOf(commandFunctions.currentItem.id), 1);
-            modifiedItems[symlinkParentItem.id] = symlinkParentItem;
-            const thisItemNewParent = transformedData.keyedNodes[commandFunctions.searchedItemId];
-            thisItemNewParent.children.push(thisItem);
-            modifiedItems[thisItemNewParent.id] = thisItemNewParent;
+            } else {
+                const newSymlinkParent = transformedData.keyedNodes[commandFunctions.searchedItemId];
+                newSymlinkParent.children.push(newNode);
+                modifiedItems[newSymlinkParent.id] = newSymlinkParent;
+            }
         }
         return modifiedItems;
     })

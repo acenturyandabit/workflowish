@@ -10,6 +10,7 @@
 - Fix broken sorting by providing id in anki
 - Fix intent of card staggering
 - Improved test buttons layout
+- Improve MUI styling and dependencies; add postfix to search bar for debugging; fix move commands
 
 # Version 4.0.0: Anki memorization system; move to _lm key for last modified 
 - Move focus to end of element to make it easier to delete items after each other

@@ -6,6 +6,7 @@ import { useCoreDataLake } from "~CoreDataLake";
 import NavBar from "~NavBar";
 import { useKVStoresList } from "~Stores/KVStoreInstances";
 import Workflowish from "~Workflowish";
+import type {} from '@mui/x-data-grid/themeAugmentation';
 
 export const AvailableApps = {
   "Workflowish": Workflowish,
@@ -41,6 +42,16 @@ export default () => {
         'Noto Sans', 'Arial', 'Helvetica', 'sans-serif'
       ].join(","),
       fontSize: 12,
+    },
+    components: {
+      // Use `MuiDataGrid` on DataGrid, DataGridPro and DataGridPremium
+      MuiDataGrid: {
+        styleOverrides: {
+          root: {
+            color: 'white',
+          },
+        },
+      },
     },
   })
   const [coreAppState, setCoreAppState] = React.useState<CoreAppState>({

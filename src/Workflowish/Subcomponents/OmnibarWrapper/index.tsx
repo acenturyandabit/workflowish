@@ -29,6 +29,7 @@ const OmniBarWrapper = (props: {
     return <>
         <OmniBar
             omniBarState={omniBarState}
+            transformedDataAndSetter={props.transformedDataAndSetter}
             setOmniBarState={setOmniBarState}
             omnibarKeyHandler={omnibarKeyHandler}
             lastFocusedItem={props.lastFocusedItem}
@@ -46,7 +47,8 @@ const OmniBar = (props: {
     setOmniBarState: React.Dispatch<React.SetStateAction<OmniBarState>>,
     omnibarKeyHandler: (evt: React.KeyboardEvent) => void,
     lastFocusedItem: IdAndFocusPath, // Todo: Elevate this property + the inputReference up
-    children: React.ReactElement
+    children: React.ReactElement,
+    transformedDataAndSetter: TransformedDataAndSetter
 }) => {
     const inputReference = React.useRef<HTMLInputElement>(null);
     React.useEffect(() => {
@@ -90,11 +92,14 @@ const OmniBar = (props: {
             });
         }
     }, [props.lastFocusedItem]);
-
+    let actOnPostfix = "";
+    if (props.lastFocusedItem.id) {
+        actOnPostfix = ` or act on ${props.transformedDataAndSetter.transformedData.keyedNodes[props.lastFocusedItem.id].data}`
+    }
     return <div className="search-bar">
         <input ref={inputReference}
             data-testid={`search-bar`}
-            placeholder={"🔍 Search"}
+            placeholder={`🔍 Search${actOnPostfix}`}
             value={props.omniBarState.barContents}
             onChange={(evt) => props.setOmniBarState((oldState) => ({ ...oldState, barContents: evt.target.value }))}
             onKeyDown={props.omnibarKeyHandler}
