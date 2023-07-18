@@ -1,5 +1,6 @@
 import tsconfigPaths from 'vite-tsconfig-paths'
 import { VitePWA } from 'vite-plugin-pwa'
+import react from '@vitejs/plugin-react'
 
 export default {
     plugins: [
@@ -34,7 +35,8 @@ export default {
             devOptions: {
                 enabled: true
             }
-        })
+        }),
+        react({ include: /\.(mdx|js|jsx|ts|tsx)$/ }),
     ],
     resolve: {
         alias: {

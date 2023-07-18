@@ -56,6 +56,7 @@
     "@types/uuid": "^9.0.1",
     "@typescript-eslint/eslint-plugin": "^5.54.0",
     "@typescript-eslint/parser": "^5.54.0",
+    "@vitejs/plugin-react": "^4.0.3",
     "babel-preset-nano-react-app": "^0.1.0",
     "esbuild": "^0.18.11",
     "eslint": "^8.35.0",
@@ -66,8 +67,7 @@
     "supertest": "^6.3.3",
     "ts-jest": "^29.0.5",
     "typescript": "^4.8.4",
-    "vite": "^3.2.1",
-    "vite-plugin-pwa": "^0.14.7",
+    "vite": "^4.4.4",
     "vite-tsconfig-paths": "^4.0.5"
   }
 }
