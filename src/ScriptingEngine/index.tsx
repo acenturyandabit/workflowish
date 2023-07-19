@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { BaseStoreDataType } from '~CoreDataLake';
+import { TaggedBaseStoreDataType, UpdateDataAction } from '~CoreDataLake';
 
 import { transformData } from './model';
 import Editor from "@monaco-editor/react";
@@ -13,8 +13,8 @@ import { DialogContentText } from '@mui/material';
 import { ScriptEngineInstance } from './engine';
 
 export const ScriptingEngineNavbarAndDialog = (props: {
-    setData: React.Dispatch<React.SetStateAction<BaseStoreDataType>>,
-    data: BaseStoreDataType
+    setData: UpdateDataAction,
+    data: TaggedBaseStoreDataType
 }) => {
     const [open, setOpen] = React.useState<boolean>(false);
     const [currentScript, setCurrentScript] = transformData(props);

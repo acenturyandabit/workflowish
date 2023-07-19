@@ -3,13 +3,25 @@ import { KVStoresAndLoadedState } from '~Stores/KVStoreInstances';
 import getDiffsAndResolvedItems from './getResolvedItems';
 import { generateFirstTimeWorkflowishDoc } from '~Workflowish/mvc/firstTimeDoc';
 import { fromTree } from '~Workflowish/mvc/model';
+import { DATA_SCHEMA_VERSION, updateVersion } from './versions';
+
+
 export type BaseItemType = {
     _lm: number,
     [key: string]: unknown
 }
+
 export type BaseStoreDataType = {
     [key: string]: BaseItemType
 }
+
+export type TaggedBaseStoreDataType = BaseStoreDataType & {
+    _meta: {
+        version: string,
+        _lm: number
+    }
+}
+
 export type BaseDeltaType = {
     key: string,
     from?: BaseItemType
@@ -17,14 +29,19 @@ export type BaseDeltaType = {
 }
 
 export type DataAndLoadState = {
-    data: BaseStoreDataType,
+    data: TaggedBaseStoreDataType,
     replayBuffer: BaseDeltaType[],
     loaded: boolean,
     changed: boolean
 }
 
-export const generateFirstTimeDoc = (): BaseStoreDataType => {
-    return fromTree(generateFirstTimeWorkflowishDoc());
+export type UpdateDataAction = (newDataOrGetter: BaseStoreDataType | ((data: TaggedBaseStoreDataType) => BaseStoreDataType)) => void
+
+export const generateFirstTimeDoc = (): TaggedBaseStoreDataType => {
+    return {
+        ...fromTree(generateFirstTimeWorkflowishDoc()),
+        ...newBlankDoc()
+    };
 }
 
 let uniqueCounter = 0;
@@ -50,16 +67,25 @@ export const setToDeleted = (itm: BaseItemType) => {
     itm._lm = Date.now();
 }
 
+export const newBlankDoc = (): TaggedBaseStoreDataType => {
+    return {
+        _meta: {
+            version: DATA_SCHEMA_VERSION,
+            _lm: 0
+        }
+    }
+}
+
 export const useCoreDataLake = (kvStores: KVStoresAndLoadedState): {
     dataAndLoadState: DataAndLoadState,
-    updateData: React.Dispatch<React.SetStateAction<BaseStoreDataType>>,
+    updateData: UpdateDataAction,
     doSave: () => void,
 } => {
     const [dataAndLoadState, setDataAndLoadState] = React.useState<DataAndLoadState>({
         loaded: false,
         changed: false,
         replayBuffer: [],
-        data: {}
+        data: newBlankDoc()
     });
 
     const doSave = React.useCallback(() => {
@@ -96,9 +122,9 @@ export const useCoreDataLake = (kvStores: KVStoresAndLoadedState): {
 
                 const documentsToBeMerged = await Promise.all(kvStores.stores.map(async i => {
                     try {
-                        return await i.load();
+                        return updateVersion(await i.load());
                     } catch (e) {
-                        return {}
+                        return newBlankDoc()
                     }
                 }));
                 if (documentsToBeMerged.length == 0) {
@@ -122,22 +148,20 @@ export const useCoreDataLake = (kvStores: KVStoresAndLoadedState): {
         return () => clearTimeout(autoSaveThrottleTimeout);
     }, [kvStores, dataAndLoadState, doSave])
 
-    const updateData = (data: BaseStoreDataType |
-        ((currentData: BaseStoreDataType) => BaseStoreDataType)) => {
+    const updateData = (newDataOrGetter: BaseStoreDataType | ((data: TaggedBaseStoreDataType) => BaseStoreDataType)) => {
         setDataAndLoadState(olddataAndLoadState => {
             let dataToSet: BaseStoreDataType;
-            if (data instanceof Function) {
-                dataToSet = data({...olddataAndLoadState.data});
+            if (newDataOrGetter instanceof Function) {
+                dataToSet = newDataOrGetter({ ...olddataAndLoadState.data });
             } else {
-                dataToSet = data;
+                dataToSet = newDataOrGetter;
             }
             const { resolved, deltas } = getDiffsAndResolvedItems(dataToSet, olddataAndLoadState.data);
             const newReplayBuffer = [...olddataAndLoadState.replayBuffer, ...deltas]
-            dataToSet = resolved;
             return {
                 ...olddataAndLoadState,
                 replayBuffer: newReplayBuffer,
-                data: dataToSet,
+                data: resolved,
                 changed: true
             }
         })
@@ -147,11 +171,11 @@ export const useCoreDataLake = (kvStores: KVStoresAndLoadedState): {
     return { dataAndLoadState, updateData, doSave }
 }
 
-export const resolveAllDocuments = (documents: BaseStoreDataType[]): BaseStoreDataType => {
-    const mergedDocument: BaseStoreDataType = documents.reduce((mergedDoc, newDoc) => {
+export const resolveAllDocuments = <DocType extends BaseStoreDataType,>(documents: DocType[]): DocType => {
+    const mergedDocument: DocType = documents.reduce((mergedDoc, newDoc) => {
         const { resolved } = getDiffsAndResolvedItems(mergedDoc, newDoc);
         return resolved;
-    }, {})
+    }, {} as DocType)
 
     return mergedDocument
 }

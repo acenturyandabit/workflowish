@@ -1,4 +1,4 @@
-import { BaseStoreDataType } from "~CoreDataLake"
+import { TaggedBaseStoreDataType } from "~CoreDataLake"
 
 export interface KVStoreSettingsStruct {
     type: string,
@@ -12,9 +12,9 @@ export interface KVStoreConstructor<SettingsStruct extends KVStoreSettingsStruct
 
 export type DefaultKVConstructionArgs = null;
 export interface KVStore<SettingsStruct extends KVStoreSettingsStruct> {
-    save: (data: BaseStoreDataType) => void,
-    sync?: (data: BaseStoreDataType) => Promise<BaseStoreDataType>,
-    load: () => Promise<BaseStoreDataType>,
+    save: (data: TaggedBaseStoreDataType) => void,
+    sync?: (data: TaggedBaseStoreDataType) => Promise<TaggedBaseStoreDataType>,
+    load: () => Promise<TaggedBaseStoreDataType>,
     makeFileDialog: (bumpKVStores: () => void) => React.ReactElement,
     toJsonSettings: () => SettingsStruct,
 }

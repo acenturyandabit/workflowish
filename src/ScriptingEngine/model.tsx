@@ -1,5 +1,5 @@
 import * as React from "react";
-import { BaseStoreDataType } from "~CoreDataLake";
+import { TaggedBaseStoreDataType, UpdateDataAction } from "~CoreDataLake";
 export type SavedUserScript = {
     _lm: number
     scriptContents: string,
@@ -13,8 +13,8 @@ export type UserScript = {
 
 const scriptKey = "__userscript";
 export const transformData = (props: {
-    data: BaseStoreDataType,
-    setData: React.Dispatch<React.SetStateAction<BaseStoreDataType>>
+    data: TaggedBaseStoreDataType,
+    setData: UpdateDataAction
 }): [UserScript,
         React.Dispatch<React.SetStateAction<UserScript>>] => {
     const [lastActivateTime, setLastActivateTime] = React.useState<number | undefined>(undefined);
@@ -41,7 +41,7 @@ export const transformData = (props: {
     return [currentScript, setCurrentScript];
 }
 
-const extractUserScript = (data: BaseStoreDataType) => {
+const extractUserScript = (data: TaggedBaseStoreDataType) => {
     let currentScript: SavedUserScript;
     if (scriptKey in data) {
         currentScript = data[scriptKey] as SavedUserScript;

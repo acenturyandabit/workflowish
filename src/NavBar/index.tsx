@@ -10,7 +10,7 @@ import HelpDocument from '~Workflowish/Subcomponents/HelpDocument';
 import FileNavbarAndDialog from '../Stores/FileDialog';
 import { ScriptingEngineNavbarAndDialog } from '~ScriptingEngine';
 import { KVStoresAndLoadedState } from '~Stores/KVStoreInstances';
-import { BaseStoreDataType, DataAndLoadState } from '~CoreDataLake';
+import { DataAndLoadState, UpdateDataAction } from '~CoreDataLake';
 import { isMobile } from '~util/isMobile';
 import { ReplayRendererNavbarAndDialog } from './ReplayRenderer';
 import { AvailableApps, CoreAppState } from '~App';
@@ -18,7 +18,7 @@ import { AvailableApps, CoreAppState } from '~App';
 export default (props: {
     setKVStores: React.Dispatch<React.SetStateAction<KVStoresAndLoadedState>>,
     kvStores: KVStoresAndLoadedState,
-    setData: React.Dispatch<React.SetStateAction<BaseStoreDataType>>,
+    setData: UpdateDataAction,
     dataAndLoadState: DataAndLoadState,
     coreAppState: CoreAppState,
     setCoreAppState: React.Dispatch<React.SetStateAction<CoreAppState>>

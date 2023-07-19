@@ -1,5 +1,5 @@
 import * as React from "react";
-import { BaseItemType, BaseStoreDataType, makeNewUniqueKey, setToDeleted } from "~CoreDataLake";
+import { BaseItemType, BaseStoreDataType, makeNewUniqueKey, newBlankDoc, setToDeleted } from "~CoreDataLake";
 import { HighlightStates as SearchHighlightStates } from "../Subcomponents/OmnibarWrapper/Specializations/search";
 import { generateFirstTimeWorkflowishDoc } from "./firstTimeDoc";
 import { excludeKeys } from "~util/getStateToSet";
@@ -24,7 +24,7 @@ export type FlatItemData = {
     collapsed: boolean
 }
 
-export type FlatItemBlob = Record<string, FlatItemData>;
+export type FlatItemBlob = Record<string, FlatItemData> & BaseStoreDataType;
 
 export const makeNewItem = (): ItemTreeNode => ({
     id: makeNewUniqueKey(),
@@ -64,7 +64,7 @@ export const getTransformedDataAndSetter = (props: {
             // Must check second time otherwise this is called multiple times.
             // feels like locks all over again
             if (!(virtualRootId in data)) return firstTimeData;
-            else return {};
+            else return newBlankDoc();
         }), 1);
         setItemsByKey = () => {
             // Don't allow user modifications before first load

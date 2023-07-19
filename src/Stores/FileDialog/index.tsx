@@ -7,15 +7,15 @@ import Dialog from '@mui/material/Dialog';
 import { KVStores, makeKVStore } from '~Stores';
 import { Box, TextField, MenuItem, FormControlLabel, Checkbox } from "@mui/material"
 import { KVStoresAndLoadedState } from '~Stores/KVStoreInstances';
-import { BaseStoreDataType } from '~CoreDataLake';
+import { TaggedBaseStoreDataType } from '~CoreDataLake';
 import { KVStore, KVStoreSettingsStruct } from '~Stores/types';
 
 
 const FileNavbarAndDialog = (props: {
     setKVStores: React.Dispatch<React.SetStateAction<KVStoresAndLoadedState>>,
     kvStores: KVStoresAndLoadedState,
-    setData: React.Dispatch<React.SetStateAction<BaseStoreDataType>>,
-    data: BaseStoreDataType
+    setData: React.Dispatch<React.SetStateAction<TaggedBaseStoreDataType>>,
+    data: TaggedBaseStoreDataType
 }) => {
     const [open, setOpen] = React.useState<boolean>(false);
     const [newSaveLocationType, setNewSaveLocationType] = React.useState<string>(Object.keys(KVStores)[0]);
@@ -92,8 +92,8 @@ const FileNavbarAndDialog = (props: {
 const SaveLoadButtons = (props: {
     saveSource: KVStore<KVStoreSettingsStruct>,
     removeSaveSource: () => void
-    data: BaseStoreDataType,
-    setData: React.Dispatch<React.SetStateAction<BaseStoreDataType>>,
+    data: TaggedBaseStoreDataType,
+    setData: React.Dispatch<React.SetStateAction<TaggedBaseStoreDataType>>,
 }) => {
     const syncFn = props.saveSource.sync;
     const SyncButton = syncFn ? <Button

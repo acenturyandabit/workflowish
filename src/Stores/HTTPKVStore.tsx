@@ -1,7 +1,7 @@
 import { DefaultKVConstructionArgs, KVStore, KVStoreSettingsStruct } from "./types";
 import * as React from "react";
 import { Checkbox, FormControlLabel, TextField } from "@mui/material"
-import { BaseStoreDataType } from "~CoreDataLake";
+import { TaggedBaseStoreDataType, newBlankDoc } from "~CoreDataLake";
 import getDiffsAndResolvedItems from "~CoreDataLake/getResolvedItems";
 
 const HTTPKVStoreType = "HTTPStore" as const;
@@ -23,7 +23,7 @@ const isHTTPKVStoreSettings = (x: KVStoreSettingsStruct | DefaultKVConstructionA
 class HTTPKVStore implements
     KVStore<HTTPKVStoreSettings>{
     settings: HTTPKVStoreSettings
-    cachedDataFile: BaseStoreDataType
+    cachedDataFile: TaggedBaseStoreDataType
     password: string
     static type = HTTPKVStoreType
     constructor(_settings: HTTPKVStoreSettings | DefaultKVConstructionArgs) {
@@ -41,7 +41,7 @@ class HTTPKVStore implements
             };
         }
         this.password = ""
-        this.cachedDataFile = {};
+        this.cachedDataFile = newBlankDoc();
         this.sync = this.sync.bind(this)
     }
 
@@ -128,7 +128,7 @@ class HTTPKVStore implements
         )
     }
 
-    async save(data: BaseStoreDataType) {
+    async save(data: TaggedBaseStoreDataType) {
         const response = await this.authedFetch(this.settings.saveURL, {
             method: "POST",
             headers: {
@@ -141,7 +141,7 @@ class HTTPKVStore implements
         }
     }
 
-    async sync(data: BaseStoreDataType): Promise<BaseStoreDataType> {
+    async sync(data: TaggedBaseStoreDataType): Promise<TaggedBaseStoreDataType> {
         const { incomingDiffs } = getDiffsAndResolvedItems(data, this.cachedDataFile);
         const response = this.authedFetch(this.settings.syncURL, {
             method: "POST",
@@ -154,7 +154,7 @@ class HTTPKVStore implements
         return this.cachedDataFile;
     }
 
-    async load(): Promise<BaseStoreDataType> {
+    async load(): Promise<TaggedBaseStoreDataType> {
         if (this.settings.usePassword && this.settings.promptPassword) {
             // TODO: Better password prompting
             this.password = prompt("Please enter your password for " + this.settings.loadURL) || "";

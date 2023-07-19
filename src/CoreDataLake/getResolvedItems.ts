@@ -1,12 +1,13 @@
 import { BaseStoreDataType, BaseDeltaType } from ".";
 
-const getDiffsAndResolvedItems = (incomingDoc: BaseStoreDataType, savedDoc: BaseStoreDataType): {
+
+const getDiffsAndResolvedItems = <SavedType extends BaseStoreDataType,>(incomingDoc: BaseStoreDataType, savedDoc: SavedType): {
     incomingDiffs: BaseStoreDataType,
-    resolved: BaseStoreDataType,
+    resolved: SavedType,
     deltas: BaseDeltaType[]
 } => {
     const keysChanged = leftRightKeysChanged(incomingDoc, savedDoc);
-    const resolved = Object.assign({}, savedDoc);
+    const resolved = Object.assign({}, savedDoc) as BaseStoreDataType;
     const incomingDiffs: BaseStoreDataType = {};
     const deltas: BaseDeltaType[] = [];
     keysChanged.leftNewerKeys.forEach(key => {
@@ -21,7 +22,7 @@ const getDiffsAndResolvedItems = (incomingDoc: BaseStoreDataType, savedDoc: Base
 
     return {
         incomingDiffs,
-        resolved,
+        resolved: resolved as SavedType,
         deltas
     }
 }

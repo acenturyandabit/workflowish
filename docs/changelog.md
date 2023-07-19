@@ -1,3 +1,6 @@
+# Latest 
+- Automatically upgrade data schema version
+
 # Version 4.0.1: Post-Anki Minor Bugfixes 
 - Sync only sends diffs
 - fix bug which duplicates entire data object for every key

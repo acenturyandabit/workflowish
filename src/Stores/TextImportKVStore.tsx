@@ -1,7 +1,7 @@
 import { DefaultKVConstructionArgs, KVStore, KVStoreSettingsStruct } from "./types";
 import * as React from "react";
 import { MenuItem, TextField } from "@mui/material"
-import { BaseStoreDataType } from "~CoreDataLake";
+import { TaggedBaseStoreDataType, newBlankDoc } from "~CoreDataLake";
 
 const TextImportKVStoreType = "TextImport" as const;
 
@@ -78,18 +78,18 @@ class TextImportKVStore implements
         )
     }
 
-    save(data: BaseStoreDataType) {
+    save(data: TaggedBaseStoreDataType) {
         this.settings.outputText = JSON.stringify(data);
         if (this.bumpKVStores) {
             this.bumpKVStores();
         }
     }
 
-    async load(): Promise<BaseStoreDataType> {
+    async load(): Promise<TaggedBaseStoreDataType> {
         if (this.settings.outputText) {
             return JSON.parse(this.settings.outputText);
         } else {
-            return {}
+            return newBlankDoc()
         }
     }
 
