@@ -1,6 +1,7 @@
 # Latest 
 - Automatically upgrade data schema version
 - Fix context menu
+- Fix child order in context menu copying
 
 # Version 4.0.1: Post-Anki Minor Bugfixes 
 - Sync only sends diffs

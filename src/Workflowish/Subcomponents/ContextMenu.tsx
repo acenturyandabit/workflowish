@@ -29,7 +29,7 @@ interface ItemParams {
 
 const exportToList = (args: ItemParams) => {
     const argProps = args.props;
-    if (argProps){
+    if (argProps) {
         const parentId = argProps.model.transformedData.parentById[argProps.thisItem.id];
         const siblings = argProps.model.transformedData.keyedNodes[parentId].children;
         const itemAndSiblingAsMarkdown = (siblings.map((i: ItemTreeNode) => toBullets(i)) || []).join("\n");
@@ -42,9 +42,9 @@ const toBullets = (rootNode: ItemTreeNode): string => {
     type ItemDepthPair = [ItemTreeNode, number]
     const nodeStack: Array<ItemDepthPair> = [[rootNode, 0]];
     while (nodeStack.length) {
-        const top: ItemDepthPair = nodeStack.shift() as ItemDepthPair;
+        const top: ItemDepthPair = nodeStack.pop() as ItemDepthPair;
         nodeStack.push(...(
-            top[0].children.map(i => [i, top[1] + 1] as ItemDepthPair)
+            [...top[0].children].reverse().map(i => [i, top[1] + 1] as ItemDepthPair)
         ));
         outputLines.push({ data: top[0].data, indent: top[1] })
     }
