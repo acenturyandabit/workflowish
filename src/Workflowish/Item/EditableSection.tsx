@@ -63,7 +63,7 @@ export const EditableSection = (props: {
 
 
     return <span style={{ background: searchHighlightBackground }}
-        onContextMenu={() => contextEventHandler(props.item, props.model)}>
+        onContextMenu={contextEventHandlerFactory(props.item, props.model)}>
         <BulletPoint
             item={props.item}
             actions={props.actions}
@@ -88,7 +88,7 @@ export const EditableSection = (props: {
 }
 
 
-const contextEventHandler = (thisItem: ItemTreeNode, model: TransformedDataAndSetter): React.MouseEventHandler<HTMLDivElement> => {
+const contextEventHandlerFactory = (thisItem: ItemTreeNode, model: TransformedDataAndSetter): React.MouseEventHandler<HTMLDivElement> => {
     const { show } = useContextMenu({
         id: ITEM_CONTEXT_MENU_ID,
     });

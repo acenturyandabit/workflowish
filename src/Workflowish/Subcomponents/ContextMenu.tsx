@@ -42,7 +42,7 @@ const toBullets = (rootNode: ItemTreeNode): string => {
     type ItemDepthPair = [ItemTreeNode, number]
     const nodeStack: Array<ItemDepthPair> = [[rootNode, 0]];
     while (nodeStack.length) {
-        const top: ItemDepthPair = nodeStack.pop() as ItemDepthPair;
+        const top: ItemDepthPair = nodeStack.shift() as ItemDepthPair;
         nodeStack.push(...(
             top[0].children.map(i => [i, top[1] + 1] as ItemDepthPair)
         ));

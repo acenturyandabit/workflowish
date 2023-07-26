@@ -1,5 +1,6 @@
 # Latest 
 - Automatically upgrade data schema version
+- Fix context menu
 
 # Version 4.0.1: Post-Anki Minor Bugfixes 
 - Sync only sends diffs
