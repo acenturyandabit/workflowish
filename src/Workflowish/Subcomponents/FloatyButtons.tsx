@@ -2,6 +2,7 @@ import * as React from 'react';
 import "./FloatyButtons.css"
 import { FocusedActionReceiver } from '../mvc/focusedActionReceiver';
 import { OmniBarHandlerAndState } from './OmnibarWrapper';
+import { FloatyRegion } from '~util/FloatyRegion';
 
 const tristateSwitches = ["shiftKey", "altKey", "ctrlKey"] as const;
 const tristates = ["ON", "HELD", "OFF"] as const;
@@ -16,41 +17,11 @@ export const FloatyButtons = (props: {
     omniBarHandlerRef: React.MutableRefObject<OmniBarHandlerAndState>
 }) => {
     // code derived from https://developer.mozilla.org/en-US/docs/Web/API/VisualViewport
-    const [transformString, setTransformString] = React.useState<string>("");
     const [tristates, setTristates] = React.useState<FloatyButtonTristates>({
         shiftKey: "OFF",
         altKey: "OFF",
         ctrlKey: "OFF",
     })
-    React.useEffect(() => {
-        const viewport = window.visualViewport;
-        if (viewport) {
-            const layoutSpannerDiv = document.createElement("div");
-            document.body.appendChild(layoutSpannerDiv);
-            layoutSpannerDiv.style.position = "fixed";
-            layoutSpannerDiv.style.width = "100%";
-            layoutSpannerDiv.style.height = "100%";
-            layoutSpannerDiv.style.visibility = "hidden";
-            const viewportHandler = () => {
-                if (viewport) {
-                    const offsetX = viewport.offsetLeft;
-                    const offsetY = viewport.height
-                        - layoutSpannerDiv.getBoundingClientRect().height
-                        + viewport.offsetTop;
-                    setTransformString(`translate(${offsetX}px, ${offsetY}px) scale(${1 / viewport.scale})`)
-                }
-            }
-            viewport.addEventListener("scroll", viewportHandler);
-            viewport.addEventListener('resize', viewportHandler);
-
-            return () => {
-                viewport.removeEventListener("scroll", viewportHandler);
-                viewport.removeEventListener('resize', viewportHandler);
-
-                layoutSpannerDiv.remove();
-            }
-        }
-    }, [setTransformString])
     const stateToColor = (state: string) => {
         const stateBackgroundColorMapping: Record<string, string> = { "ON": "lightblue", "HELD": "blue", "OFF": "" };
         const stateColorMapping: Record<string, string> = { "ON": "black", "HELD": "white", "OFF": "black" };
@@ -62,8 +33,8 @@ export const FloatyButtons = (props: {
     const restoreFocus = () => {
         props.focusedActionReceiver.focusThis();
     }
-    return <>
-        <span className="floatyButtons" style={{ transform: transformString }}>
+    return <FloatyRegion style={{ bottom: "0px" }} stickyHeightPct={100}>
+        <span className="floatyButtons">
             <StateToggleKey _key="Shift" sx={stateToColor(tristates["shiftKey"])} restoreFocus={restoreFocus} setTristates={setTristates} />
             <StateToggleKey _key="Ctrl" sx={stateToColor(tristates["ctrlKey"])} restoreFocus={restoreFocus} setTristates={setTristates} />
             <StateToggleKey _key="Alt" sx={stateToColor(tristates["altKey"])} restoreFocus={restoreFocus} setTristates={setTristates} />
@@ -103,7 +74,7 @@ export const FloatyButtons = (props: {
                 omniBarHandlerRef={props.omniBarHandlerRef}
             />
         </span>
-    </>
+    </FloatyRegion>
 }
 
 const StateToggleKey = (props: {

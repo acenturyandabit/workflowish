@@ -14,6 +14,7 @@ import { DataAndLoadState, UpdateDataAction } from '~CoreDataLake';
 import { isMobile } from '~util/isMobile';
 import { ReplayRendererNavbarAndDialog } from './ReplayRenderer';
 import { AvailableApps, CoreAppState } from '~App';
+import { FloatyRegion } from '~util/FloatyRegion';
 
 export default (props: {
     setKVStores: React.Dispatch<React.SetStateAction<KVStoresAndLoadedState>>,
@@ -24,7 +25,7 @@ export default (props: {
     setCoreAppState: React.Dispatch<React.SetStateAction<CoreAppState>>
 }) => {
     const unsavedChangesText = isMobile() ? "*" : "Unsaved Changes";
-    return <>
+    return <FloatyRegion style={{ top: "0px", zIndex: 100 }} stickyHeightPct={0}>
         <ul className="filemenu">
             <AppSelector
                 coreAppState={props.coreAppState}
@@ -51,7 +52,7 @@ export default (props: {
                 {props.dataAndLoadState.changed ? unsavedChangesText : ""}
             </a></li>
         </ul>
-    </>
+    </FloatyRegion>
 }
 
 const AppSelector = (props: {
@@ -59,7 +60,7 @@ const AppSelector = (props: {
     setCoreAppState: React.Dispatch<React.SetStateAction<CoreAppState>>
 }) => {
     return <li>
-        <a style={{textAlign: "left" }}>T &gt; {props.coreAppState.selectedApp}</a>
+        <a style={{ textAlign: "left" }}>T &gt; {props.coreAppState.selectedApp}</a>
         <ul>
             {Object.keys(AvailableApps).map((_app) => {
                 const app = _app as keyof typeof AvailableApps;

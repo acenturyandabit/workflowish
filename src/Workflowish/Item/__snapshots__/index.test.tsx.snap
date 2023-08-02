@@ -18,23 +18,27 @@ exports[`Renders an item 1`] = `
       }
     }
   >
-    <div
-      className="search-bar"
+    <span
+      className="floatyRegion"
     >
-      <input
-        data-testid="search-bar"
-        onChange={[Function]}
-        onKeyDown={[Function]}
-        placeholder="🔍 Search"
-        style={
-          {
-            "flex": "1 0 auto",
-            "padding": "2px",
+      <div
+        className="search-bar"
+      >
+        <input
+          data-testid="search-bar"
+          onChange={[Function]}
+          onKeyDown={[Function]}
+          placeholder="🔍 Search"
+          style={
+            {
+              "flex": "1 0 auto",
+              "padding": "2px",
+            }
           }
-        }
-        value=""
-      />
-    </div>
+          value=""
+        />
+      </div>
+    </span>
     <span
       className="itemWrapperClass"
     >

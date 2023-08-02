@@ -6,6 +6,7 @@ import "./index.css"
 import { OmniBarState } from './States';
 import { OmniBarHandler, getSpecializedProps } from './Specializations';
 import { DFSFocusManager, IdAndFocusPath } from '~Workflowish/mvc/DFSFocus';
+import { FloatyRegion } from '~util/FloatyRegion';
 
 export type OmniBarHandlerAndState = {
     handler: OmniBarHandler,
@@ -96,16 +97,18 @@ const OmniBar = (props: {
     if (props.lastFocusedItem.id) {
         actOnPostfix = ` or act on ${props.transformedDataAndSetter.transformedData.keyedNodes[props.lastFocusedItem.id].data}`
     }
-    return <div className="search-bar">
-        <input ref={inputReference}
-            data-testid={`search-bar`}
-            placeholder={`🔍 Search${actOnPostfix}`}
-            value={props.omniBarState.barContents}
-            onChange={(evt) => props.setOmniBarState((oldState) => ({ ...oldState, barContents: evt.target.value }))}
-            onKeyDown={props.omnibarKeyHandler}
-            style={{ flex: "1 0 auto", padding: "2px" }} />
-        {props.children}
-    </div>
+    return <FloatyRegion stickyHeightPct={0}>
+        <div className="search-bar">
+            <input ref={inputReference}
+                data-testid={`search-bar`}
+                placeholder={`🔍 Search${actOnPostfix}`}
+                value={props.omniBarState.barContents}
+                onChange={(evt) => props.setOmniBarState((oldState) => ({ ...oldState, barContents: evt.target.value }))}
+                onKeyDown={props.omnibarKeyHandler}
+                style={{ flex: "1 0 auto", padding: "2px" }} />
+            {props.children}
+        </div>
+    </FloatyRegion>
 }
 
 export const getDefaultOmnibarState = (): OmniBarState => {

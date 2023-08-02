@@ -1,0 +1,21 @@
+.floatyRegion{
+    position: sticky;
+    display: flex;
+    left: 0px;
+    right: 0px;
+    transform-origin: left bottom;
+    transform: translate(0px, 0px) scale(1);
+}
+
+.floatyRegion button{
+    flex: 1 1 auto;
+    height: 40px;
+}
+
+.floatyRegion button.pressed{
+    background:lightblue;
+}
+.floatyRegion button.heavyPressed{
+    color:white;
+    background:darkblue;
+}
