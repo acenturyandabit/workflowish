@@ -28,9 +28,9 @@ export const commandPropsFactory: SpecializedPropsFactory = (
     return {
         omnibarKeyHandler: (evt: { key: string }) => {
             if (evt.key == "ArrowUp") {
-                setOmniBarState((oldState) => ({ ...oldState, selectionIdx: oldState.selectionIdx - 1 }))
+                setOmniBarState((oldState) => ({ ...oldState, selectionIdx: Math.max(oldState.selectionIdx - 1,0) }))
             } else if (evt.key == "ArrowDown") {
-                setOmniBarState((oldState) => ({ ...oldState, selectionIdx: oldState.selectionIdx + 1 }))
+                setOmniBarState((oldState) => ({ ...oldState, selectionIdx: Math.min(oldState.selectionIdx + 1, matchingNodes.length-1) }))
             } else if (evt.key == "Enter") {
                 if (matchedCommand) {
                     matchedCommand.command({
