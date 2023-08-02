@@ -20,6 +20,12 @@ exports[`Renders an item 1`] = `
   >
     <span
       className="floatyRegion"
+      style={
+        {
+          "position": "sticky",
+          "top": "0px",
+        }
+      }
     >
       <div
         className="search-bar"

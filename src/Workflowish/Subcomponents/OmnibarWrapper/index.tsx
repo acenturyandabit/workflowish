@@ -97,7 +97,7 @@ const OmniBar = (props: {
     if (props.lastFocusedItem.id) {
         actOnPostfix = ` or act on ${props.transformedDataAndSetter.transformedData.keyedNodes[props.lastFocusedItem.id].data}`
     }
-    return <FloatyRegion stickyHeightPct={0}>
+    return <FloatyRegion stickyHeightPct={0} style={{position:"sticky", top:"0px"}}>
         <div className="search-bar">
             <input ref={inputReference}
                 data-testid={`search-bar`}

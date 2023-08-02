@@ -26,6 +26,12 @@ exports[`Creates the new document if no document is provided 2`] = `
   >
     <span
       className="floatyRegion"
+      style={
+        {
+          "position": "sticky",
+          "top": "0px",
+        }
+      }
     >
       <div
         className="search-bar"
