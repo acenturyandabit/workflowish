@@ -28,9 +28,9 @@ export const commandPropsFactory: SpecializedPropsFactory = (
     return {
         omnibarKeyHandler: (evt: { key: string }) => {
             if (evt.key == "ArrowUp") {
-                setOmniBarState((oldState) => ({ ...oldState, selectionIdx: Math.max(oldState.selectionIdx - 1,0) }))
+                setOmniBarState((oldState) => ({ ...oldState, selectionIdx: Math.max(oldState.selectionIdx - 1, 0) }))
             } else if (evt.key == "ArrowDown") {
-                setOmniBarState((oldState) => ({ ...oldState, selectionIdx: Math.min(oldState.selectionIdx + 1, matchingNodes.length-1) }))
+                setOmniBarState((oldState) => ({ ...oldState, selectionIdx: Math.min(oldState.selectionIdx + 1, matchingNodes.length - 1) }))
             } else if (evt.key == "Enter") {
                 if (matchedCommand) {
                     matchedCommand.command({
@@ -64,13 +64,18 @@ const getMatchedCommandAndMatchingNodes = (omniBarState: OmniBarState, transform
     const omniBarContents = omniBarState.barContents;
     let matchingNodes: ItemTreeNode[] = [];
     let matchedCommand: Command | null = null;
-    const contentParts = omniBarContents.split(":");
-    const commandPart = contentParts.shift();
-    if (commandPart) {
-        matchedCommand = commands.filter((command) => commandMatchesFilter(command, commandPart.slice(">".length)))[0];
-        let searchPart = contentParts.join(":");
-        searchPart = searchPart.replace(/^\s+/, "");
-        matchingNodes = Object.values(transformedDataAndSetter.transformedData.keyedNodes).filter(node => node.data.toLowerCase().includes(searchPart.toLowerCase()));
+    const candidateSeparators = [":", ","]; // comma is more easy to reach on mobile
+    const separatorIndices = candidateSeparators.map(sep => ({ sep, idx: omniBarContents.indexOf(sep) })).filter(sep_pair => sep_pair.idx > 0);
+    if (separatorIndices.length > 0) {
+        const separator = separatorIndices.sort((a, b) => a.idx - b.idx)[0].sep;
+        const contentParts = omniBarContents.split(separator);
+        const commandPart = contentParts.shift();
+        if (commandPart) {
+            matchedCommand = commands.filter((command) => commandMatchesFilter(command, commandPart.slice(">".length)))[0];
+            let searchPart = contentParts.join(separator);
+            searchPart = searchPart.replace(/^\s+/, "");
+            matchingNodes = Object.values(transformedDataAndSetter.transformedData.keyedNodes).filter(node => node.data.toLowerCase().includes(searchPart.toLowerCase()));
+        }
     }
     return {
         matchingNodes,

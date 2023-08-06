@@ -115,6 +115,9 @@ const KeyButton = (props: {
     <button onClick={(rawEvent) => {
         props.setTristates(tristates => {
             const { event, resetTristates } = composeEvent(tristates, props._key);
+            if (props._key == MOBILE_ACTION_1 && tristates.altKey == "OFF" && tristates.ctrlKey == "OFF" && tristates.shiftKey == "OFF") {
+                props.omniBarHandlerRef.current.setOmniBarState(state => ({ ...state, barContents: ">" }));
+            }
             if (props.omniBarHandlerRef.current.state.barContents.length == 0) {
                 props.focusedActionReceiver.keyCommand(event, rawEvent);
             }

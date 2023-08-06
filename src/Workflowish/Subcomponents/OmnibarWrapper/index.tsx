@@ -10,6 +10,7 @@ import { FloatyRegion } from '~util/FloatyRegion';
 
 export type OmniBarHandlerAndState = {
     handler: OmniBarHandler,
+    setOmniBarState: React.Dispatch<React.SetStateAction<OmniBarState>>,
     state: OmniBarState
 }
 
@@ -25,6 +26,7 @@ const OmniBarWrapper = (props: {
     const { omnibarKeyHandler, rootNode, extraAnnotations } = getSpecializedProps(omniBarState, setOmniBarState, props.transformedDataAndSetter, props.itemRefsDictionary, props.dfsFocusManager);
     props.omniBarHandlerRef.current = {
         handler: omnibarKeyHandler,
+        setOmniBarState: setOmniBarState,
         state: omniBarState
     }
     return <>
@@ -97,7 +99,7 @@ const OmniBar = (props: {
     if (props.lastFocusedItem.id) {
         actOnPostfix = ` or act on ${props.transformedDataAndSetter.transformedData.keyedNodes[props.lastFocusedItem.id].data}`
     }
-    return <FloatyRegion stickyHeightPct={0} style={{position:"sticky", top:"0px"}}>
+    return <FloatyRegion stickyHeightPct={0} style={{ position: "sticky", top: "0px" }}>
         <div className="search-bar">
             <input ref={inputReference}
                 data-testid={`search-bar`}

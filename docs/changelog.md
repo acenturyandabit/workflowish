@@ -5,6 +5,7 @@
 - Make menu + search bar sticky when keyboard appears
 - Restore sticky to omnibar on desktop
 - Wrap item selection in command bar
+- Improve mobile omnibar experience: ACT button and comma as separator
 
 # Version 4.0.1: Post-Anki Minor Bugfixes 
 - Sync only sends diffs
