@@ -12,6 +12,7 @@ export type OmniBarHandlerAndState = {
     handler: OmniBarHandler,
     setOmniBarState: React.Dispatch<React.SetStateAction<OmniBarState>>,
     state: OmniBarState
+    focusOmnibar: () => void
 }
 
 const OmniBarWrapper = (props: {
@@ -24,14 +25,19 @@ const OmniBarWrapper = (props: {
 }) => {
     const [omniBarState, setOmniBarState] = React.useState<OmniBarState>(getDefaultOmnibarState());
     const { omnibarKeyHandler, rootNode, extraAnnotations } = getSpecializedProps(omniBarState, setOmniBarState, props.transformedDataAndSetter, props.itemRefsDictionary, props.dfsFocusManager);
+    const textBarRef = React.useRef<HTMLInputElement>(null);
     props.omniBarHandlerRef.current = {
         handler: omnibarKeyHandler,
         setOmniBarState: setOmniBarState,
-        state: omniBarState
+        state: omniBarState,
+        focusOmnibar: () => {
+            textBarRef.current?.focus();
+        }
     }
     return <>
         <OmniBar
             omniBarState={omniBarState}
+            innerRef={textBarRef}
             transformedDataAndSetter={props.transformedDataAndSetter}
             setOmniBarState={setOmniBarState}
             omnibarKeyHandler={omnibarKeyHandler}
@@ -47,20 +53,20 @@ const OmniBarWrapper = (props: {
 
 const OmniBar = (props: {
     omniBarState: OmniBarState,
+    innerRef: React.MutableRefObject<HTMLInputElement | null>
     setOmniBarState: React.Dispatch<React.SetStateAction<OmniBarState>>,
     omnibarKeyHandler: (evt: React.KeyboardEvent) => void,
     lastFocusedItem: IdAndFocusPath, // Todo: Elevate this property + the inputReference up
     children: React.ReactElement,
     transformedDataAndSetter: TransformedDataAndSetter
 }) => {
-    const inputReference = React.useRef<HTMLInputElement>(null);
     React.useEffect(() => {
         const listenForCtrlFP = (e: KeyboardEvent) => {
             if ((e.key == "f" || e.key == "p") && (e.ctrlKey || e.metaKey)) {
                 let visibleChangeOccured = false;
-                const userIsAlreadyInSearchBar = (inputReference.current == document.activeElement);
+                const userIsAlreadyInSearchBar = (props.innerRef.current == document.activeElement);
                 if (!userIsAlreadyInSearchBar) {
-                    inputReference.current?.focus();
+                    props.innerRef.current?.focus();
                     visibleChangeOccured = true;
                 }
                 if (e.key == "p") {
@@ -101,7 +107,7 @@ const OmniBar = (props: {
     }
     return <FloatyRegion stickyHeightPct={0} style={{ position: "sticky", top: "0px" }}>
         <div className="search-bar">
-            <input ref={inputReference}
+            <input ref={props.innerRef}
                 data-testid={`search-bar`}
                 placeholder={`🔍 Search${actOnPostfix}`}
                 value={props.omniBarState.barContents}

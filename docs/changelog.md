@@ -6,6 +6,7 @@
 - Restore sticky to omnibar on desktop
 - Wrap item selection in command bar
 - Improve mobile omnibar experience: ACT button and comma as separator
+- Add focus to omnibar when act button pressed
 
 # Version 4.0.1: Post-Anki Minor Bugfixes 
 - Sync only sends diffs
