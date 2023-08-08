@@ -63,7 +63,7 @@ export const commandPropsFactory: SpecializedPropsFactory = (
 const getMatchedCommandAndMatchingNodes = (omniBarState: OmniBarState, transformedDataAndSetter: TransformedDataAndSetter) => {
     const omniBarContents = omniBarState.barContents;
     let matchingNodes: ItemTreeNode[] = [];
-    let matchedCommand: Command | null = null;
+    let matchedCommand: Command = commands[0];
     const candidateSeparators = [":", ","]; // comma is more easy to reach on mobile
     const separatorIndices = candidateSeparators.map(sep => ({ sep, idx: omniBarContents.indexOf(sep) })).filter(sep_pair => sep_pair.idx > 0);
     if (separatorIndices.length > 0) {
@@ -76,6 +76,9 @@ const getMatchedCommandAndMatchingNodes = (omniBarState: OmniBarState, transform
             searchPart = searchPart.replace(/^\s+/, "");
             matchingNodes = Object.values(transformedDataAndSetter.transformedData.keyedNodes).filter(node => node.data.toLowerCase().includes(searchPart.toLowerCase()));
         }
+    }else{
+        // default goto command
+        matchingNodes = Object.values(transformedDataAndSetter.transformedData.keyedNodes).filter(node => node.data.toLowerCase().includes(omniBarContents.toLowerCase()));
     }
     return {
         matchingNodes,

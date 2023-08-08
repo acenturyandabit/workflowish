@@ -63,7 +63,6 @@ export const makeItemActions = (props: {
                 data: newContents || "",
                 children: [],
                 collapsed: false,
-                searchHighlight: []
             };
             transformedData.keyedNodes[props.thisItem.id].children.unshift(newTreeNode);
             transformedData.keyedNodes[props.thisItem.id].collapsed = false;
@@ -86,7 +85,6 @@ export const makeItemActions = (props: {
                 data: newContents || "",
                 children: [],
                 collapsed: false,
-                searchHighlight: []
             };
             siblings.splice(currentSiblingIdx + 1, 0, newTreeNode);
             return {

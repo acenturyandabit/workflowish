@@ -41,7 +41,6 @@ export const commands: Command[] = [
                     data: `[LN: ${commandFunctions.searchedItemId}]`,
                     children: [],
                     collapsed: false,
-                    searchHighlight: [],
                     _lm: Date.now()
                 }
                 parentItem.children.splice(currentChildIdx + 1, 0, newNode);
@@ -114,7 +113,6 @@ const copySymlink = (commandFunctions: CommandFunctionsBundle) => {
             data: `[LN: ${linkId}]`,
             children: [],
             collapsed: false,
-            searchHighlight: [],
             _lm: Date.now()
         }
         const thisParentId = transformedData.parentById[commandFunctions.currentItem.id];

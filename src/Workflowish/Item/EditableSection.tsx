@@ -53,12 +53,8 @@ export const EditableSection = (props: {
 
     const renderTimeContext = React.useContext<RenderTimeContext>(RenderTimeContext)
     let searchHighlightBackground = "";
-    if (props.item.searchHighlight.includes("SEARCH_SELECTED")) {
-        searchHighlightBackground = "blue";
-    } else if (renderTimeContext.currentFocusedItem.id == props.item.id && treeEquals(renderTimeContext.currentFocusedItem.treePath, props.treePath)) {
+    if (renderTimeContext.currentFocusedItem.id == props.item.id && treeEquals(renderTimeContext.currentFocusedItem.treePath, props.treePath)) {
         searchHighlightBackground = "#b36200";
-    } else if (props.item.searchHighlight.includes("SEARCH_MATCH")) {
-        searchHighlightBackground = "darkslateblue";
     }
 
 

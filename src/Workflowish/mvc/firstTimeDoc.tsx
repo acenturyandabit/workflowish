@@ -138,7 +138,6 @@ export const fromNestedRecord = (root: DeflatedItemTreeNode | string, idGenerato
             data: root,
             children: [],
             collapsed: false,
-            searchHighlight: []
         }
     } else return {
         _lm: Date.now(),
@@ -146,6 +145,5 @@ export const fromNestedRecord = (root: DeflatedItemTreeNode | string, idGenerato
         data: root.data,
         children: root.children?.map(i => fromNestedRecord(i, idGenerator)) || [],
         collapsed: root.collapsed || false,
-        searchHighlight: []
     }
 }

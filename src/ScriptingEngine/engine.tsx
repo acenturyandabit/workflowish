@@ -178,7 +178,6 @@ const getHandlersFromUserScript = (props: {
                     data: "",
                     children: [],
                     collapsed: false,
-                    searchHighlight: []
                 }
                 return newItem;
             }

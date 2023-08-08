@@ -1,10 +1,7 @@
 import * as React from "react";
 import { BaseItemType, BaseStoreDataType, makeNewUniqueKey, newBlankDoc, setToDeleted } from "~CoreDataLake";
-import { HighlightStates as SearchHighlightStates } from "../Subcomponents/OmnibarWrapper/Specializations/search";
 import { generateFirstTimeWorkflowishDoc } from "./firstTimeDoc";
 import { excludeKeys } from "~util/getStateToSet";
-
-type HighlightStates = SearchHighlightStates;
 
 export type ItemTreeNode = {
     _lm: number
@@ -12,7 +9,6 @@ export type ItemTreeNode = {
     data: string,
     children: ItemTreeNode[],
     collapsed: boolean,
-    searchHighlight: HighlightStates[],
     markedForCleanup?: boolean,
     symlinkedNode?: ItemTreeNode
 }
@@ -31,7 +27,6 @@ export const makeNewItem = (): ItemTreeNode => ({
     _lm: Date.now(),
     data: "",
     children: [],
-    searchHighlight: [],
     collapsed: false
 });
 
@@ -130,7 +125,6 @@ export const transformData = (flatItemBlob: FlatItemBlob): TransformedData => {
                 _lm: flatItemBlob[nodeId]._lm,
                 data: flatItemBlob[nodeId].data,
                 children: [],
-                searchHighlight: [],
                 collapsed: flatItemBlob[nodeId].collapsed
             }
         }
