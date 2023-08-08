@@ -53,7 +53,7 @@ it('Copy Symlink Command works on plain item', async () => {
 
     await user.click(screen.getByTestId("child"));
     await user.click(screen.getByTestId("search-bar"));
-    await user.keyboard(">csl:{Enter}");
+    await user.keyboard(">cl:{Enter}");
     const symlinkFlat: FlatItemData = getDataSetByConsumer()["intermediate_parent"] as FlatItemData;
     expect(symlinkFlat.children[2]).toBe("newItem")
 
@@ -92,7 +92,7 @@ it('Move Symlink (msl) Command moves item and creates symlink', async () => {
 
     await user.click(screen.getByTestId("child"));
     await user.click(screen.getByTestId("search-bar"));
-    await user.keyboard(">msl:move target{Enter}");
+    await user.keyboard(">ml:move target{Enter}");
     const set_data = getDataSetByConsumer();
     expect((set_data["move_target"] as FlatItemData).children[0]).toBe("child");
     expect((set_data["source_parent"] as FlatItemData).children[0]).toBe("newItem");

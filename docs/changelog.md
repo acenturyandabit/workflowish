@@ -7,6 +7,7 @@
 - Wrap item selection in command bar
 - Improve mobile omnibar experience: ACT button and comma as separator
 - Add focus to omnibar when act button pressed
+- Remove duplicate lu command and rephrase other commands
 
 # Version 4.0.1: Post-Anki Minor Bugfixes 
 - Sync only sends diffs

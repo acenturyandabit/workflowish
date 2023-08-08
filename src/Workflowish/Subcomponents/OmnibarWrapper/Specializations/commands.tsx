@@ -78,50 +78,24 @@ export const commands: Command[] = [
         },
     },
     {
-        commandName: "lu",
-        prettyName: "Link this item under another...",
-        command: (commandFunctions) => {
-            const newNode: ItemTreeNode = {
-                id: makeNewUniqueKey(),
-                data: `[LN: ${commandFunctions.currentItem.id}]`,
-                children: [],
-                collapsed: false,
-                searchHighlight: [],
-                _lm: Date.now()
-            }
-            commandFunctions.transformedDataAndSetter.setItemsByKey((transformedData) => {
-                const searchedItem = transformedData.keyedNodes[commandFunctions.searchedItemId]
-                return {
-                    [searchedItem.id]: {
-                        ...searchedItem,
-                        _lm: Date.now(),
-                        children: [...searchedItem.children, newNode]
-                    },
-                    [newNode.id]: newNode
-                }
-            })
-            commandFunctions.focusItem({ id: newNode.id, treePathHint: commandFunctions.currentItem.treePath });
-        },
-    },
-    {
-        commandName: "csl",
-        prettyName: "Copy as symlink here",
+        commandName: "cl",
+        prettyName: "Create link to [item] here",
         singleArgument: true,
         command: (commandFunctions) => copySymlink(commandFunctions),
     },
     {
-        commandName: "cslu",
-        prettyName: "Copy as symlink under...",
+        commandName: "clu",
+        prettyName: "Create link to this item under...",
         command: (commandFunctions) => copySymlink(commandFunctions),
     },
     {
-        commandName: "msl",
-        prettyName: "Keep symlink here but move away to...",
+        commandName: "ml",
+        prettyName: "Move this to [item] and make symlink here",
         command: (commandFunctions) => copySymlink(commandFunctions),
     },
     {
-        commandName: "msla",
-        prettyName: "Keep symlink here and move this away under...",
+        commandName: "mla",
+        prettyName: "Move this to [item] and make symlink here; keep focus here",
         command: (commandFunctions) => copySymlink(commandFunctions),
     }
 ]
@@ -159,7 +133,7 @@ const copySymlink = (commandFunctions: CommandFunctionsBundle) => {
             moveTarget.children.push(thisItem);
             modifiedItems[moveTarget.id] = moveTarget;
         } else {
-            if (commandName == "csl") {
+            if (commandName == "cl") {
                 thisParentItem.children.splice(currentIdx + 1, 0, newNode);
                 modifiedItems[thisParentItem.id] = thisParentItem;
             } else {
@@ -170,7 +144,7 @@ const copySymlink = (commandFunctions: CommandFunctionsBundle) => {
         }
         return modifiedItems;
     })
-    if (commandFunctions.currentCommand.commandName.length == 4) {
+    if (commandFunctions.currentCommand.commandName.length == 3) {
         commandFunctions.focusItem({ treePathHint: commandFunctions.currentItem.treePath });
     } else {
         commandFunctions.focusItem({ id: newId, treePathHint: commandFunctions.currentItem.treePath });
