@@ -9,6 +9,7 @@
 - Add focus to omnibar when act button pressed
 - Remove duplicate lu command and rephrase other commands
 - Remove search bar functionality
+- fix command menu not showing up when > pressed in omnibar
 
 # Version 4.0.1: Post-Anki Minor Bugfixes 
 - Sync only sends diffs
