@@ -82,7 +82,6 @@ const getMatchedCommandAndMatchingNodes = (omniBarState: OmniBarState, transform
         matchingNodes = Object.values(transformedDataAndSetter.transformedData.keyedNodes).filter(node => node.data.toLowerCase().includes(omniBarContents.toLowerCase()));
         matchedCommand = commands[0]
     }
-    console.log(matchedCommand)
     return {
         matchingNodes,
         matchedCommand

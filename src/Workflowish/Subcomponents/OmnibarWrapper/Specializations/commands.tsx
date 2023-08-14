@@ -33,29 +33,7 @@ export const commands: Command[] = [
         commandName: "l",
         prettyName: "Add sibling with link to...",
         command: (commandFunctions) => {
-            if (commandFunctions.searchedItemId) {
-                const searchedItemId = commandFunctions.searchedItemId;
-                commandFunctions.transformedDataAndSetter.setItemsByKey((transformedData) => {
-                    const currentItem = transformedData.keyedNodes[commandFunctions.currentItem.id]
-                    const parentItemId = transformedData.parentById[commandFunctions.currentItem.id];
-                    const parentItem = transformedData.keyedNodes[parentItemId];
-                    const currentChildIdx = parentItem.children.indexOf(currentItem);
-                    const newNode: ItemTreeNode = {
-                        id: makeNewUniqueKey(),
-                        data: `[LN: ${searchedItemId}]`,
-                        children: [],
-                        collapsed: false,
-                        _lm: Date.now()
-                    }
-                    parentItem.children.splice(currentChildIdx + 1, 0, newNode);
-                    parentItem._lm = Date.now();
-                    return {
-                        [parentItemId]: parentItem,
-                        [newNode.id]: newNode
-                    }
-                })
-                commandFunctions.focusItem({ id: commandFunctions.currentItem.id, treePathHint: commandFunctions.currentItem.treePath });
-            }
+            createNewLink(commandFunctions);
         },
     },
     {
@@ -78,7 +56,7 @@ export const commands: Command[] = [
         commandName: "lc",
         prettyName: "Add child with link to...",
         command: (commandFunctions) => {
-            commandFunctions.focusItem({ id: commandFunctions.currentItem.id, treePathHint: commandFunctions.currentItem.treePath });
+            createNewLink(commandFunctions);
         },
     },
     {
@@ -103,6 +81,42 @@ export const commands: Command[] = [
         command: (commandFunctions) => copySymlink(commandFunctions),
     }
 ]
+
+const createNewLink = (commandFunctions: CommandFunctionsBundle) => {
+    if (commandFunctions.searchedItemId) {
+        const searchedItemId = commandFunctions.searchedItemId;
+        commandFunctions.transformedDataAndSetter.setItemsByKey((transformedData) => {
+            const currentItem = transformedData.keyedNodes[commandFunctions.currentItem.id];
+            const newNode: ItemTreeNode = {
+                id: makeNewUniqueKey(),
+                data: `[LN: ${searchedItemId}]`,
+                children: [],
+                collapsed: false,
+                _lm: Date.now()
+            }
+            let parentItemId: string;
+            let parentItem: ItemTreeNode;
+            if (commandFunctions.currentCommand.commandName == "l") {
+                parentItemId = transformedData.parentById[commandFunctions.currentItem.id];
+                parentItem = transformedData.keyedNodes[parentItemId];
+                const currentChildIdx = parentItem.children.indexOf(currentItem);
+                parentItem.children.splice(currentChildIdx + 1, 0, newNode);
+            } else if (commandFunctions.currentCommand.commandName == "lc") {
+                parentItemId = commandFunctions.currentItem.id;
+                parentItem = transformedData.keyedNodes[parentItemId];
+                parentItem.children.push(newNode);
+            } else {
+                throw "Unexpected command"
+            }
+            parentItem._lm = Date.now();
+            return {
+                [parentItemId]: parentItem,
+                [newNode.id]: newNode
+            }
+        })
+        commandFunctions.focusItem({ id: commandFunctions.currentItem.id, treePathHint: commandFunctions.currentItem.treePath });
+    }
+}
 
 const copySymlink = (commandFunctions: CommandFunctionsBundle) => {
     const newId = makeNewUniqueKey();
