@@ -23,7 +23,11 @@ describe('commands', () => {
       // that certain functions were called with the correct arguments, etc.
       // For example:
       command.expectedChanges.forEach((change) => {
-        expect(mockBundle[change.function]).toHaveBeenCalledWith(change.arguments);
+        if (typeof mockBundle[change.function] === 'function') {
+          expect(mockBundle[change.function]).toHaveBeenCalledWith(change.arguments);
+        } else {
+          fail(`Expected ${change.function} to be a function, but it was not.`);
+        }
       });
     });
   });
