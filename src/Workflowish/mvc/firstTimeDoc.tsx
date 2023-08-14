@@ -59,7 +59,6 @@ export const generateFirstTimeWorkflowishDoc = (): ItemTreeNode => {
                                         collapsed: true,
                                         children: [
                                             "Write [LN: <item id>] to create a link to another item.",
-                                            // TODO: Add a keyboard shortcut insetad of clicking on IDs.
                                             "You can determine item IDs by pressing ALT+SHIFT, then clicking on the ID to copy it to your clipboard.",
                                             "The keyboard shortcut for copying IDs is ALT+SHIFT+C. or ALT+SHIFT+ACT on mobile.",
                                             "You can also jump to a linked item using CTRL+J CTRL+ACT on mobile.",

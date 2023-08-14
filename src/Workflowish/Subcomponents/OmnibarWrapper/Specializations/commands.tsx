@@ -6,7 +6,7 @@ import { ItemTreeNode, TransformedDataAndSetter } from "~Workflowish/mvc/model";
 type CommandFunctionsBundle = {
     currentCommand: Command,
     itemGetSetter: TransformedDataAndSetter,
-    searchedItemId: string,
+    searchedItemId: string | null,
     currentItem: { id: string, treePath: TreePath },
     focusItem: (focusRequest: FocusRequest) => void,
     transformedDataAndSetter: TransformedDataAndSetter
@@ -24,33 +24,38 @@ export const commands: Command[] = [
         commandName: "g",
         prettyName: "Jump to item",
         command: (commandFunctions) => {
-            commandFunctions.focusItem({ id: commandFunctions.searchedItemId, treePathHint: commandFunctions.currentItem.treePath });
+            if (commandFunctions.searchedItemId) {
+                commandFunctions.focusItem({ id: commandFunctions.searchedItemId, treePathHint: commandFunctions.currentItem.treePath });
+            }
         }
     },
     {
         commandName: "l",
         prettyName: "Add sibling with link to...",
         command: (commandFunctions) => {
-            commandFunctions.transformedDataAndSetter.setItemsByKey((transformedData) => {
-                const currentItem = transformedData.keyedNodes[commandFunctions.currentItem.id]
-                const parentItemId = transformedData.parentById[commandFunctions.currentItem.id];
-                const parentItem = transformedData.keyedNodes[parentItemId];
-                const currentChildIdx = parentItem.children.indexOf(currentItem);
-                const newNode: ItemTreeNode = {
-                    id: makeNewUniqueKey(),
-                    data: `[LN: ${commandFunctions.searchedItemId}]`,
-                    children: [],
-                    collapsed: false,
-                    _lm: Date.now()
-                }
-                parentItem.children.splice(currentChildIdx + 1, 0, newNode);
-                parentItem._lm = Date.now();
-                return {
-                    [parentItemId]: parentItem,
-                    [newNode.id]: newNode
-                }
-            })
-            commandFunctions.focusItem({ id: commandFunctions.currentItem.id, treePathHint: commandFunctions.currentItem.treePath });
+            if (commandFunctions.searchedItemId) {
+                const searchedItemId = commandFunctions.searchedItemId;
+                commandFunctions.transformedDataAndSetter.setItemsByKey((transformedData) => {
+                    const currentItem = transformedData.keyedNodes[commandFunctions.currentItem.id]
+                    const parentItemId = transformedData.parentById[commandFunctions.currentItem.id];
+                    const parentItem = transformedData.keyedNodes[parentItemId];
+                    const currentChildIdx = parentItem.children.indexOf(currentItem);
+                    const newNode: ItemTreeNode = {
+                        id: makeNewUniqueKey(),
+                        data: `[LN: ${searchedItemId}]`,
+                        children: [],
+                        collapsed: false,
+                        _lm: Date.now()
+                    }
+                    parentItem.children.splice(currentChildIdx + 1, 0, newNode);
+                    parentItem._lm = Date.now();
+                    return {
+                        [parentItemId]: parentItem,
+                        [newNode.id]: newNode
+                    }
+                })
+                commandFunctions.focusItem({ id: commandFunctions.currentItem.id, treePathHint: commandFunctions.currentItem.treePath });
+            }
         },
     },
     {
@@ -123,21 +128,25 @@ const copySymlink = (commandFunctions: CommandFunctionsBundle) => {
             [newNode.id]: newNode
         }
         if (commandName.startsWith("m")) {
-            // remove original item from parent and insert symlink
-            thisParentItem.children.splice(currentIdx, 1, newNode);
-            modifiedItems[thisParentItem.id] = thisParentItem;
-            // insert into target
-            const moveTarget = transformedData.keyedNodes[commandFunctions.searchedItemId];
-            moveTarget.children.push(thisItem);
-            modifiedItems[moveTarget.id] = moveTarget;
+            if (commandFunctions.searchedItemId) {
+                // remove original item from parent and insert symlink
+                thisParentItem.children.splice(currentIdx, 1, newNode);
+                modifiedItems[thisParentItem.id] = thisParentItem;
+                // insert into target
+                const moveTarget = transformedData.keyedNodes[commandFunctions.searchedItemId];
+                moveTarget.children.push(thisItem);
+                modifiedItems[moveTarget.id] = moveTarget;
+            }
         } else {
             if (commandName == "cl") {
                 thisParentItem.children.splice(currentIdx + 1, 0, newNode);
                 modifiedItems[thisParentItem.id] = thisParentItem;
             } else {
-                const newSymlinkParent = transformedData.keyedNodes[commandFunctions.searchedItemId];
-                newSymlinkParent.children.push(newNode);
-                modifiedItems[newSymlinkParent.id] = newSymlinkParent;
+                if (commandFunctions.searchedItemId) {
+                    const newSymlinkParent = transformedData.keyedNodes[commandFunctions.searchedItemId];
+                    newSymlinkParent.children.push(newNode);
+                    modifiedItems[newSymlinkParent.id] = newSymlinkParent;
+                }
             }
         }
         return modifiedItems;
@@ -150,18 +159,20 @@ const copySymlink = (commandFunctions: CommandFunctionsBundle) => {
 }
 
 const moveItem = (commandFunctions: CommandFunctionsBundle) => {
-    commandFunctions.transformedDataAndSetter.setItemsByKey((transformedData) => {
-        const currentItem = transformedData.keyedNodes[commandFunctions.currentItem.id]
-        const currentParentItemId = transformedData.parentById[commandFunctions.currentItem.id];
-        const currentParentItem = transformedData.keyedNodes[currentParentItemId];
-        const currentChildIdx = currentParentItem.children.indexOf(currentItem);
-        currentParentItem.children.splice(currentChildIdx, 1);
-
-        const newParentItem = transformedData.keyedNodes[commandFunctions.searchedItemId];
-        newParentItem.children.push(currentItem);
-        return {
-            [currentParentItemId]: currentParentItem,
-            [newParentItem.id]: newParentItem,
-        }
-    })
+    if (commandFunctions.searchedItemId) {
+        const searchedItemId = commandFunctions.searchedItemId;
+        commandFunctions.transformedDataAndSetter.setItemsByKey((transformedData) => {
+            const currentItem = transformedData.keyedNodes[commandFunctions.currentItem.id]
+            const currentParentItemId = transformedData.parentById[commandFunctions.currentItem.id];
+            const currentParentItem = transformedData.keyedNodes[currentParentItemId];
+            const currentChildIdx = currentParentItem.children.indexOf(currentItem);
+            currentParentItem.children.splice(currentChildIdx, 1);
+            const newParentItem = transformedData.keyedNodes[searchedItemId];
+            newParentItem.children.push(currentItem);
+            return {
+                [currentParentItemId]: currentParentItem,
+                [newParentItem.id]: newParentItem,
+            }
+        })
+    }
 }

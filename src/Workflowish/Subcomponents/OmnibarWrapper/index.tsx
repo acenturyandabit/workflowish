@@ -56,7 +56,7 @@ const OmniBar = (props: {
     innerRef: React.MutableRefObject<HTMLInputElement | null>
     setOmniBarState: React.Dispatch<React.SetStateAction<OmniBarState>>,
     omnibarKeyHandler: (evt: React.KeyboardEvent) => void,
-    lastFocusedItem: IdAndFocusPath, // Todo: Elevate this property + the inputReference up
+    lastFocusedItem: IdAndFocusPath,
     children: React.ReactElement,
     transformedDataAndSetter: TransformedDataAndSetter
 }) => {
@@ -93,7 +93,6 @@ const OmniBar = (props: {
     }, []);
 
     React.useEffect(() => {
-        // TODO: Consider promoting this state to parent
         if (props.omniBarState.barContents == "") {
             props.setOmniBarState({
                 ...props.omniBarState,

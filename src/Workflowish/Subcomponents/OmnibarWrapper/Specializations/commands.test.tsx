@@ -16,7 +16,7 @@ import { jestSetMakeUniqueKey } from "~CoreDataLake";
 
 jestSetMakeUniqueKey(() => "newItem");
 
-it('Copy Symlink Command works on plain item', async () => {
+it('You can type ">cl" into the omnibar to create a link of the currently selected item with the same parent', async () => {
     const user = userEvent.setup({ delay: null }) // https://github.com/testing-library/user-event/issues/833
 
     const initialData: FlatItemBlob = fromTree(fromNestedRecord({
@@ -53,13 +53,13 @@ it('Copy Symlink Command works on plain item', async () => {
 
     await user.click(screen.getByTestId("child"));
     await user.click(screen.getByTestId("search-bar"));
-    await user.keyboard(">cl:{Enter}");
+    await user.keyboard(">cl{Enter}");
     const symlinkFlat: FlatItemData = getDataSetByConsumer()["intermediate_parent"] as FlatItemData;
     expect(symlinkFlat.children[2]).toBe("newItem")
 
 })
 
-it('Move Symlink (msl) Command moves item and creates symlink', async () => {
+it('Move Symlink (ml) Command moves item and creates symlink', async () => {
     const user = userEvent.setup({ delay: null }) // https://github.com/testing-library/user-event/issues/833
 
     const initialData: FlatItemBlob = fromTree(fromNestedRecord({
