@@ -31,7 +31,8 @@ export const transformData = (props: {
             } else {
                 newScriptToSet = newScript;
             }
-            setLastActivateTime(newScriptToSet.lastActivateTime);
+            const newLastActiveTime = newScriptToSet.lastActivateTime;
+            setTimeout(() => { setLastActivateTime(newLastActiveTime) }, 1);
             delete newScriptToSet.lastActivateTime;
             return {
                 [scriptKey]: newScriptToSet
