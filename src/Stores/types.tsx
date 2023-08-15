@@ -1,12 +1,15 @@
-import { TaggedBaseStoreDataType } from "~CoreDataLake"
+import { TaggedBaseStoreDataType, UpdateDataAction } from "~CoreDataLake"
+import * as React from 'react';
 
 export interface KVStoreSettingsStruct {
     type: string,
     [key: string]: unknown
 }
 
+export type ProactiveSetDataRef = React.RefObject<UpdateDataAction>;
+
 export interface KVStoreConstructor<SettingsStruct extends KVStoreSettingsStruct> {
-    new(settings: SettingsStruct | DefaultKVConstructionArgs): KVStore<SettingsStruct>,
+    new(settings: SettingsStruct | DefaultKVConstructionArgs, proactiveSetData: ProactiveSetDataRef): KVStore<SettingsStruct>,
     type: string
 }
 

@@ -1,4 +1,4 @@
-import { DefaultKVConstructionArgs, KVStore, KVStoreSettingsStruct } from "./types";
+import { DefaultKVConstructionArgs, KVStore, KVStoreSettingsStruct, ProactiveSetDataRef } from "./types";
 import * as React from "react";
 import { Checkbox, FormControlLabel, TextField } from "@mui/material"
 import { TaggedBaseStoreDataType, newBlankDoc } from "~CoreDataLake";
@@ -10,6 +10,8 @@ export interface HTTPKVStoreSettings extends KVStoreSettingsStruct {
     saveURL: string
     loadURL: string
     syncURL: string
+    autoSync: boolean
+    pingURL: string
     passwordPrefix: string
     usePassword?: boolean
     promptPassword?: boolean
@@ -25,8 +27,11 @@ class HTTPKVStore implements
     settings: HTTPKVStoreSettings
     cachedDataFile: TaggedBaseStoreDataType
     password: string
+    autoSyncTimer?: number
+    lastModified: number
+    proactiveSetData: ProactiveSetDataRef
     static type = HTTPKVStoreType
-    constructor(_settings: HTTPKVStoreSettings | DefaultKVConstructionArgs) {
+    constructor(_settings: HTTPKVStoreSettings | DefaultKVConstructionArgs, _proactiveSetData: ProactiveSetDataRef) {
         if (isHTTPKVStoreSettings(_settings)) {
             this.settings = _settings;
         } else {
@@ -35,18 +40,41 @@ class HTTPKVStore implements
                 saveURL: "",
                 loadURL: "",
                 syncURL: "",
+                pingURL: "",
                 passwordPrefix: "",
                 usePassword: false,
-                promptPassword: true
+                promptPassword: true,
+                autoSync: false
             };
         }
         this.password = ""
+        this.lastModified = 0;
         this.cachedDataFile = newBlankDoc();
         this.sync = this.sync.bind(this)
+        this.updateAutoSyncState();
+        this.proactiveSetData = _proactiveSetData;
     }
 
     toJsonSettings() {
         return this.settings
+    }
+
+    updateAutoSyncState() {
+        if (this.autoSyncTimer) {
+            clearInterval(this.autoSyncTimer);
+        }
+        if (this.settings.autoSync) {
+            const autoSyncFn = async () => {
+                const response = await fetch(this.settings.pingURL);
+                const serverLastModified = Number(await response.text());
+                if (serverLastModified != this.lastModified) {
+                    const loadedData = await this.sync(this.cachedDataFile);
+                    if (this.proactiveSetData.current) this.proactiveSetData.current(loadedData);
+                }
+                this.autoSyncTimer = window.setTimeout(autoSyncFn, 5000)
+            }
+            autoSyncFn();
+        }
     }
 
     makeFileDialog(bumpKVStores: () => void) {
@@ -85,6 +113,31 @@ class HTTPKVStore implements
                         bumpKVStores();
                     }}
                 />
+                <FormControlLabel
+                    sx={{ width: "100%", mb: 2 }}
+                    control={<Checkbox
+                        checked={this.settings.autoSync}
+                        onChange={(evt) => {
+                            this.settings.autoSync = evt.target.checked;
+                            this.updateAutoSyncState()
+                            bumpKVStores();
+                        }}
+                    />}
+                    label={"Auto sync by pinging server intermittently"}
+                />
+                {this.settings.autoSync ? <>
+                    <br></br>
+                    <TextField
+                        label="Ping URL"
+                        sx={{ mb: 2 }}
+                        value={this.settings.pingURL}
+                        fullWidth
+                        onChange={(evt) => {
+                            this.settings.pingURL = evt.target.value;
+                            bumpKVStores();
+                        }}
+                    />
+                </> : null}
                 <FormControlLabel
                     sx={{ width: "100%", mb: 2 }}
                     control={<Checkbox
@@ -129,6 +182,12 @@ class HTTPKVStore implements
     }
 
     async save(data: TaggedBaseStoreDataType) {
+        this.lastModified = 0;
+        for (const key in data) {
+            if (data[key]._lm > this.lastModified) {
+                this.lastModified = data[key]._lm;
+            }
+        }
         const response = await this.authedFetch(this.settings.saveURL, {
             method: "POST",
             headers: {
@@ -151,7 +210,17 @@ class HTTPKVStore implements
             body: JSON.stringify(incomingDiffs)
         })
         this.cachedDataFile = await (await response).json();
+        this.updateLastModified(this.cachedDataFile);
         return this.cachedDataFile;
+    }
+
+    updateLastModified(data: TaggedBaseStoreDataType) {
+        this.lastModified = 0;
+        for (const key in data) {
+            if (data[key]._lm > this.lastModified) {
+                this.lastModified = data[key]._lm;
+            }
+        }
     }
 
     async load(): Promise<TaggedBaseStoreDataType> {
@@ -161,6 +230,7 @@ class HTTPKVStore implements
         }
         const response = await this.authedFetch(this.settings.loadURL);
         this.cachedDataFile = await response.json();
+        this.updateLastModified(this.cachedDataFile);
         return this.cachedDataFile;
     }
 

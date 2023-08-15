@@ -14,6 +14,7 @@
 - Fix lc command + write tests
 - Add autorun switch with hash
 - Backend has ping endpoint to check version of document
+- Autoping on frontend
 
 # Version 4.0.1: Post-Anki Minor Bugfixes 
 - Sync only sends diffs

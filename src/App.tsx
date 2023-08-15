@@ -2,11 +2,11 @@ import { Dialog, DialogTitle, ThemeProvider, createTheme } from "@mui/material";
 import { deepPurple } from "@mui/material/colors";
 import * as React from "react";
 import Anki from "~Anki";
-import { useCoreDataLake } from "~CoreDataLake";
+import { UpdateDataAction, useCoreDataLake } from "~CoreDataLake";
 import NavBar from "~NavBar";
 import { useKVStoresList } from "~Stores/KVStoreInstances";
 import Workflowish from "~Workflowish";
-import type {} from '@mui/x-data-grid/themeAugmentation';
+import type { } from '@mui/x-data-grid/themeAugmentation';
 
 export const AvailableApps = {
   "Workflowish": Workflowish,
@@ -18,9 +18,12 @@ export type CoreAppState = {
 }
 
 export default () => {
-
-  const [kvStores, setKVStores] = useKVStoresList();
+  const proactiveSetDataRef: React.MutableRefObject<UpdateDataAction> = React.useRef<UpdateDataAction>(() => {
+    // to be replaced by actual updateData function
+  });
+  const [kvStores, setKVStores] = useKVStoresList(proactiveSetDataRef);
   const { dataAndLoadState, updateData, doSave } = useCoreDataLake(kvStores);
+  proactiveSetDataRef.current = updateData;
 
   React.useEffect(() => {
     const keydownListener = (e: KeyboardEvent) => {
@@ -66,6 +69,7 @@ export default () => {
       <NavBar
         kvStores={kvStores}
         setKVStores={setKVStores}
+        proactiveSetData={proactiveSetDataRef}
         dataAndLoadState={dataAndLoadState}
         setData={updateData}
         coreAppState={coreAppState}
