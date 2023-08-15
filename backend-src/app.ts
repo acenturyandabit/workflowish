@@ -49,10 +49,14 @@ export const appFactory_build = (config: Config): ReturnType<typeof express> => 
 
     app.get('/ping', (req, res) => {
         const docPath = getCleanFileName(req.query.f);
-        if (!(docPath in latestUpdateByFile)) {
-            res.sendStatus(400);
+        if (!checkAuthPasses(docPath, req.headers)) {
+            res.sendStatus(401);
         } else {
-            res.send(`${latestUpdateByFile[docPath]}`);
+            if (!(docPath in latestUpdateByFile)) {
+                res.sendStatus(400);
+            } else {
+                res.send(`${latestUpdateByFile[docPath]}`);
+            }
         }
     })
 

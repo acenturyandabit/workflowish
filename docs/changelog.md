@@ -15,6 +15,7 @@
 - Add autorun switch with hash
 - Backend has ping endpoint to check version of document
 - Autoping on frontend
+- Add auth to ping endpoint
 
 # Version 4.0.1: Post-Anki Minor Bugfixes 
 - Sync only sends diffs

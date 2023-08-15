@@ -65,7 +65,7 @@ class HTTPKVStore implements
         }
         if (this.settings.autoSync) {
             const autoSyncFn = async () => {
-                const response = await fetch(this.settings.pingURL);
+                const response = await this.authedFetch(this.settings.pingURL);
                 const serverLastModified = Number(await response.text());
                 if (serverLastModified != this.lastModified) {
                     const loadedData = await this.sync(this.cachedDataFile);
