@@ -6,4 +6,4 @@ const config = new Config();
 const app = appFactory_build(config);
 app.listen(port, () => {
     console.log(`Workflowish backend listening on port ${port}`)
-})  
+})

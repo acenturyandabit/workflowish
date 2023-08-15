@@ -7,7 +7,7 @@ import getDiffsAndResolvedItems from '../src/CoreDataLake/getResolvedItems'
 import { BaseStoreDataType } from '../src/CoreDataLake'
 import { IncomingHttpHeaders } from 'http'
 import { testDocuments } from './testDocuments'
-import { loadFromFile } from './docFileOps'
+import { docFileOps } from './docFileOps'
 import { Config } from './backend_config'
 
 const thisFileDirectory = path.dirname(__filename)
@@ -45,9 +45,22 @@ export const appFactory_build = (config: Config): ReturnType<typeof express> => 
         }
     })
 
+    const latestUpdateByFile: Record<string, number> = {};
+
+    app.get('/ping', (req, res) => {
+        const docPath = getCleanFileName(req.query.f);
+        if (!checkAuthPasses(docPath, req.headers)) {
+            res.sendStatus(401);
+        } else {
+            if (!(docPath in latestUpdateByFile)) {
+                res.sendStatus(400);
+            } else {
+                res.send(`${latestUpdateByFile[docPath]}`);
+            }
+        }
+    })
 
     app.post('/sync', (req, res) => {
-        console.log("Syncing")
         const docPath = getCleanFileName(req.query.f);
         if (!checkAuthPasses(docPath, req.headers)) {
             res.sendStatus(401);
@@ -55,11 +68,10 @@ export const appFactory_build = (config: Config): ReturnType<typeof express> => 
             const { resolved } = innerSaveOrSync(docPath, req.body);
             res.send(resolved);
         }
-        console.log("Synced");
     })
 
     const innerSaveOrSync = (docPath: string, incomingDoc: BaseStoreDataType): { resolved: BaseStoreDataType, incomingDiffs: BaseStoreDataType } => {
-        const savedDoc = loadFromFile(docPath);
+        const savedDoc = new docFileOps().loadFromFile(docPath);
 
         const { resolved, incomingDiffs } = getDiffsAndResolvedItems(incomingDoc, savedDoc)
         if (Object.keys(incomingDiffs).length) {
@@ -67,25 +79,41 @@ export const appFactory_build = (config: Config): ReturnType<typeof express> => 
         } else {
             console.log("Nothing to save")
         }
+        latestUpdateByFile[docPath] = 0;
+        for (const key in resolved) {
+            if (resolved[key]._lm > latestUpdateByFile[docPath]) {
+                latestUpdateByFile[docPath] = resolved[key]._lm;
+            }
+        }
         return { resolved, incomingDiffs };
     }
 
     app.get("/load", (req, res) => {
-        console.log("Loaded")
         const queryString = req.query.f;
         if (!queryString) throw Error("No query provided");
         if (typeof queryString != "string") throw Error("Invalid document name");
+        let errorStatus: number | undefined;
+        let docToSend: BaseStoreDataType | undefined;
+        const docPath = getCleanFileName(queryString);
         if (queryString in testDocuments) {
-            console.log("generating")
-            res.json(testDocuments[queryString]());
+            docToSend = testDocuments[queryString]();
         } else {
-            const docPath = getCleanFileName(queryString);
             if (!checkAuthPasses(docPath, req.headers)) {
-                res.sendStatus(401);
+                errorStatus = 401;
             } else {
-                const savedDoc = loadFromFile(docPath);
-                res.json(savedDoc)
+                docToSend = new docFileOps().loadFromFile(docPath);
             }
+        }
+        latestUpdateByFile[docPath] = 0;
+        for (const key in docToSend) {
+            if (docToSend[key]._lm > latestUpdateByFile[docPath]) {
+                latestUpdateByFile[docPath] = docToSend[key]._lm;
+            }
+        }
+        if (errorStatus == undefined) {
+            res.json(docToSend)
+        } else {
+            res.sendStatus(errorStatus);
         }
     })
     return app;

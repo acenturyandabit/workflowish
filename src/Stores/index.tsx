@@ -1,4 +1,4 @@
-import { DefaultKVConstructionArgs, KVStore, KVStoreConstructor, KVStoreSettingsStruct } from "./types";
+import { DefaultKVConstructionArgs, KVStore, KVStoreConstructor, KVStoreSettingsStruct, ProactiveSetDataRef } from "./types";
 import { v4 as uuid } from "uuid";
 import BrowserKVStore from "./BrowserKVStore"
 import HTTPStore from "./HTTPKVStore";
@@ -13,18 +13,18 @@ export const KVStores: Record<string, KVStoreConstructor<any>> = {
     [TextImportKVStore.type]: TextImportKVStore
 }
 
-export const makeKVStore = (type: string): KVStore<KVStoreSettingsStruct> => {
+export const makeKVStore = (type: string, proactiveSetData: ProactiveSetDataRef): KVStore<KVStoreSettingsStruct> => {
     const defaultArg: DefaultKVConstructionArgs = null;
-    return innerMakeKVStore(KVStores[type], defaultArg);
+    return innerMakeKVStore(KVStores[type], defaultArg, proactiveSetData);
 }
 
-const innerMakeKVStore = (ctor: KVStoreConstructor<KVStoreSettingsStruct>, args: KVStoreSettingsStruct | DefaultKVConstructionArgs) => {
-    return new ctor(args);
+const innerMakeKVStore = (ctor: KVStoreConstructor<KVStoreSettingsStruct>, args: KVStoreSettingsStruct | DefaultKVConstructionArgs, proactiveSetData: ProactiveSetDataRef) => {
+    return new ctor(args, proactiveSetData);
 }
 
-export const makeDefaultKVStore = () => {
+export const makeDefaultKVStore = (proactiveSetData: ProactiveSetDataRef) => {
     return new KVStores[BrowserKVStore.type]({
         type: BrowserKVStore.type,
         documentName: uuid()
-    })
+    }, proactiveSetData)
 }

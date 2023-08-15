@@ -8,14 +8,15 @@ import { KVStores, makeKVStore } from '~Stores';
 import { Box, TextField, MenuItem, FormControlLabel, Checkbox } from "@mui/material"
 import { KVStoresAndLoadedState } from '~Stores/KVStoreInstances';
 import { TaggedBaseStoreDataType } from '~CoreDataLake';
-import { KVStore, KVStoreSettingsStruct } from '~Stores/types';
+import { KVStore, KVStoreSettingsStruct, ProactiveSetDataRef } from '~Stores/types';
 
 
 const FileNavbarAndDialog = (props: {
     setKVStores: React.Dispatch<React.SetStateAction<KVStoresAndLoadedState>>,
     kvStores: KVStoresAndLoadedState,
     setData: React.Dispatch<React.SetStateAction<TaggedBaseStoreDataType>>,
-    data: TaggedBaseStoreDataType
+    data: TaggedBaseStoreDataType,
+    proactiveSetData: ProactiveSetDataRef
 }) => {
     const [open, setOpen] = React.useState<boolean>(false);
     const [newSaveLocationType, setNewSaveLocationType] = React.useState<string>(Object.keys(KVStores)[0]);
@@ -26,7 +27,7 @@ const FileNavbarAndDialog = (props: {
         props.setKVStores(kvStores => ({
             ...kvStores, stores: [
                 ...kvStores.stores,
-                makeKVStore(newSaveLocationType)
+                makeKVStore(newSaveLocationType, props.proactiveSetData)
             ]
         }))
     }

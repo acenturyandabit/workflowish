@@ -116,7 +116,9 @@ const KeyButton = (props: {
         props.setTristates(tristates => {
             const { event, resetTristates } = composeEvent(tristates, props._key);
             if (props._key == MOBILE_ACTION_1 && tristates.altKey == "OFF" && tristates.ctrlKey == "OFF" && tristates.shiftKey == "OFF") {
+                // USERDOC: When the mobile action button is pressed without any additional modifiers, the omnibar will be put into command mode and focused.
                 props.omniBarHandlerRef.current.setOmniBarState(state => ({ ...state, barContents: ">" }));
+                props.omniBarHandlerRef.current.focusOmnibar();
             }
             if (props.omniBarHandlerRef.current.state.barContents.length == 0) {
                 props.focusedActionReceiver.keyCommand(event, rawEvent);

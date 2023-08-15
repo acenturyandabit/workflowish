@@ -182,7 +182,7 @@ const chooseCloserOf = (left: FocusTakerEntry, right: FocusTakerEntry, treePath:
     }
     const leftDeepest = deepestCommonLevel(left.treePath, treePath);
     const rightDeepest = deepestCommonLevel(right.treePath, treePath);
-    // TODO: lots of room for finer cases here but this case isn't used often yet
+    // TODO: consider the distance between left and right nodes rather than just the deepest common node
     return (leftDeepest > rightDeepest) ? left : right;
 }
 

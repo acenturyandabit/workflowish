@@ -36,7 +36,7 @@ export const commandPropsFactory: SpecializedPropsFactory = (
                     matchedCommand.command({
                         currentCommand: matchedCommand,
                         itemGetSetter: transformedDataAndSetter,
-                        searchedItemId: matchingNodes[omniBarState.selectionIdx].id,
+                        searchedItemId: matchingNodes[omniBarState.selectionIdx] ? matchingNodes[omniBarState.selectionIdx].id : null,
                         currentItem: omniBarState.preOmnibarFocusItem ?? { id: "", treePath: [] },
                         focusItem: (focusRequest: FocusRequest) => expandParentsAndFocusItem(transformedDataAndSetter, dfsFocusManager, focusRequest),
                         transformedDataAndSetter
@@ -51,7 +51,6 @@ export const commandPropsFactory: SpecializedPropsFactory = (
         rootNode: transformedDataAndSetter.transformedData.rootNode,
         extraAnnotations: <div style={{ position: "relative" }}>
             <div style={{ position: "absolute", bottom: 0 }}>
-                {/* TODO: Use non-breaking reflow: https://stackoverflow.com/questions/2147303/how-can-i-send-an-inner-div-to-the-bottom-of-its-parent-div */}
                 <div className="command-hints-container">
                     <CommandHints omniBarState={omniBarState} matchingNodes={matchingNodes} matchedCommand={matchedCommand} />
                 </div>
@@ -63,7 +62,7 @@ export const commandPropsFactory: SpecializedPropsFactory = (
 const getMatchedCommandAndMatchingNodes = (omniBarState: OmniBarState, transformedDataAndSetter: TransformedDataAndSetter) => {
     const omniBarContents = omniBarState.barContents;
     let matchingNodes: ItemTreeNode[] = [];
-    let matchedCommand: Command | null = null;
+    let matchedCommand: Command | undefined;
     const candidateSeparators = [":", ","]; // comma is more easy to reach on mobile
     const separatorIndices = candidateSeparators.map(sep => ({ sep, idx: omniBarContents.indexOf(sep) })).filter(sep_pair => sep_pair.idx > 0);
     if (separatorIndices.length > 0) {
@@ -76,6 +75,12 @@ const getMatchedCommandAndMatchingNodes = (omniBarState: OmniBarState, transform
             searchPart = searchPart.replace(/^\s+/, "");
             matchingNodes = Object.values(transformedDataAndSetter.transformedData.keyedNodes).filter(node => node.data.toLowerCase().includes(searchPart.toLowerCase()));
         }
+    } else if (omniBarContents.startsWith(">")) {
+        matchedCommand = commands.filter((command) => commandMatchesFilter(command, omniBarContents.slice(">".length)))[0];
+    } else {
+        // default goto command
+        matchingNodes = Object.values(transformedDataAndSetter.transformedData.keyedNodes).filter(node => node.data.toLowerCase().includes(omniBarContents.toLowerCase()));
+        matchedCommand = commands[0]
     }
     return {
         matchingNodes,
@@ -88,7 +93,7 @@ const commandMatchesFilter = (command: Command, omniBarContents: string): boolea
     return omniBarContents == command.commandName;
 }
 
-export const CommandHints = (props: { omniBarState: OmniBarState, matchingNodes: ItemTreeNode[], matchedCommand: Command | null }) => {
+export const CommandHints = (props: { omniBarState: OmniBarState, matchingNodes: ItemTreeNode[], matchedCommand: Command | undefined }) => {
     let elementToReturn: React.ReactElement;
     if (props.matchedCommand) {
         const matchedItems = props.matchingNodes.map((node, idx) => (<p className={idx == props.omniBarState.selectionIdx ? "selected" : ""} key={idx}>{node.data}</p>))
