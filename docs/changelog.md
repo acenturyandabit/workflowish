@@ -13,6 +13,7 @@
 - Fix Copy Symlink command
 - Fix lc command + write tests
 - Add autorun switch with hash
+- Backend has ping endpoint to check version of document
 
 # Version 4.0.1: Post-Anki Minor Bugfixes 
 - Sync only sends diffs
