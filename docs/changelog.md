@@ -16,6 +16,7 @@
 - Backend has ping endpoint to check version of document
 - Autoping on frontend
 - Add auth to ping endpoint
+- Add dockerfile and docker-compose file
 
 # Version 4.0.1: Post-Anki Minor Bugfixes 
 - Sync only sends diffs
