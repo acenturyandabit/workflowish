@@ -1,6 +1,6 @@
 import * as React from 'react'
 import * as localforage from "localforage";
-import { KVStore, KVStoreSettingsStruct } from './types';
+import { KVStore, KVStoreSettingsStruct, ProactiveSetDataRef } from './types';
 import { KVStores, makeDefaultKVStore } from '~Stores';
 
 
@@ -17,7 +17,7 @@ export type KVStoresAndLoadedState = {
     autosaveOn: boolean
 }
 
-export const useKVStoresList = (): [
+export const useKVStoresList = (proactiveSetDataRef: ProactiveSetDataRef): [
     KVStoresAndLoadedState,
     React.Dispatch<React.SetStateAction<KVStoresAndLoadedState>>
 ] => {
@@ -32,11 +32,11 @@ export const useKVStoresList = (): [
                 await localforage.getItem("stores")
             );
             if (storeSettings) {
-                setKVStores(activate(storeSettings))
+                setKVStores(activate(storeSettings, proactiveSetDataRef))
             } else {
                 setKVStores({
                     stores: [
-                        makeDefaultKVStore()
+                        makeDefaultKVStore(proactiveSetDataRef)
                     ],
                     autosaveOn: false,
                     loaded: true
@@ -44,12 +44,12 @@ export const useKVStoresList = (): [
             }
         })();
     }, [])
-    
+
     React.useEffect(() => {
         if (kvStores.loaded) {
             if (kvStores.stores.length == 0) {
                 if (confirm("This document doesn't seem to save anywhere... do you want to save your results to the browser? Otherwise you will lose all your changes!")) {
-                    kvStores.stores.push(makeDefaultKVStore());
+                    kvStores.stores.push(makeDefaultKVStore(proactiveSetDataRef));
                 }
             }
             localforage.setItem<LocallyStoredStoresInformation>("stores", passivate(kvStores));
@@ -68,9 +68,9 @@ const upgradeToLatestVersion = (input: unknown): LocallyStoredStoresInformation 
                 autosaveOn: false
             }
         } else if (typeof input == "object" && "version" in input) {
-            if (input.version == CURRENT_LOCAL_STORE_STORES_VERSION){
+            if (input.version == CURRENT_LOCAL_STORE_STORES_VERSION) {
                 return input as LocallyStoredStoresInformation;
-            }else{
+            } else {
                 throw Error("Unknown (possibly future) version. Refusing to make changes that may affect user data.")
             }
         } else {
@@ -82,10 +82,10 @@ const upgradeToLatestVersion = (input: unknown): LocallyStoredStoresInformation 
     }
 }
 
-const activate = (input: LocallyStoredStoresInformation): KVStoresAndLoadedState => {
+const activate = (input: LocallyStoredStoresInformation, proactiveSetDataRef: ProactiveSetDataRef): KVStoresAndLoadedState => {
     const activated: KVStoresAndLoadedState = {
         autosaveOn: input.autosaveOn,
-        stores: input.stores.map(storeSetting => new KVStores[storeSetting.type](storeSetting)),
+        stores: input.stores.map(storeSetting => new KVStores[storeSetting.type](storeSetting, proactiveSetDataRef)),
         loaded: true
     }
     return activated

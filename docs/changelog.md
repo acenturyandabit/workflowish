@@ -6,6 +6,16 @@
 - Restore sticky to omnibar on desktop
 - Wrap item selection in command bar
 - Improve mobile omnibar experience: ACT button and comma as separator
+- Add focus to omnibar when act button pressed
+- Remove duplicate lu command and rephrase other commands
+- Remove search bar functionality
+- fix command menu not showing up when > pressed in omnibar
+- Fix Copy Symlink command
+- Fix lc command + write tests
+- Add autorun switch with hash
+- Backend has ping endpoint to check version of document
+- Autoping on frontend
+- Add auth to ping endpoint
 
 # Version 4.0.1: Post-Anki Minor Bugfixes 
 - Sync only sends diffs

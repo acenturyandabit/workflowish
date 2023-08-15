@@ -27,7 +27,6 @@ export const ChildItems = (props: {
             id: "",
             children: [],
             collapsed: true,
-            searchHighlight: []
         }]
     }
 

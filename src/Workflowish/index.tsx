@@ -23,7 +23,13 @@ export default (props: {
         handler: () => {
             // default empty
         },
-        state: getDefaultOmnibarState()
+        state: getDefaultOmnibarState(),
+        setOmniBarState: ()=>{
+            // default empty
+        },
+        focusOmnibar: ()=>{
+            // default empty
+        },
     });
     // ref needed so that callbacks will not access old copies of dfsFocusManager, leading to new items being unselectable
     const focusManager = React.useRef(new DFSFocusManager(setLastFocusedItem));

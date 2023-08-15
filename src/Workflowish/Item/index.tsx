@@ -25,8 +25,6 @@ export type ItemStyleParams = {
     symlinkedParents: string[]
 }
 
-const shouldBeUncollapsed = (item: ItemTreeNode): boolean => !item.collapsed || item.searchHighlight.includes("SEARCH_UNCOLLAPSE");
-
 const Item = (props: {
     styleParams: ItemStyleParams,
     item: ItemTreeNode,
@@ -46,7 +44,7 @@ const Item = (props: {
         itemsRefArray.current.pop();
     }
 
-    const shouldUncollapse = shouldBeUncollapsed(props.item);
+    const shouldUncollapse = !props.item.collapsed;
     const itemRef = React.useRef(props.item);
     React.useEffect(() => {
         // Force the focusedActionReceiver to look at the current item  otherwise it will fail to update
@@ -106,7 +104,12 @@ const Item = (props: {
     props.pushRef(props.item.id, {
         focusThis,
         scrollThisIntoView: () => {
-            thisContentEditable.current?.scrollIntoView()
+            if (thisContentEditable.current) {
+                thisContentEditable.current.scrollIntoView()
+                console.log("called scroll w " + thisContentEditable.current.innerText)
+            } else {
+                console.log("NO SCROLL")
+            }
         }
     })
 
@@ -122,7 +125,7 @@ const Item = (props: {
             item={props.item}
             treePath={props.treePath}
             model={props.model}
-            onClick={()=>{
+            onClick={() => {
                 // dont call focusThis otherwise the cursor will jump around
                 props.setThisAsFocused(focusedActionReceiver, { id: props.item.id, treePath: props.treePath });
             }}

@@ -15,9 +15,11 @@ import { isMobile } from '~util/isMobile';
 import { ReplayRendererNavbarAndDialog } from './ReplayRenderer';
 import { AvailableApps, CoreAppState } from '~App';
 import { FloatyRegion } from '~util/FloatyRegion';
+import { ProactiveSetDataRef } from '~Stores/types';
 
 export default (props: {
     setKVStores: React.Dispatch<React.SetStateAction<KVStoresAndLoadedState>>,
+    proactiveSetData: ProactiveSetDataRef,
     kvStores: KVStoresAndLoadedState,
     setData: UpdateDataAction,
     dataAndLoadState: DataAndLoadState,
@@ -34,6 +36,7 @@ export default (props: {
             <FileNavbarAndDialog
                 data={props.dataAndLoadState.data}
                 setData={props.setData}
+                proactiveSetData={props.proactiveSetData}
                 kvStores={props.kvStores}
                 setKVStores={props.setKVStores}
             ></FileNavbarAndDialog>

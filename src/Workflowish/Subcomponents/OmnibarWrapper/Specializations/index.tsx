@@ -2,11 +2,10 @@ import * as React from 'react';
 import { ItemTreeNode, TransformedDataAndSetter } from "~Workflowish/mvc/model";
 import { OmniBarState } from "../States";
 import { ItemRef } from "~Workflowish/Item";
-import { searchPropsFactory } from './search';
 import { commandPropsFactory } from './commandPropsFactory';
 import { DFSFocusManager } from '~Workflowish/mvc/DFSFocus';
 
-type OmniBarSubtype = "Search" | "Command" | "None";
+type OmniBarSubtype = "Command" | "None";
 export type OmniBarHandler = (evt: { key: string }) => void;
 export type SpecializedPropsFactory = (
     omniBarState: OmniBarState,
@@ -28,8 +27,7 @@ export const getSpecializedProps: SpecializedPropsFactory = (
     dfsFocusManager: DFSFocusManager
 ) => {
     let omniBarSubtype: OmniBarSubtype = "None";
-    if (omniBarState.barContents.startsWith(">")) omniBarSubtype = "Command";
-    else omniBarSubtype = "Search";
+    if (omniBarState.barContents.length) omniBarSubtype = "Command";
     return specializations[omniBarSubtype](
         omniBarState,
         setOmniBarState,
@@ -54,7 +52,6 @@ const nonePropsFactory: SpecializedPropsFactory = (
 }
 
 const specializations: Record<OmniBarSubtype, SpecializedPropsFactory> = {
-    "Search": searchPropsFactory,
     "Command": commandPropsFactory,
     "None": nonePropsFactory,
 }

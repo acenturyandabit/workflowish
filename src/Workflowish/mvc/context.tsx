@@ -10,7 +10,6 @@ export const ModelContext = React.createContext<ItemTreeNode>({
     data: "If you're seeing this, something's probably gone wrong :(",
     children: [],
     collapsed: false,
-    searchHighlight: []
 });
 
 export type RenderTimeContext = {

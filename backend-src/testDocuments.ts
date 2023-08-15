@@ -43,7 +43,12 @@ export const testDocuments: Record<string, () => BaseStoreDataType> = {
             collapsed: true
         }
         return items;
-    }
+    },
+    "lastmodified100": (): BaseStoreDataType => ({
+        test: {
+            _lm: 100
+        }
+    })
 }
 
 const getDataBlockWithVirtualRoot = (): BaseStoreDataType => {
