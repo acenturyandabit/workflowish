@@ -1,3 +1,6 @@
+# Latest 
+- Resume autosync if failed
+
 # Version 4.0.2: Various mobile and save fixes 
 - Automatically upgrade data schema version
 - Fix context menu
