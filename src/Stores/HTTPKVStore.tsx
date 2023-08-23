@@ -65,11 +65,15 @@ class HTTPKVStore implements
         }
         if (this.settings.autoSync) {
             const autoSyncFn = async () => {
-                const response = await this.authedFetch(this.settings.pingURL);
-                const serverLastModified = Number(await response.text());
-                if (serverLastModified != this.lastModified) {
-                    const loadedData = await this.sync(this.cachedDataFile);
-                    if (this.proactiveSetData.current) this.proactiveSetData.current(loadedData);
+                try {
+                    const response = await this.authedFetch(this.settings.pingURL);
+                    const serverLastModified = Number(await response.text());
+                    if (serverLastModified != this.lastModified) {
+                        const loadedData = await this.sync(this.cachedDataFile);
+                        if (this.proactiveSetData.current) this.proactiveSetData.current(loadedData);
+                    }
+                } catch {
+                    // continue
                 }
                 this.autoSyncTimer = window.setTimeout(autoSyncFn, 5000)
             }
