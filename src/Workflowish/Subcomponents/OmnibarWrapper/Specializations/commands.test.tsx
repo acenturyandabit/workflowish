@@ -103,6 +103,62 @@ it('You can type ">lc" into the omnibar to create a link of a specified target i
 })
 
 it('Move Symlink (ml) Command moves item and creates symlink', async () => {
+// Add test cases here
+})
+it('Jump to item (g) Command focuses on the specified item', async () => {
+// Add test case here
+})
+it('Add sibling with link to (l) Command creates a new link', async () => {
+// Add test case here
+})
+it('Move current item under (m) Command moves the current item and focuses on it', async () => {
+// Add test case here
+})
+it('Move away current item under (ma) Command moves the current item without focusing on it', async () => {
+// Add test case here
+})
+it('Add child with link to (lc) Command creates a new link', async () => {
+// Add test case here
+})
+it('Create link to item here (cl) Command creates a symlink', async () => {
+// Add test case here
+})
+it('Create link to this item under (clu) Command creates a symlink', async () => {
+// Add test case here
+})
+it('Move this to item and make symlink here (ml) Command creates a symlink', async () => {
+// Add test case here
+})
+it('Move this to item and make symlink here; keep focus here (mla) Command creates a symlink', async () => {
+// Add test case here
+})
+it('Jump to item (g) Command focuses on the specified item', async () => {
+// Add test case here
+})
+it('Add sibling with link to (l) Command creates a new link', async () => {
+// Add test case here
+})
+it('Move current item under (m) Command moves the current item and focuses on it', async () => {
+// Add test case here
+})
+it('Move away current item under (ma) Command moves the current item without focusing on it', async () => {
+// Add test case here
+})
+it('Add child with link to (lc) Command creates a new link', async () => {
+// Add test case here
+})
+it('Create link to item here (cl) Command creates a symlink', async () => {
+// Add test case here
+})
+it('Create link to this item under (clu) Command creates a symlink', async () => {
+// Add test case here
+})
+it('Move this to item and make symlink here (ml) Command creates a symlink', async () => {
+// Add test case here
+})
+it('Move this to item and make symlink here; keep focus here (mla) Command creates a symlink', async () => {
+// Add test case here
+})
     const user = userEvent.setup({ delay: null }) // https://github.com/testing-library/user-event/issues/833
 
     const initialData: FlatItemBlob = fromTree(fromNestedRecord({
